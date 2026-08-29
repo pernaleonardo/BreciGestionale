@@ -855,6 +855,13 @@
           },
           "WasteType": {
             "fields": {
+              "category": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "cerCode": {
                 "nullable": false,
                 "type": {
@@ -910,6 +917,9 @@
             },
             "storage": {
               "fields": {
+                "category": {
+                  "column": "category"
+                },
                 "cerCode": {
                   "column": "cerCode"
                 },
@@ -1626,6 +1636,15 @@
             },
             "wasteType": {
               "columns": {
+                "category": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "Altro"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "cerCode": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -1681,7 +1700,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "6cf42ca644ea1cb1a3a04fe837c4b420677b21661e8370457db8031dc963385c"
+    "storageHash": "7419a6d2b13749927e17997a6f1f3033762c7cd839541ae1b02b7597fd10a1ad"
   },
   "execution": {
     "executionHash": "d07a4ed52f7e76a3c9254bca3c82bf8840dc5714a3f5c0b12007dab0c66850a7",

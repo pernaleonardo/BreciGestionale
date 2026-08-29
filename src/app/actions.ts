@@ -286,9 +286,37 @@ export async function deleteVehicle(id: number) {
 // WasteType / Articoli (CER)
 export async function createWasteType(data: { cerCode: string; description?: string }) {
   try {
+    const cleanCode = data.cerCode.replace(/\s+/g, '');
+    const prefix = cleanCode.substring(0, 2);
+    const defaultCategories: { [key: string]: string } = {
+      '01': 'Rifiuti da estrazione e prospezione di miniere e cave',
+      '02': 'Rifiuti da agricoltura, selvicoltura, caccia e pesca',
+      '03': 'Rifiuti da lavorazione del legno, carta e cartone',
+      '04': 'Rifiuti da industria tessile e conciaria',
+      '05': 'Rifiuti da raffinazione del petrolio e trattamento carbone',
+      '06': 'Rifiuti da processi chimici inorganici',
+      '07': 'Rifiuti da processi chimici organici',
+      '08': 'Rifiuti da produzione di vernici, pitture, inchiostri e adesivi',
+      '09': 'Rifiuti dell\'industria fotografica',
+      '10': 'Rifiuti provenienti da processi termici',
+      '11': 'Rifiuti da trattamento chimico e rivestimento di metalli',
+      '12': 'Rifiuti da lavorazione fisica e meccanica di metalli e plastica',
+      '13': 'Oli esausti e residui di combustibili liquidi',
+      '14': 'Solventi organici e refrigeranti esausti',
+      '15': 'Imballaggi, assorbenti, stracci e materiali filtranti',
+      '16': 'Rifiuti non specificati altrove nel catalogo',
+      '17': 'Rifiuti da operazioni di costruzione e demolizione',
+      '18': 'Rifiuti sanitari e veterinari o da attività di ricerca',
+      '19': 'Rifiuti da impianti di trattamento rifiuti e acque reflue',
+      '20': 'Rifiuti urbani e domestici della raccolta differenziata'
+    };
+    const categoryName = defaultCategories[prefix] || 'Altro';
+    const finalCategory = defaultCategories[prefix] ? `${prefix} - ${categoryName}` : 'Altro';
+
     const newWaste = await db.orm.public.WasteType.create({
       cerCode: data.cerCode,
       description: data.description || '',
+      category: finalCategory,
     });
     return { success: true, wasteType: newWaste };
   } catch (e: any) {

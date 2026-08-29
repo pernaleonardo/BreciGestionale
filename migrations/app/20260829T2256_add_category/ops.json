@@ -1,0 +1,44 @@
+[
+  {
+    "id": "column.public.wasteType.category",
+    "label": "Add column \"category\" to \"wasteType\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "category",
+        "table": "wasteType"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"category\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "wasteType",
+          "category"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"category\"",
+        "sql": "ALTER TABLE \"public\".\"wasteType\" ADD COLUMN \"category\" text DEFAULT 'Altro' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"category\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "wasteType",
+          "category"
+        ]
+      }
+    ]
+  }
+]

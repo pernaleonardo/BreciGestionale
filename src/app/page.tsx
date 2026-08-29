@@ -96,6 +96,8 @@ export default function Home() {
   const [newVehicleData, setNewVehicleData] = useState({ plateNumber: '', model: '', capacity: '' });
   const [newWasteData, setNewWasteData] = useState({ cerCode: '', description: '' });
   const [newUserData, setNewUserData] = useState({ email: '', name: '', password: '', role: 'OPERATOR' });
+  const [cerSearchQuery, setCerSearchQuery] = useState('');
+  const [cerCategoryFilter, setCerCategoryFilter] = useState('');
 
   // Caricamento iniziale sessione e dati
   useEffect(() => {
@@ -879,47 +881,142 @@ export default function Home() {
                 )}
 
                 {/* SUB TAB: CER CODES */}
-                {anagraficaSubTab === 'cer' && (
-                  <div>
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-bold text-white">Anagrafica Codici EER/CER (Articoli)</h3>
-                      <button
-                        onClick={() => setIsWasteModalOpen(true)}
-                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                      >
-                        + Aggiungi Codice CER
-                      </button>
-                    </div>
+                {anagraficaSubTab === 'cer' && (() => {
+                  const cerCategories = [
+                    '01 - Rifiuti da estrazione e prospezione di miniere e cave',
+                    '02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca',
+                    '03 - Rifiuti da lavorazione del legno, carta e cartone',
+                    '04 - Rifiuti da industria tessile e conciaria',
+                    '05 - Rifiuti da raffinazione del petrolio e trattamento carbone',
+                    '06 - Rifiuti da processi chimici inorganici',
+                    '07 - Rifiuti da processi chimici organici',
+                    '08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi',
+                    '09 - Rifiuti dell\'industria fotografica',
+                    '10 - Rifiuti provenienti da processi termici',
+                    '11 - Rifiuti da trattamento chimico e rivestimento di metalli',
+                    '12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica',
+                    '13 - Oli esausti e residui di combustibili liquidi',
+                    '14 - Solventi organici e refrigeranti esausti',
+                    '15 - Imballaggi, assorbenti, stracci e materiali filtranti',
+                    '16 - Rifiuti non specificati altrove nel catalogo',
+                    '17 - Rifiuti da operazioni di costruzione e demolizione',
+                    '18 - Rifiuti sanitari e veterinari o da attività di ricerca',
+                    '19 - Rifiuti da impianti di trattamento rifiuti e acque reflue',
+                    '20 - Rifiuti urbani e domestici della raccolta differenziata'
+                  ];
 
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-                      <table className="w-full text-left border-collapse">
-                        <thead>
-                          <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
-                            <th className="p-3 w-48">Codice CER</th>
-                            <th className="p-3">Descrizione del Rifiuto</th>
-                            <th className="p-3 text-center">Rimuovi</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-zinc-800 text-sm">
-                          {wasteTypes.map((w) => (
-                            <tr key={w.id} className="hover:bg-zinc-800/20">
-                              <td className="p-3 font-mono font-bold text-emerald-400">{w.cerCode}</td>
-                              <td className="p-3 text-zinc-300 truncate max-w-xl" title={w.description || ''}>{w.description || '-'}</td>
-                              <td className="p-3 text-center">
-                                <button
-                                  onClick={() => handleDeleteWaste(w.id)}
-                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-800 rounded cursor-pointer"
-                                >
-                                  Elimina
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  const filtered = wasteTypes.filter((w) => {
+                    const matchesSearch = 
+                      (w.cerCode || '').toLowerCase().includes(cerSearchQuery.toLowerCase()) ||
+                      (w.description || '').toLowerCase().includes(cerSearchQuery.toLowerCase());
+                    const matchesCategory = cerCategoryFilter === '' || w.category === cerCategoryFilter;
+                    return matchesSearch && matchesCategory;
+                  });
+
+                  const grouped = filtered.reduce((acc: { [key: string]: any[] }, w) => {
+                    const cat = w.category || 'Altro';
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(w);
+                    return acc;
+                  }, {});
+
+                  const sortedKeys = Object.keys(grouped).sort((a, b) => {
+                    if (a === 'Altro') return 1;
+                    if (b === 'Altro') return -1;
+                    return a.localeCompare(b);
+                  });
+
+                  return (
+                    <div>
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+                        <div>
+                          <h3 className="text-lg font-bold text-white">Anagrafica Codici EER/CER (Articoli)</h3>
+                          <p className="text-xs text-zinc-400 mt-1">Totale codici trovati: {filtered.length} di {wasteTypes.length}</p>
+                        </div>
+                        <button
+                          onClick={() => setIsWasteModalOpen(true)}
+                          className="self-start md:self-auto px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                        >
+                          + Aggiungi Codice CER
+                        </button>
+                      </div>
+
+                      {/* FILTERS */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-400 mb-1.5">Ricerca per Codice o Descrizione</label>
+                          <input
+                            type="text"
+                            placeholder="Cerca es: 170107 o cemento..."
+                            value={cerSearchQuery}
+                            onChange={(e) => setCerSearchQuery(e.target.value)}
+                            className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-700"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-400 mb-1.5">Filtro Categoria (Capitolo)</label>
+                          <select
+                            value={cerCategoryFilter}
+                            onChange={(e) => setCerCategoryFilter(e.target.value)}
+                            className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-700"
+                          >
+                            <option value="">Tutte le categorie</option>
+                            {cerCategories.map((cat) => (
+                              <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* TABLE WITH GROUPING */}
+                      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden max-h-[600px] overflow-y-auto">
+                        {sortedKeys.length === 0 ? (
+                          <div className="p-8 text-center text-zinc-500 text-sm">
+                            Nessun codice CER corrisponde ai filtri impostati.
+                          </div>
+                        ) : (
+                          <table className="w-full text-left border-collapse">
+                            <thead>
+                              <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800 sticky top-0 z-10 backdrop-blur-md">
+                                <th className="p-3 w-48">Codice CER</th>
+                                <th className="p-3">Descrizione del Rifiuto</th>
+                                <th className="p-3 text-center w-24">Rimuovi</th>
+                              </tr>
+                            </thead>
+                            <tbody className="text-sm">
+                              {sortedKeys.map((catKey) => (
+                                <React.Fragment key={catKey}>
+                                  {/* Category Header Row */}
+                                  <tr className="bg-zinc-850/80 font-bold border-y border-zinc-800 text-xs text-emerald-400 select-none">
+                                    <td colSpan={3} className="p-2.5 px-4 bg-zinc-800/20">
+                                      📁 Categoria: {catKey}
+                                    </td>
+                                  </tr>
+                                  {grouped[catKey].map((w) => (
+                                    <tr key={w.id} className="hover:bg-zinc-800/20 border-b border-zinc-800/30">
+                                      <td className="p-3 px-6 font-mono font-bold text-zinc-100">{w.cerCode}</td>
+                                      <td className="p-3 text-zinc-300 truncate max-w-xl" title={w.description || ''}>
+                                        {w.description || '-'}
+                                      </td>
+                                      <td className="p-3 text-center">
+                                        <button
+                                          onClick={() => handleDeleteWaste(w.id)}
+                                          className="text-red-500 hover:text-red-400 p-1 px-2.5 hover:bg-red-500/10 rounded cursor-pointer transition-colors text-xs font-semibold"
+                                        >
+                                          Elimina
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </React.Fragment>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             )}
 
