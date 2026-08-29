@@ -1,7 +1,44 @@
-import 'dotenv/config';
 import postgres from '@prisma/orm-postgres/runtime';
 import type { Contract } from './contract.d';
 import contractJson from './contract.json' with { type: 'json' };
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+
+// Diagnostica e caricamento env
+const loadEnv = () => {
+  const cwd = process.cwd();
+  console.log('[Prisma Debug] process.cwd() is:', cwd);
+
+  const pathsToTry = [
+    path.resolve(cwd, '.env'),
+    path.resolve(cwd, 'gestionale-web/.env'),
+    path.resolve(cwd, '../.env'),
+  ];
+
+  let loaded = false;
+  for (const envPath of pathsToTry) {
+    if (fs.existsSync(envPath)) {
+      const result = dotenv.config({ path: envPath });
+      if (result.error) {
+        console.error(`[Prisma Debug] Failed to load env from ${envPath}:`, result.error);
+      } else {
+        console.log(`[Prisma Debug] Successfully loaded env from ${envPath}`);
+        loaded = true;
+        break;
+      }
+    } else {
+      console.log(`[Prisma Debug] Env file does not exist at: ${envPath}`);
+    }
+  }
+
+  if (!loaded && !process.env['DATABASE_URL']) {
+    console.warn('[Prisma Debug] Could not find or load any .env file and DATABASE_URL is not set.');
+  }
+};
+
+loadEnv();
+console.log('[Prisma Debug] DATABASE_URL env is:', process.env['DATABASE_URL'] ? 'SET' : 'NOT SET');
 
 // Singleton per evitare connessioni multiple durante l'hot-reloading in Next.js dev
 const globalForDb = globalThis as unknown as {
@@ -11,12 +48,9 @@ const globalForDb = globalThis as unknown as {
 const getDb = (): ReturnType<typeof postgres<Contract>> => {
   const url = process.env['DATABASE_URL'];
   if (!url) {
-    // Se DATABASE_URL non è ancora disponibile (es. durante la compilazione statica di Next.js),
-    // non salviamo il client nel singleton globale così da poterlo reinizializzare al primo utilizzo a runtime.
-    return postgres<Contract>({
-      contractJson,
-      url: '',
-    });
+    throw new Error(
+      "DATABASE_URL environment variable is not defined. Please verify that your .env file is present and configured correctly."
+    );
   }
 
   if (!globalForDb.db) {
@@ -52,4 +86,3 @@ export const db = new Proxy({} as ReturnType<typeof postgres<Contract>>, {
     return value;
   },
 });
-
