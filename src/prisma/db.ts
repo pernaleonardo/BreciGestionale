@@ -9,10 +9,20 @@ const globalForDb = globalThis as unknown as {
 };
 
 const getDb = (): ReturnType<typeof postgres<Contract>> => {
+  const url = process.env['DATABASE_URL'];
+  if (!url) {
+    // Se DATABASE_URL non è ancora disponibile (es. durante la compilazione statica di Next.js),
+    // non salviamo il client nel singleton globale così da poterlo reinizializzare al primo utilizzo a runtime.
+    return postgres<Contract>({
+      contractJson,
+      url: '',
+    });
+  }
+
   if (!globalForDb.db) {
     globalForDb.db = postgres<Contract>({
       contractJson,
-      url: process.env['DATABASE_URL']!,
+      url,
     });
   }
   return globalForDb.db;
@@ -23,8 +33,19 @@ const getDb = (): ReturnType<typeof postgres<Contract>> => {
 // assicurando che Next.js abbia già caricato le variabili d'ambiente (.env).
 export const db = new Proxy({} as ReturnType<typeof postgres<Contract>>, {
   get(target, prop, receiver) {
+    // Evita l'inizializzazione del client per ispezioni del compilatore/sistema (es. HMR, SSR)
+    if (
+      typeof prop === 'symbol' ||
+      prop === 'then' ||
+      prop === '$$typeof' ||
+      prop === 'constructor' ||
+      prop === 'prototype' ||
+      prop === 'toJSON'
+    ) {
+      return Reflect.get(target, prop, receiver);
+    }
     const instance = getDb();
-    const value = Reflect.get(instance, prop, receiver);
+    const value = Reflect.get(instance, prop, instance);
     if (typeof value === 'function') {
       return value.bind(instance);
     }
