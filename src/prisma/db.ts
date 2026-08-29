@@ -18,7 +18,7 @@ const loadEnv = () => {
 
   let loaded = false;
   for (const envPath of pathsToTry) {
-    if (fs.existsSync(envPath)) {
+    if (fs.existsSync(/*turbopackIgnore: true*/ envPath)) {
       const result = dotenv.config({ path: envPath });
       if (result.error) {
         console.error(`[Prisma Debug] Failed to load env from ${envPath}:`, result.error);

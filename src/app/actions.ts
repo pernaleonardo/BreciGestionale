@@ -245,14 +245,8 @@ export async function createDriver(data: { name: string; email: string; phone?: 
 
 export async function deleteDriver(id: number) {
   try {
-    // Svincoliamo i viaggi collegati
-    const trips = await db.orm.public.Trip.where({ driverId: id }).all();
-    for (const t of trips) {
-      await db.orm.public.Trip.where({ id: t.id }).createOrUpdate({
-        ...t,
-        driverId: null,
-      });
-    }
+    // Svincoliamo i viaggi collegati impostando driverId a null
+    await db.orm.public.Trip.where({ driverId: id }).update({ driverId: null });
     await db.orm.public.Driver.where({ id }).delete();
     return { success: true };
   } catch (e: any) {
@@ -262,7 +256,7 @@ export async function deleteDriver(id: number) {
 }
 
 // Vehicle
-export async function createVehicle(data: { plateNumber: string; model?: string; capacity?: number }) {
+export async function createVehicle(data: { plateNumber: string; model?: string; capacity?: string | number }) {
   try {
     const newVehicle = await db.orm.public.Vehicle.create({
       plateNumber: data.plateNumber,
@@ -279,14 +273,8 @@ export async function createVehicle(data: { plateNumber: string; model?: string;
 
 export async function deleteVehicle(id: number) {
   try {
-    // Svincoliamo i viaggi collegati
-    const trips = await db.orm.public.Trip.where({ vehicleId: id }).all();
-    for (const t of trips) {
-      await db.orm.public.Trip.where({ id: t.id }).createOrUpdate({
-        ...t,
-        vehicleId: null,
-      });
-    }
+    // Svincoliamo i viaggi collegati impostando vehicleId a null
+    await db.orm.public.Trip.where({ vehicleId: id }).update({ vehicleId: null });
     await db.orm.public.Vehicle.where({ id }).delete();
     return { success: true };
   } catch (e: any) {
@@ -311,14 +299,8 @@ export async function createWasteType(data: { cerCode: string; description?: str
 
 export async function deleteWasteType(id: number) {
   try {
-    // Svincoliamo i viaggi collegati
-    const trips = await db.orm.public.Trip.where({ wasteTypeId: id }).all();
-    for (const t of trips) {
-      await db.orm.public.Trip.where({ id: t.id }).createOrUpdate({
-        ...t,
-        wasteTypeId: null,
-      });
-    }
+    // Svincoliamo i viaggi collegati impostando wasteTypeId a null
+    await db.orm.public.Trip.where({ wasteTypeId: id }).update({ wasteTypeId: null });
     await db.orm.public.WasteType.where({ id }).delete();
     return { success: true };
   } catch (e: any) {
