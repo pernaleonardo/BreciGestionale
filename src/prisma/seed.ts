@@ -3,6 +3,22 @@ import { db } from './db';
 async function main() {
   console.log('Starting seed...');
 
+  // Create users
+  console.log('Creating default users...');
+  await db.orm.public.User.create({
+    email: 'admin@brecitrasporti.it',
+    password: 'admin',
+    name: 'Amministratore',
+    role: 'ADMIN',
+  });
+
+  await db.orm.public.User.create({
+    email: 'operator@brecitrasporti.it',
+    password: 'operator',
+    name: 'Operatore',
+    role: 'OPERATOR',
+  });
+
   // Create companies
   const pmGroup = await db.orm.public.Company.create({
     name: 'P&M GROUP SRL',
