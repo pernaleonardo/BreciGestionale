@@ -53,6 +53,7 @@ model WasteType {
   id          Int      @id @default(autoincrement())
   cerCode     String   @unique // Codice EER/CER (es. 170802)
   description String?  // Descrizione del rifiuto
+  category    String   @default("Altro")
   trips       Trip[]
   createdAt   TimestamptzString @default(now())
   updatedAt   temporal.updatedAtString()
