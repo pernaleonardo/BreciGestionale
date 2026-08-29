@@ -1,0 +1,116 @@
+// use prisma-next
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  role      String   @default("OPERATOR") // ADMIN, DISPATCHER, OPERATOR
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+  @@rls
+}
+
+model Company {
+  id            Int      @id @default(autoincrement())
+  name          String   // Denominazione (es. P&M GROUP SRL)
+  address       String?  // Indirizzo Unità Locale
+  vatNumber     String?  @unique // Codice Fiscale / P.IVA
+  role          String   // PRODUCER (Produttore), RECIPIENT (Destinatario)
+  producedTrips Trip[]   @relation("ProducedTrips")
+  receivedTrips Trip[]   @relation("ReceivedTrips")
+  createdAt     TimestamptzString @default(now())
+  updatedAt     temporal.updatedAtString()
+  @@rls
+}
+
+model Driver {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  name          String   // Cognome e Nome Conducente
+  phone         String?
+  licenseNumber String?
+  status        String   @default("AVAILABLE") // AVAILABLE, BUSY, INACTIVE
+  trips         Trip[]
+  createdAt     TimestamptzString @default(now())
+  updatedAt     temporal.updatedAtString()
+  @@rls
+}
+
+model Vehicle {
+  id          Int      @id @default(autoincrement())
+  plateNumber String   @unique // Targa automezzo/mezzo (es. HD014KY)
+  model       String?  // Modello veicolo
+  capacity    Float?   // Portata utile in kg
+  status      String   @default("ACTIVE") // ACTIVE, MAINTENANCE, INACTIVE
+  trips       Trip[]
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+  @@rls
+}
+
+model WasteType {
+  id          Int      @id @default(autoincrement())
+  cerCode     String   @unique // Codice EER/CER (es. 170802)
+  description String?  // Descrizione del rifiuto
+  trips       Trip[]
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+  @@rls
+}
+
+model Trip {
+  id                 Int      @id @default(autoincrement())
+  date               String   // Data del viaggio (es. 05/08/2026)
+  firNumber          String   @unique // Numero Formulario Rifiuti (es. NVBNH 006819 TG)
+  
+  // Dettagli del Rifiuto e del Peso
+  cerCode            String   // Codice EER/CER inserito nel viaggio (es. 170802)
+  cerPrice           Float    @default(0.0) // Prezzo CER al tonnellata
+  weight             Float    @default(0.0) // Peso in tonnellate o kg
+  
+  // Costi e Ricavi (Campi contabili derivati dall'Excel)
+  transportPrice     Float    @default(0.0) // Prezzo trasporto (€)
+  disposalPrice      Float    @default(0.0) // Consegna/smaltimento (€)
+  fuoriRomaPrice     Float    @default(0.0) // Supplemento Fuori Roma (€)
+  noleggioPrice      Float    @default(0.0) // Noleggio (€)
+  bigBagPrice        Float    @default(0.0) // Big Bag (€)
+  analisiPrice       Float    @default(0.0) // Analisi (€)
+  servRagnoPrice     Float    @default(0.0) // Servizio Ragno (€)
+  sostaPrice         Float    @default(0.0) // Sosta (€)
+  
+  // Informazioni di Spedizione
+  address            String?  // Indirizzo cantiere/consegna (es. VIA DEI MILLE)
+  notes              String?  // Annotazioni
+  status             String   @default("PENDING") // PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED
+
+  // Relazioni
+  producerId         Int      // ID del Produttore (Mittente)
+  producer           Company  @relation("ProducedTrips", fields: [producerId], references: [id])
+  recipientId        Int      // ID del Destinatario (Discarica/Impianto)
+  recipient          Company  @relation("ReceivedTrips", fields: [recipientId], references: [id])
+  
+  driverId           Int?     // Autista assegnato
+  driver             Driver?  @relation(fields: [driverId], references: [id])
+  vehicleId          Int?     // Mezzo assegnato
+  vehicle            Vehicle? @relation(fields: [vehicleId], references: [id])
+  wasteTypeId        Int?     // Collegamento al catalogo EER/CER (opzionale)
+  wasteType          WasteType? @relation(fields: [wasteTypeId], references: [id])
+
+  gpsLogs            GPSLog[]
+  createdAt          TimestamptzString @default(now())
+  updatedAt          temporal.updatedAtString()
+  @@rls
+}
+
+model GPSLog {
+  id         Int      @id @default(autoincrement())
+  tripId     Int
+  trip       Trip     @relation(fields: [tripId], references: [id])
+  latitude   Float
+  longitude  Float
+  recordedAt TimestamptzString @default(now())
+  @@rls
+}
+
+
+
