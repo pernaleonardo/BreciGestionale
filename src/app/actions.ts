@@ -128,6 +128,8 @@ export async function getTripsData() {
     const drivers = await db.orm.public.Driver.all();
     const vehicles = await db.orm.public.Vehicle.all();
     const wasteTypes = await db.orm.public.WasteType.all();
+    const disposalPrices = await db.orm.public.DisposalPrice.include('client').include('wasteType').all();
+    const transportPrices = await db.orm.public.TransportPrice.include('client').include('vehicle').all();
 
     return {
       trips,
@@ -135,11 +137,13 @@ export async function getTripsData() {
       destinations,
       drivers,
       vehicles,
-      wasteTypes
+      wasteTypes,
+      disposalPrices,
+      transportPrices
     };
   } catch (e) {
     console.error('getTripsData error:', e);
-    return { trips: [], clients: [], destinations: [], drivers: [], vehicles: [], wasteTypes: [] };
+    return { trips: [], clients: [], destinations: [], drivers: [], vehicles: [], wasteTypes: [], disposalPrices: [], transportPrices: [] };
   }
 }
 
@@ -153,8 +157,17 @@ export async function createTrip(data: any) {
       return { success: false, error: 'Destinazione o Codice CER non trovato.' };
     }
 
+    // Convert date from YYYY-MM-DD to DD/MM/YYYY if needed
+    let tripDate = data.date;
+    if (tripDate && tripDate.includes('-')) {
+      const parts = tripDate.split('-');
+      if (parts.length === 3) {
+        tripDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+    }
+
     const tripData = {
-      date: data.date,
+      date: tripDate,
       firNumber: data.firNumber,
       cerCode: wasteType.cerCode,
       cerPrice: Number(data.cerPrice || 0),
@@ -362,5 +375,57 @@ export async function deleteWasteType(id: number) {
   } catch (e: any) {
     console.error('deleteWasteType error:', e);
     return { success: false, error: e.message || 'Errore nella rimozione del codice CER.' };
+  }
+}
+
+// ----------------- LISTINI (PRICES) -----------------
+
+export async function createDisposalPrice(data: { clientId?: number | string | null; wasteTypeId: number; pricePerQuintal: number }) {
+  try {
+    const cId = data.clientId && data.clientId !== '' ? Number(data.clientId) : null;
+    const newPrice = await db.orm.public.DisposalPrice.create({
+      clientId: cId,
+      wasteTypeId: Number(data.wasteTypeId),
+      pricePerQuintal: Number(data.pricePerQuintal || 0),
+    });
+    return { success: true, disposalPrice: newPrice };
+  } catch (e: any) {
+    console.error('createDisposalPrice error:', e);
+    return { success: false, error: e.message || 'Errore nella creazione del listino smaltimento.' };
+  }
+}
+
+export async function deleteDisposalPrice(id: number) {
+  try {
+    await db.orm.public.DisposalPrice.where({ id }).delete();
+    return { success: true };
+  } catch (e: any) {
+    console.error('deleteDisposalPrice error:', e);
+    return { success: false, error: e.message || 'Errore nella rimozione del listino smaltimento.' };
+  }
+}
+
+export async function createTransportPrice(data: { clientId?: number | string | null; vehicleId: number; price: number }) {
+  try {
+    const cId = data.clientId && data.clientId !== '' ? Number(data.clientId) : null;
+    const newPrice = await db.orm.public.TransportPrice.create({
+      clientId: cId,
+      vehicleId: Number(data.vehicleId),
+      price: Number(data.price || 0),
+    });
+    return { success: true, transportPrice: newPrice };
+  } catch (e: any) {
+    console.error('createTransportPrice error:', e);
+    return { success: false, error: e.message || 'Errore nella creazione del listino trasporto.' };
+  }
+}
+
+export async function deleteTransportPrice(id: number) {
+  try {
+    await db.orm.public.TransportPrice.where({ id }).delete();
+    return { success: true };
+  } catch (e: any) {
+    console.error('deleteTransportPrice error:', e);
+    return { success: false, error: e.message || 'Errore nella rimozione del listino trasporto.' };
   }
 }

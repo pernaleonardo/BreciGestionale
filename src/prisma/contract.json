@@ -12,12 +12,20 @@
       "model": "Destination",
       "namespace": "public"
     },
+    "disposalPrice": {
+      "model": "DisposalPrice",
+      "namespace": "public"
+    },
     "driver": {
       "model": "Driver",
       "namespace": "public"
     },
     "gPSLog": {
       "model": "GPSLog",
+      "namespace": "public"
+    },
+    "transportPrice": {
+      "model": "TransportPrice",
       "namespace": "public"
     },
     "trip": {
@@ -106,6 +114,36 @@
                 },
                 "to": {
                   "model": "Destination",
+                  "namespace": "public"
+                }
+              },
+              "disposalPrices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "clientId"
+                  ]
+                },
+                "to": {
+                  "model": "DisposalPrice",
+                  "namespace": "public"
+                }
+              },
+              "transportPrices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "clientId"
+                  ]
+                },
+                "to": {
+                  "model": "TransportPrice",
                   "namespace": "public"
                 }
               }
@@ -248,6 +286,108 @@
               },
               "namespaceId": "public",
               "table": "destination"
+            }
+          },
+          "DisposalPrice": {
+            "fields": {
+              "clientId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "pricePerQuintal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "wasteTypeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "client": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "clientId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Client",
+                  "namespace": "public"
+                }
+              },
+              "wasteType": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "wasteTypeId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "WasteType",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "clientId": {
+                  "column": "clientId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "pricePerQuintal": {
+                  "column": "pricePerQuintal"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "wasteTypeId": {
+                  "column": "wasteTypeId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "disposalPrice"
             }
           },
           "Driver": {
@@ -432,6 +572,108 @@
               },
               "namespaceId": "public",
               "table": "gPSLog"
+            }
+          },
+          "TransportPrice": {
+            "fields": {
+              "clientId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "price": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "vehicleId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "client": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "clientId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Client",
+                  "namespace": "public"
+                }
+              },
+              "vehicle": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "vehicleId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Vehicle",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "clientId": {
+                  "column": "clientId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "price": {
+                  "column": "price"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "vehicleId": {
+                  "column": "vehicleId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "transportPrice"
             }
           },
           "Trip": {
@@ -885,6 +1127,21 @@
               }
             },
             "relations": {
+              "transportPrices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "vehicleId"
+                  ]
+                },
+                "to": {
+                  "model": "TransportPrice",
+                  "namespace": "public"
+                }
+              },
               "trips": {
                 "cardinality": "1:N",
                 "on": {
@@ -975,6 +1232,21 @@
               }
             },
             "relations": {
+              "disposalPrices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "wasteTypeId"
+                  ]
+                },
+                "to": {
+                  "model": "DisposalPrice",
+                  "namespace": "public"
+                }
+              },
               "trips": {
                 "cardinality": "1:N",
                 "on": {
@@ -1035,6 +1307,11 @@
               "namespaceId": "public",
               "tableName": "destination"
             },
+            "disposalPrice": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "disposalPrice"
+            },
             "driver": {
               "kind": "rls",
               "namespaceId": "public",
@@ -1044,6 +1321,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "gPSLog"
+            },
+            "transportPrice": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "transportPrice"
             },
             "trip": {
               "kind": "rls",
@@ -1220,6 +1502,110 @@
                 }
               ]
             },
+            "disposalPrice": {
+              "columns": {
+                "clientId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "pricePerQuintal": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "wasteTypeId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "clientId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "disposalPrice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "client"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "wasteTypeId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "disposalPrice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "wasteType"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "clientId"
+                  ],
+                  "name": "disposalPrice_clientId_idx_153a9a49",
+                  "prefix": "disposalPrice_clientId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "wasteTypeId"
+                  ],
+                  "name": "disposalPrice_wasteTypeId_idx_26e4c367",
+                  "prefix": "disposalPrice_wasteTypeId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "driver": {
               "columns": {
                 "createdAt": {
@@ -1351,6 +1737,110 @@
                   ],
                   "name": "gPSLog_tripId_idx_75da6d97",
                   "prefix": "gPSLog_tripId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "transportPrice": {
+              "columns": {
+                "clientId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "price": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "vehicleId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "clientId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "transportPrice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "client"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "vehicleId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "transportPrice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "vehicle"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "clientId"
+                  ],
+                  "name": "transportPrice_clientId_idx_153a9a49",
+                  "prefix": "transportPrice_clientId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "vehicleId"
+                  ],
+                  "name": "transportPrice_vehicleId_idx_e2df58fc",
+                  "prefix": "transportPrice_vehicleId_idx",
                   "unique": false
                 }
               ],
@@ -1844,10 +2334,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "67cabadf70f854179e5e3dff47a3a7e3544e7f191e0200a8cd1ef6fb3b7b75cd"
+    "storageHash": "84dc69f56d65da05c89458680b6780499e030ec9de2ff94414bc569bedd6188a"
   },
   "execution": {
-    "executionHash": "6cc7e61331c61f697a7c171a8456774002a4efd8744a7bbdb626a393fda41a0e",
+    "executionHash": "8a635120ef7e4a8735d62c54ad4e904186c58d8c9ce2a481de7b8821ff46a308",
     "mutations": {
       "defaults": [
         {
@@ -1892,7 +2382,37 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
+            "table": "disposalPrice"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
             "table": "driver"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "transportPrice"
           }
         },
         {

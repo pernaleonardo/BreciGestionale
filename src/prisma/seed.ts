@@ -1,16 +1,39 @@
 // @ts-ignore
 import { db } from './db.ts';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function main() {
   console.log('Cleaning up database...');
   await db.orm.public.GPSLog.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.Trip.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.Destination.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.DisposalPrice.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.TransportPrice.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.Client.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.Driver.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.Vehicle.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.WasteType.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.User.where((f) => f.id.gt(0)).deleteAll();
+
+  // Load and seed CER codes
+  const cerCodesPath = path.join(__dirname, 'cer_codes.json');
+  const cerCodesData = JSON.parse(fs.readFileSync(cerCodesPath, 'utf8'));
+  console.log(`Seeding ${cerCodesData.length} CER codes (spaces removed)...`);
+  
+  const wasteMap = new Map<string, any>();
+  for (const item of cerCodesData) {
+    const created = await db.orm.public.WasteType.create({
+      cerCode: item.cerCode,
+      description: item.description,
+      category: item.category,
+    });
+    wasteMap.set(item.cerCode, created);
+  }
 
   // Create users
   console.log('Creating default users...');
@@ -29,6 +52,7 @@ async function main() {
   });
 
   // Create clients
+  console.log('Creating clients...');
   const pmGroup = await db.orm.public.Client.create({
     name: 'P&M GROUP SRL',
     billingAddress: "VIA DELL'AMBA ARADAM 22 Roma 00184 RM",
@@ -51,6 +75,7 @@ async function main() {
   });
 
   // Create destinations for clients
+  console.log('Creating destinations...');
   const destViaDeiMille = await db.orm.public.Destination.create({
     name: 'VIA DEI MILLE',
     address: 'VIA DEI MILLE, Roma',
@@ -59,13 +84,14 @@ async function main() {
   });
 
   const destViaDeiGiubb = await db.orm.public.Destination.create({
-    name: 'VIA DEI GIUBB...',
+    name: 'VIA DEI GIUBBONARI',
     address: 'VIA DEI GIUBBONARI, Roma',
     shippingCode: 'GIUBB-01',
     clientId: pmGroup.id,
   });
 
   // Create drivers
+  console.log('Creating drivers...');
   const driverLeonardo = await db.orm.public.Driver.create({
     name: 'Leonardo Perna',
     email: 'perna.leonardo@gmail.com',
@@ -75,6 +101,7 @@ async function main() {
   });
 
   // Create vehicles
+  console.log('Creating vehicles...');
   const vehicle1 = await db.orm.public.Vehicle.create({
     plateNumber: 'HD014KY',
     model: 'Iveco Stralis',
@@ -103,23 +130,50 @@ async function main() {
     status: 'ACTIVE',
   });
 
-  // Create waste types
-  const waste170802 = await db.orm.public.WasteType.create({
-    cerCode: '170802',
-    description: 'Materiali da costruzione a base di gesso diversi da quelli di cui alla voce 17 08 01',
+  // Create Price Lists (Disposal & Transport)
+  console.log('Creating price lists...');
+  
+  // Base disposal prices:
+  // 170107: €1.70 per quintal (€17.00 per ton)
+  const disposalBase170107 = await db.orm.public.DisposalPrice.create({
+    wasteTypeId: wasteMap.get('170107')?.id,
+    pricePerQuintal: 1.70,
   });
 
-  const waste170107 = await db.orm.public.WasteType.create({
-    cerCode: '170107',
-    description: 'Miscugli o scorie di cemento, mattoni, mattonelle e ceramiche, diverse da quelle di cui alla voce 17 01 06',
+  // 170904: €2.00 per quintal (€20.00 per ton)
+  const disposalBase170904 = await db.orm.public.DisposalPrice.create({
+    wasteTypeId: wasteMap.get('170904')?.id,
+    pricePerQuintal: 2.00,
   });
 
-  const waste170904 = await db.orm.public.WasteType.create({
-    cerCode: '170904',
-    description: 'Rifiuti misti dell\'attività di costruzione e demolizione, diversi da quelli di cui alle voci 17 09 01, 17 09 02 e 17 09 03',
+  // Client-specific override: Client RIME-001 gets 170107 at €1.50/quintal
+  const disposalOverride170107 = await db.orm.public.DisposalPrice.create({
+    clientId: rime1.id,
+    wasteTypeId: wasteMap.get('170107')?.id,
+    pricePerQuintal: 1.50,
+  });
+
+  // Transport rates (based on vehicle used):
+  // Vehicle1 (HD014KY): €220.00
+  const transportPriceVehicle1 = await db.orm.public.TransportPrice.create({
+    vehicleId: vehicle1.id,
+    price: 220.00,
+  });
+
+  // Vehicle2 (GK273YM): €130.00
+  const transportPriceVehicle2 = await db.orm.public.TransportPrice.create({
+    vehicleId: vehicle2.id,
+    price: 130.00,
+  });
+
+  // Vehicle3 (GR373VD): €250.00
+  const transportPriceVehicle3 = await db.orm.public.TransportPrice.create({
+    vehicleId: vehicle3.id,
+    price: 250.00,
   });
 
   // Create trips (from user's Excel sheet)
+  console.log('Creating trips...');
   await db.orm.public.Trip.create({
     date: '05/08/2026',
     firNumber: 'NVBNH006245YQ',
@@ -134,12 +188,12 @@ async function main() {
     analisiPrice: 0.0,
     servRagnoPrice: 0.0,
     sostaPrice: 0.0,
-    address: 'VIA DEI MILLE',
+    address: 'VIA DEI MILLE, Roma',
     status: 'DELIVERED',
     destinationId: destViaDeiMille.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle1.id,
-    wasteTypeId: waste170107.id,
+    wasteTypeId: wasteMap.get('170107')?.id,
   });
 
   await db.orm.public.Trip.create({
@@ -156,12 +210,12 @@ async function main() {
     analisiPrice: 0.0,
     servRagnoPrice: 0.0,
     sostaPrice: 0.0,
-    address: 'VIA DEI GIUBB...',
+    address: 'VIA DEI GIUBBONARI, Roma',
     status: 'DELIVERED',
     destinationId: destViaDeiGiubb.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle2.id,
-    wasteTypeId: waste170107.id,
+    wasteTypeId: wasteMap.get('170107')?.id,
   });
 
   await db.orm.public.Trip.create({
@@ -178,12 +232,12 @@ async function main() {
     analisiPrice: 0.0,
     servRagnoPrice: 0.0,
     sostaPrice: 0.0,
-    address: 'VIA DEI MILLE',
+    address: 'VIA DEI MILLE, Roma',
     status: 'DELIVERED',
     destinationId: destViaDeiMille.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle1.id,
-    wasteTypeId: waste170107.id,
+    wasteTypeId: wasteMap.get('170107')?.id,
   });
 
   await db.orm.public.Trip.create({
@@ -200,20 +254,20 @@ async function main() {
     analisiPrice: 0.0,
     servRagnoPrice: 0.0,
     sostaPrice: 0.0,
-    address: 'VIA DEI MILLE',
+    address: 'VIA DEI MILLE, Roma',
     status: 'DELIVERED',
     destinationId: destViaDeiMille.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle3.id,
-    wasteTypeId: waste170107.id,
+    wasteTypeId: wasteMap.get('170107')?.id,
   });
 
   await db.orm.public.Trip.create({
     date: '11/08/2026',
     firNumber: 'NVBNH006685DX',
-    cerCode: '170904 MISTO',
-    cerPrice: 0.40,
-    weight: 680.0,
+    cerCode: '170904',
+    cerPrice: 20.00,
+    weight: 13.6,
     transportPrice: 130.00,
     disposalPrice: 272.00,
     fuoriRomaPrice: 0.0,
@@ -222,12 +276,12 @@ async function main() {
     analisiPrice: 0.0,
     servRagnoPrice: 0.0,
     sostaPrice: 0.0,
-    address: 'VIA DEI MILLE',
+    address: 'VIA DEI MILLE, Roma',
     status: 'DELIVERED',
     destinationId: destViaDeiMille.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle2.id,
-    wasteTypeId: waste170904.id,
+    wasteTypeId: wasteMap.get('170904')?.id,
   });
 
   console.log('Seed completed successfully!');

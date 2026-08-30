@@ -12,14 +12,16 @@ model User {
 }
 
 model Client {
-  id             Int           @id @default(autoincrement())
-  name           String        // Denominazione (es. P&M GROUP SRL)
-  billingAddress String?       // Indirizzo di fatturazione
-  vatNumber      String?       @unique // Codice Fiscale / P.IVA
-  clientCode     String        @unique // Codice Cliente di fatturazione
-  destinations   Destination[]
-  createdAt      TimestamptzString @default(now())
-  updatedAt      temporal.updatedAtString()
+  id              Int              @id @default(autoincrement())
+  name            String           // Denominazione (es. P&M GROUP SRL)
+  billingAddress  String?          // Indirizzo di fatturazione
+  vatNumber       String?          @unique // Codice Fiscale / P.IVA
+  clientCode      String           @unique // Codice Cliente di fatturazione
+  destinations    Destination[]
+  disposalPrices  DisposalPrice[]
+  transportPrices TransportPrice[]
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
   @@rls
 }
 
@@ -50,25 +52,27 @@ model Driver {
 }
 
 model Vehicle {
-  id          Int      @id @default(autoincrement())
-  plateNumber String   @unique // Targa automezzo/mezzo (es. HD014KY)
-  model       String?  // Modello veicolo
-  capacity    Float?   // Portata utile in kg
-  status      String   @default("ACTIVE") // ACTIVE, MAINTENANCE, INACTIVE
-  trips       Trip[]
-  createdAt   TimestamptzString @default(now())
-  updatedAt   temporal.updatedAtString()
+  id              Int              @id @default(autoincrement())
+  plateNumber     String           @unique // Targa automezzo/mezzo (es. HD014KY)
+  model           String?          // Modello veicolo
+  capacity        Float?           // Portata utile in kg
+  status          String           @default("ACTIVE") // ACTIVE, MAINTENANCE, INACTIVE
+  trips           Trip[]
+  transportPrices TransportPrice[]
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
   @@rls
 }
 
 model WasteType {
-  id          Int      @id @default(autoincrement())
-  cerCode     String   @unique // Codice EER/CER (es. 170802)
-  description String?  // Descrizione del rifiuto
-  category    String   @default("Altro")
-  trips       Trip[]
-  createdAt   TimestamptzString @default(now())
-  updatedAt   temporal.updatedAtString()
+  id             Int             @id @default(autoincrement())
+  cerCode        String          @unique // Codice EER/CER (es. 170802)
+  description    String?         // Descrizione del rifiuto
+  category       String          @default("Altro")
+  trips          Trip[]
+  disposalPrices DisposalPrice[]
+  createdAt      TimestamptzString @default(now())
+  updatedAt      temporal.updatedAtString()
   @@rls
 }
 
@@ -121,6 +125,30 @@ model GPSLog {
   latitude   Float
   longitude  Float
   recordedAt TimestamptzString @default(now())
+  @@rls
+}
+
+model DisposalPrice {
+  id              Int        @id @default(autoincrement())
+  clientId        Int?       // Nullable: represents base price if null
+  client          Client?    @relation(fields: [clientId], references: [id])
+  wasteTypeId     Int
+  wasteType       WasteType  @relation(fields: [wasteTypeId], references: [id])
+  pricePerQuintal Float      @default(0.0) // Price in € per quintal (100 kg)
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+  @@rls
+}
+
+model TransportPrice {
+  id        Int      @id @default(autoincrement())
+  clientId  Int?     // Nullable: represents base price if null
+  client    Client?  @relation(fields: [clientId], references: [id])
+  vehicleId Int
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  price     Float    @default(0.0) // Flat rate for transport (€)
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
   @@rls
 }
 

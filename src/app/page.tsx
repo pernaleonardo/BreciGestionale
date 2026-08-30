@@ -15,6 +15,10 @@ import {
   deleteClient,
   createDestination,
   deleteDestination,
+  createDisposalPrice,
+  deleteDisposalPrice,
+  createTransportPrice,
+  deleteTransportPrice,
   createDriver,
   deleteDriver,
   createVehicle,
@@ -42,7 +46,7 @@ const formatWeight = (value: number) => {
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'registro' | 'anagrafiche' | 'utenti'>('registro');
-  const [anagraficaSubTab, setAnagraficaSubTab] = useState<'clienti' | 'destinatari' | 'autisti' | 'mezzi' | 'cer'>('clienti');
+  const [anagraficaSubTab, setAnagraficaSubTab] = useState<'clienti' | 'destinatari' | 'autisti' | 'mezzi' | 'cer' | 'listinoSmaltimento' | 'listinoTrasporti'>('clienti');
   
   // Dati dal database
   const [trips, setTrips] = useState<any[]>([]);
@@ -51,6 +55,8 @@ export default function Home() {
   const [drivers, setDrivers] = useState<any[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [wasteTypes, setWasteTypes] = useState<any[]>([]);
+  const [disposalPrices, setDisposalPrices] = useState<any[]>([]);
+  const [transportPrices, setTransportPrices] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
 
   // Caricamento stati
@@ -70,6 +76,16 @@ export default function Home() {
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isWasteModalOpen, setIsWasteModalOpen] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+  // Search input state for searchable selectors
+  const [cerSearchInput, setCerSearchInput] = useState('');
+  const [isCerDropdownOpen, setIsCerDropdownOpen] = useState(false);
+  const [driverSearchInput, setDriverSearchInput] = useState('');
+  const [isDriverDropdownOpen, setIsDriverDropdownOpen] = useState(false);
+  const [vehicleSearchInput, setVehicleSearchInput] = useState('');
+  const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
+  const [destSearchInput, setDestSearchInput] = useState('');
+  const [isDestDropdownOpen, setIsDestDropdownOpen] = useState(false);
 
   // Form states
   const [loginError, setLoginError] = useState('');
@@ -101,6 +117,8 @@ export default function Home() {
   const [newVehicleData, setNewVehicleData] = useState({ plateNumber: '', model: '', capacity: '' });
   const [newWasteData, setNewWasteData] = useState({ cerCode: '', description: '' });
   const [newUserData, setNewUserData] = useState({ email: '', name: '', password: '', role: 'OPERATOR' });
+  const [newDisposalPriceData, setNewDisposalPriceData] = useState({ clientId: '', wasteTypeId: '', pricePerQuintal: '' });
+  const [newTransportPriceData, setNewTransportPriceData] = useState({ clientId: '', vehicleId: '', price: '' });
   const [cerSearchQuery, setCerSearchQuery] = useState('');
   const [cerCategoryFilter, setCerCategoryFilter] = useState('');
 
@@ -135,6 +153,8 @@ export default function Home() {
       setDrivers(data.drivers || []);
       setVehicles(data.vehicles || []);
       setWasteTypes(data.wasteTypes || []);
+      setDisposalPrices(data.disposalPrices || []);
+      setTransportPrices(data.transportPrices || []);
 
       if (user.role === 'ADMIN') {
         const userList = await getUsers();
@@ -303,6 +323,147 @@ export default function Home() {
       if (res.success) await refreshData();
       else alert(res.error);
     }
+  };
+
+  const handleCreateDisposalPrice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDisposalPriceData.wasteTypeId) {
+      alert('Seleziona un codice CER.');
+      return;
+    }
+    const res = await createDisposalPrice({
+      clientId: newDisposalPriceData.clientId || null,
+      wasteTypeId: Number(newDisposalPriceData.wasteTypeId),
+      pricePerQuintal: Number(newDisposalPriceData.pricePerQuintal || 0),
+    });
+    if (res.success) {
+      setNewDisposalPriceData({ clientId: '', wasteTypeId: '', pricePerQuintal: '' });
+      await refreshData();
+    } else {
+      alert(res.error);
+    }
+  };
+
+  const handleDeleteDisposalPrice = async (id: number) => {
+    if (confirm('Confermi di voler rimuovere questa voce di listino?')) {
+      const res = await deleteDisposalPrice(id);
+      if (res.success) await refreshData();
+      else alert(res.error);
+    }
+  };
+
+  const handleCreateTransportPrice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTransportPriceData.vehicleId) {
+      alert('Seleziona un veicolo.');
+      return;
+    }
+    const res = await createTransportPrice({
+      clientId: newTransportPriceData.clientId || null,
+      vehicleId: Number(newTransportPriceData.vehicleId),
+      price: Number(newTransportPriceData.price || 0),
+    });
+    if (res.success) {
+      setNewTransportPriceData({ clientId: '', vehicleId: '', price: '' });
+      await refreshData();
+    } else {
+      alert(res.error);
+    }
+  };
+
+  const handleDeleteTransportPrice = async (id: number) => {
+    if (confirm('Confermi di voler rimuovere questa voce di listino?')) {
+      const res = await deleteTransportPrice(id);
+      if (res.success) await refreshData();
+      else alert(res.error);
+    }
+  };
+
+  const calculatePrefilledPrices = (destId: string, cerId: string, vehId: string, wt: string) => {
+    let cerPrice = '';
+    let transportPrice = '';
+    let disposalPrice = '';
+
+    const destination = destinations.find(d => d.id === Number(destId));
+    const clientId = destination ? destination.clientId : null;
+
+    if (cerId) {
+      let dispPrice = disposalPrices.find(dp => dp.clientId === clientId && dp.wasteTypeId === Number(cerId));
+      if (!dispPrice) {
+        dispPrice = disposalPrices.find(dp => dp.clientId === null && dp.wasteTypeId === Number(cerId));
+      }
+      if (dispPrice) {
+        const rate = dispPrice.pricePerQuintal;
+        cerPrice = String(rate * 10);
+        if (wt) {
+          disposalPrice = String(Number(wt) * 10 * rate);
+        }
+      }
+    }
+
+    if (vehId) {
+      let transPrice = transportPrices.find(tp => tp.clientId === clientId && tp.vehicleId === Number(vehId));
+      if (!transPrice) {
+        transPrice = transportPrices.find(tp => tp.clientId === null && tp.vehicleId === Number(vehId));
+      }
+      if (transPrice) {
+        transportPrice = String(transPrice.price);
+      }
+    }
+
+    return { cerPrice, transportPrice, disposalPrice };
+  };
+
+  const handleTripDestinationChange = (destId: string) => {
+    const calculated = calculatePrefilledPrices(destId, newTripData.wasteTypeId, newTripData.vehicleId, newTripData.weight);
+    setNewTripData(prev => ({
+      ...prev,
+      destinationId: destId,
+      cerPrice: calculated.cerPrice !== '' ? calculated.cerPrice : prev.cerPrice,
+      transportPrice: calculated.transportPrice !== '' ? calculated.transportPrice : prev.transportPrice,
+      disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : prev.disposalPrice
+    }));
+  };
+
+  const handleTripWasteTypeChange = (wasteTypeId: string) => {
+    const calculated = calculatePrefilledPrices(newTripData.destinationId, wasteTypeId, newTripData.vehicleId, newTripData.weight);
+    setNewTripData(prev => ({
+      ...prev,
+      wasteTypeId: wasteTypeId,
+      cerPrice: calculated.cerPrice !== '' ? calculated.cerPrice : prev.cerPrice,
+      disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : prev.disposalPrice
+    }));
+  };
+
+  const handleTripVehicleChange = (vehicleId: string) => {
+    const calculated = calculatePrefilledPrices(newTripData.destinationId, newTripData.wasteTypeId, vehicleId, newTripData.weight);
+    setNewTripData(prev => ({
+      ...prev,
+      vehicleId: vehicleId,
+      transportPrice: calculated.transportPrice !== '' ? calculated.transportPrice : prev.transportPrice
+    }));
+  };
+
+  const handleTripWeightChange = (wt: string) => {
+    const wtVal = Number(wt || 0);
+    const cerPriceVal = Number(newTripData.cerPrice || 0);
+    const calculatedDispPrice = wtVal * cerPriceVal;
+    setNewTripData(prev => ({
+      ...prev,
+      weight: wt,
+      disposalPrice: wt ? String(calculatedDispPrice) : ''
+    }));
+  };
+
+  const handleTripCerPriceChange = (cp: string) => {
+    const wtVal = Number(newTripData.weight || 0);
+    const cpVal = Number(cp || 0);
+    const calculatedDispPrice = wtVal * cpVal;
+    setNewTripData(prev => ({
+      ...prev,
+      cerPrice: cp,
+      disposalPrice: prev.weight ? String(calculatedDispPrice) : ''
+    }));
   };
 
   const handleCreateDriver = async (e: React.FormEvent) => {
@@ -771,6 +932,18 @@ export default function Home() {
                   >
                     🏷️ Codici CER
                   </button>
+                  <button
+                    onClick={() => setAnagraficaSubTab('listinoSmaltimento')}
+                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${anagraficaSubTab === 'listinoSmaltimento' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
+                  >
+                    💰 Listino Smaltimento
+                  </button>
+                  <button
+                    onClick={() => setAnagraficaSubTab('listinoTrasporti')}
+                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${anagraficaSubTab === 'listinoTrasporti' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
+                  >
+                    🚚 Listino Trasporti
+                  </button>
                 </div>
 
                 {/* SUB TAB: CLIENTI */}
@@ -1101,6 +1274,215 @@ export default function Home() {
               </div>
             )}
 
+            {/* SUB TAB: LISTINO SMALTIMENTO */}
+            {anagraficaSubTab === 'listinoSmaltimento' && (
+              <div>
+                <div className="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                  <h3 className="text-md font-bold text-white mb-4">Aggiungi Voce Listino Smaltimento</h3>
+                  <form onSubmit={handleCreateDisposalPrice} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-400">Cliente (Opzionale: vuoto per prezzo base)</label>
+                      <select
+                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                        value={newDisposalPriceData.clientId}
+                        onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, clientId: e.target.value })}
+                      >
+                        <option value="">-- PREZZO BASE (Generale) --</option>
+                        {clients.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-400">Codice CER</label>
+                      <select
+                        required
+                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                        value={newDisposalPriceData.wasteTypeId}
+                        onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, wasteTypeId: e.target.value })}
+                      >
+                        <option value="">Seleziona CER...</option>
+                        {wasteTypes.map((w) => (
+                          <option key={w.id} value={w.id}>{w.cerCode} - {w.description?.substring(0, 45)}...</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-400">Prezzo al Quintale (€/q.le)</label>
+                      <input
+                        type="number"
+                        step="0.001"
+                        required
+                        placeholder="Es: 1.70"
+                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                        value={newDisposalPriceData.pricePerQuintal}
+                        onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, pricePerQuintal: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <button
+                        type="submit"
+                        className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-colors cursor-pointer"
+                      >
+                        Salva nel Listino
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
+                        <th className="p-3">Cliente</th>
+                        <th className="p-3">Codice CER</th>
+                        <th className="p-3">Descrizione</th>
+                        <th className="p-3 text-right">Prezzo al Quintale</th>
+                        <th className="p-3 text-right">Prezzo al Tonnellata</th>
+                        <th className="p-3 text-center">Rimuovi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-800 text-sm">
+                      {disposalPrices.map((dp) => (
+                        <tr key={dp.id} className="hover:bg-zinc-800/20">
+                          <td className="p-3 font-semibold text-zinc-200">
+                            {dp.client ? (
+                              <span className="text-blue-400">{dp.client.name} ({dp.client.clientCode})</span>
+                            ) : (
+                              <span className="text-zinc-500 font-bold italic">PREZZO BASE</span>
+                            )}
+                          </td>
+                          <td className="p-3 font-mono font-bold text-emerald-400">{dp.wasteType?.cerCode}</td>
+                          <td className="p-3 text-zinc-400 max-w-md truncate" title={dp.wasteType?.description || ''}>
+                            {dp.wasteType?.description || '-'}
+                          </td>
+                          <td className="p-3 text-right text-zinc-100 font-mono">{formatCurrency(dp.pricePerQuintal)} /q.le</td>
+                          <td className="p-3 text-right text-amber-400 font-mono">{formatCurrency(dp.pricePerQuintal * 10)} /t</td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => handleDeleteDisposalPrice(dp.id)}
+                              className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-850 rounded cursor-pointer"
+                            >
+                              Elimina
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {disposalPrices.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="p-6 text-center text-zinc-500">Nessuna voce definita nel listino smaltimento.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* SUB TAB: LISTINO TRASPORTI */}
+            {anagraficaSubTab === 'listinoTrasporti' && (
+              <div>
+                <div className="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                  <h3 className="text-md font-bold text-white mb-4">Aggiungi Voce Listino Trasporto</h3>
+                  <form onSubmit={handleCreateTransportPrice} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-400">Cliente (Opzionale: vuoto per prezzo base)</label>
+                      <select
+                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                        value={newTransportPriceData.clientId}
+                        onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, clientId: e.target.value })}
+                      >
+                        <option value="">-- PREZZO BASE (Generale) --</option>
+                        {clients.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-400">Automezzo</label>
+                      <select
+                        required
+                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                        value={newTransportPriceData.vehicleId}
+                        onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, vehicleId: e.target.value })}
+                      >
+                        <option value="">Seleziona Veicolo...</option>
+                        {vehicles.map((v) => (
+                          <option key={v.id} value={v.id}>{v.plateNumber} ({v.model})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-400">Prezzo Trasporto (€)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        required
+                        placeholder="Es: 220.00"
+                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                        value={newTransportPriceData.price}
+                        onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, price: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <button
+                        type="submit"
+                        className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-colors cursor-pointer"
+                      >
+                        Salva nel Listino
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
+                        <th className="p-3">Cliente</th>
+                        <th className="p-3">Automezzo</th>
+                        <th className="p-3 text-right">Prezzo Trasporto (€)</th>
+                        <th className="p-3 text-center">Rimuovi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-800 text-sm">
+                      {transportPrices.map((tp) => (
+                        <tr key={tp.id} className="hover:bg-zinc-800/20">
+                          <td className="p-3 font-semibold text-zinc-200">
+                            {tp.client ? (
+                              <span className="text-blue-400">{tp.client.name} ({tp.client.clientCode})</span>
+                            ) : (
+                              <span className="text-zinc-500 font-bold italic">PREZZO BASE</span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            <span className="font-mono font-bold text-xs bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-750 mr-2">
+                              {tp.vehicle?.plateNumber}
+                            </span>
+                            <span className="text-zinc-400 text-xs">{tp.vehicle?.model}</span>
+                          </td>
+                          <td className="p-3 text-right text-emerald-400 font-mono font-bold">{formatCurrency(tp.price)}</td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => handleDeleteTransportPrice(tp.id)}
+                              className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-850 rounded cursor-pointer"
+                            >
+                              Elimina
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {transportPrices.length === 0 && (
+                        <tr>
+                          <td colSpan={4} className="p-6 text-center text-zinc-500">Nessuna voce definita nel listino trasporti.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             {/* TAB: UTENTI (ADMIN ONLY) */}
             {activeTab === 'utenti' && currentUser.role === 'ADMIN' && (
               <div>
@@ -1175,247 +1557,364 @@ export default function Home() {
             </div>
 
             <form onSubmit={handleCreateTrip} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Data (gg/mm/aaaa)</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Es: 05/08/2026"
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.date}
-                    onChange={(e) => setNewTripData({ ...newTripData, date: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Numero Formulario (FIR)</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Es: NVBNH006245YQ"
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.firNumber}
-                    onChange={(e) => setNewTripData({ ...newTripData, firNumber: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Codice CER (Catalogo)</label>
-                  <select
-                    required
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.wasteTypeId}
-                    onChange={(e) => setNewTripData({ ...newTripData, wasteTypeId: e.target.value })}
-                  >
-                    <option value="">Seleziona CER...</option>
-                    {wasteTypes.map((w) => (
-                      <option key={w.id} value={w.id}>{w.cerCode} - {w.description?.substring(0, 40)}...</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              {(() => {
+                const chosenDest = destinations.find(d => d.id === Number(newTripData.destinationId));
+                const destDisplayValue = chosenDest ? `${chosenDest.name} (${chosenDest.client?.name} - ${chosenDest.shippingCode})` : '';
+                return (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Data di Consegna</label>
+                        <input
+                          type="date"
+                          required
+                          className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                          value={newTripData.date}
+                          onChange={(e) => setNewTripData({ ...newTripData, date: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Numero Formulario (FIR)</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Es: NVBNH006245YQ"
+                          className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                          value={newTripData.firNumber}
+                          onChange={(e) => setNewTripData({ ...newTripData, firNumber: e.target.value })}
+                        />
+                      </div>
+                      
+                      {/* Searchable CER Code dropdown */}
+                      <div className="relative">
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Codice CER</label>
+                        <div className="relative mt-1">
+                          <input
+                            type="text"
+                            placeholder="Cerca CER (es: 170107 o cemento...)"
+                            className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                            value={isCerDropdownOpen ? cerSearchInput : (wasteTypes.find(w => w.id === Number(newTripData.wasteTypeId))?.cerCode || '')}
+                            onFocus={() => {
+                              setIsCerDropdownOpen(true);
+                              setCerSearchInput('');
+                            }}
+                            onChange={(e) => setCerSearchInput(e.target.value)}
+                          />
+                          {isCerDropdownOpen && (
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                              {wasteTypes
+                                .filter(w => {
+                                  const query = cerSearchInput.toLowerCase();
+                                  return w.cerCode.toLowerCase().includes(query) || 
+                                         (w.description || '').toLowerCase().includes(query);
+                                })
+                                .slice(0, 50)
+                                .map(w => (
+                                  <div
+                                    key={w.id}
+                                    className="p-2 text-xs text-zinc-200 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors"
+                                    onClick={() => {
+                                      handleTripWasteTypeChange(String(w.id));
+                                      setIsCerDropdownOpen(false);
+                                    }}
+                                  >
+                                    <span className="font-mono font-bold bg-zinc-900 text-emerald-400 px-1.5 py-0.5 rounded mr-2">{w.cerCode}</span>
+                                    <span>{w.description?.substring(0, 60)}...</span>
+                                  </div>
+                                ))}
+                              {wasteTypes.filter(w => {
+                                const query = cerSearchInput.toLowerCase();
+                                return w.cerCode.toLowerCase().includes(query) || 
+                                       (w.description || '').toLowerCase().includes(query);
+                              }).length === 0 && (
+                                <div className="p-2 text-xs text-zinc-500 text-center">Nessun codice CER trovato.</div>
+                              )}
+                            </div>
+                          )}
+                          {isCerDropdownOpen && (
+                            <div className="fixed inset-0 z-40" onClick={() => setIsCerDropdownOpen(false)} />
+                          )}
+                        </div>
+                      </div>
+                    </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Cliente di Fatturazione</label>
-                  <select
-                    required
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={selectedTripClientId}
-                    onChange={(e) => {
-                      setSelectedTripClientId(e.target.value);
-                      setNewTripData({ ...newTripData, destinationId: '', address: '' });
-                    }}
-                  >
-                    <option value="">Seleziona Cliente...</option>
-                    {clients.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Destinazione (Cantiere)</label>
-                  <select
-                    required
-                    disabled={!selectedTripClientId}
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm disabled:opacity-50"
-                    value={newTripData.destinationId}
-                    onChange={(e) => {
-                      const destId = e.target.value;
-                      const chosen = destinations.find(d => d.id === Number(destId));
-                      setNewTripData({
-                        ...newTripData,
-                        destinationId: destId,
-                        address: chosen ? chosen.address : ''
-                      });
-                    }}
-                  >
-                    <option value="">Seleziona Destinazione...</option>
-                    {destinations.filter(d => d.clientId === Number(selectedTripClientId)).map((d) => (
-                      <option key={d.id} value={d.id}>{d.name} - {d.shippingCode}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+                    {/* Searchable Destination selector (sole selector, removing client selector) */}
+                    <div className="relative">
+                      <label className="block text-xs font-bold text-zinc-400 uppercase">Destinazione (Cantiere / Cliente)</label>
+                      <div className="relative mt-1">
+                        <input
+                          type="text"
+                          placeholder="Cerca e seleziona destinazione (es: Colosseo...)"
+                          className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                          value={isDestDropdownOpen ? destSearchInput : destDisplayValue}
+                          onFocus={() => {
+                            setIsDestDropdownOpen(true);
+                            setDestSearchInput('');
+                          }}
+                          onChange={(e) => setDestSearchInput(e.target.value)}
+                        />
+                        {isDestDropdownOpen && (
+                          <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                            {destinations
+                              .filter(d => {
+                                const query = destSearchInput.toLowerCase();
+                                return d.name.toLowerCase().includes(query) || 
+                                       (d.client?.name || '').toLowerCase().includes(query) ||
+                                       d.shippingCode.toLowerCase().includes(query);
+                              })
+                              .map(d => (
+                                <div
+                                  key={d.id}
+                                  className="p-2 text-sm text-zinc-200 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors"
+                                  onClick={() => {
+                                    handleTripDestinationChange(String(d.id));
+                                    setIsDestDropdownOpen(false);
+                                  }}
+                                >
+                                  <span className="font-bold">{d.name}</span>
+                                  <span className="text-xs ml-2 text-zinc-400">
+                                    (Cod: {d.shippingCode} - Client: {d.client?.name})
+                                  </span>
+                                </div>
+                              ))}
+                            {destinations.filter(d => {
+                              const query = destSearchInput.toLowerCase();
+                              return d.name.toLowerCase().includes(query) || 
+                                     (d.client?.name || '').toLowerCase().includes(query) ||
+                                     d.shippingCode.toLowerCase().includes(query);
+                            }).length === 0 && (
+                              <div className="p-2 text-xs text-zinc-500 text-center">Nessuna destinazione trovata.</div>
+                            )}
+                          </div>
+                        )}
+                        {isDestDropdownOpen && (
+                          <div className="fixed inset-0 z-40" onClick={() => setIsDestDropdownOpen(false)} />
+                        )}
+                      </div>
+                    </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Autista</label>
-                  <select
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.driverId}
-                    onChange={(e) => setNewTripData({ ...newTripData, driverId: e.target.value })}
-                  >
-                    <option value="">Non Assegnato</option>
-                    {drivers.map((d) => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Automezzo</label>
-                  <select
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.vehicleId}
-                    onChange={(e) => setNewTripData({ ...newTripData, vehicleId: e.target.value })}
-                  >
-                    <option value="">Non Assegnato</option>
-                    {vehicles.map((v) => (
-                      <option key={v.id} value={v.id}>{v.plateNumber} ({v.model})</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Peso (t)</label>
-                  <input
-                    type="number"
-                    step="0.001"
-                    required
-                    placeholder="Es: 12.4"
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.weight}
-                    onChange={(e) => setNewTripData({ ...newTripData, weight: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Prezzo CER (€/t)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    placeholder="Es: 17"
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.cerPrice}
-                    onChange={(e) => setNewTripData({ ...newTripData, cerPrice: e.target.value })}
-                  />
-                </div>
-              </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      {/* Searchable Autista dropdown */}
+                      <div className="relative">
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Autista</label>
+                        <div className="relative mt-1">
+                          <input
+                            type="text"
+                            placeholder="Cerca autista..."
+                            className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                            value={isDriverDropdownOpen ? driverSearchInput : (drivers.find(d => d.id === Number(newTripData.driverId))?.name || 'Non Assegnato')}
+                            onFocus={() => {
+                              setIsDriverDropdownOpen(true);
+                              setDriverSearchInput('');
+                            }}
+                            onChange={(e) => setDriverSearchInput(e.target.value)}
+                          />
+                          {isDriverDropdownOpen && (
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                              <div
+                                className="p-2 text-sm text-zinc-400 hover:bg-zinc-800 cursor-pointer"
+                                onClick={() => {
+                                  setNewTripData({ ...newTripData, driverId: '' });
+                                  setIsDriverDropdownOpen(false);
+                                }}
+                              >
+                                Non Assegnato
+                              </div>
+                              {drivers
+                                .filter(d => d.name.toLowerCase().includes(driverSearchInput.toLowerCase()))
+                                .map(d => (
+                                  <div
+                                    key={d.id}
+                                    className="p-2 text-sm text-zinc-200 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors"
+                                    onClick={() => {
+                                      setNewTripData({ ...newTripData, driverId: String(d.id) });
+                                      setIsDriverDropdownOpen(false);
+                                    }}
+                                  >
+                                    {d.name}
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                          {isDriverDropdownOpen && (
+                            <div className="fixed inset-0 z-40" onClick={() => setIsDriverDropdownOpen(false)} />
+                          )}
+                        </div>
+                      </div>
 
-              <div className="border-t border-zinc-800 pt-4">
-                <span className="text-sm font-semibold text-white block mb-3">Prezzi Contabili (€)</span>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400">Trasporto</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                      value={newTripData.transportPrice}
-                      onChange={(e) => setNewTripData({ ...newTripData, transportPrice: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400">Smaltimento</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                      value={newTripData.disposalPrice}
-                      onChange={(e) => setNewTripData({ ...newTripData, disposalPrice: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400">Fuori Roma</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                      value={newTripData.fuoriRomaPrice}
-                      onChange={(e) => setNewTripData({ ...newTripData, fuoriRomaPrice: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400">Noleggio Cassoni</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                      value={newTripData.noleggioPrice}
-                      onChange={(e) => setNewTripData({ ...newTripData, noleggioPrice: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400">Fornitura Big Bag</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                      value={newTripData.bigBagPrice}
-                      onChange={(e) => setNewTripData({ ...newTripData, bigBagPrice: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400">Analisi Rifiuto</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                      value={newTripData.analisiPrice}
-                      onChange={(e) => setNewTripData({ ...newTripData, analisiPrice: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400">Carico Ragno</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                      value={newTripData.servRagnoPrice}
-                      onChange={(e) => setNewTripData({ ...newTripData, servRagnoPrice: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400">Indennizzo Sosta</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                      value={newTripData.sostaPrice}
-                      onChange={(e) => setNewTripData({ ...newTripData, sostaPrice: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
+                      {/* Searchable Vehicle dropdown */}
+                      <div className="relative">
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Automezzo</label>
+                        <div className="relative mt-1">
+                          <input
+                            type="text"
+                            placeholder="Cerca mezzo..."
+                            className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                            value={isVehicleDropdownOpen ? vehicleSearchInput : (vehicles.find(v => v.id === Number(newTripData.vehicleId))?.plateNumber || 'Non Assegnato')}
+                            onFocus={() => {
+                              setIsVehicleDropdownOpen(true);
+                              setVehicleSearchInput('');
+                            }}
+                            onChange={(e) => setVehicleSearchInput(e.target.value)}
+                          />
+                          {isVehicleDropdownOpen && (
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                              <div
+                                className="p-2 text-sm text-zinc-400 hover:bg-zinc-800 cursor-pointer"
+                                onClick={() => {
+                                  setNewTripData({ ...newTripData, vehicleId: '' });
+                                  setIsVehicleDropdownOpen(false);
+                                }}
+                              >
+                                Non Assegnato
+                              </div>
+                              {vehicles
+                                .filter(v => v.plateNumber.toLowerCase().includes(vehicleSearchInput.toLowerCase()) || (v.model || '').toLowerCase().includes(vehicleSearchInput.toLowerCase()))
+                                .map(v => (
+                                  <div
+                                    key={v.id}
+                                    className="p-2 text-sm text-zinc-200 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors"
+                                    onClick={() => {
+                                      handleTripVehicleChange(String(v.id));
+                                      setIsVehicleDropdownOpen(false);
+                                    }}
+                                  >
+                                    <span className="font-mono font-bold text-xs bg-zinc-900 text-blue-400 px-1.5 py-0.5 rounded mr-2">{v.plateNumber}</span>
+                                    <span className="text-zinc-450 text-xs">{v.model}</span>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                          {isVehicleDropdownOpen && (
+                            <div className="fixed inset-0 z-40" onClick={() => setIsVehicleDropdownOpen(false)} />
+                          )}
+                        </div>
+                      </div>
 
-              <div>
-                <label className="block text-xs font-bold text-zinc-400 uppercase font-sans">Destinazione Cantiere / Indirizzo</label>
-                <input
-                  type="text"
-                  placeholder="Es: VIA DEI MILLE 40, Roma"
-                  className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                  value={newTripData.address}
-                  onChange={(e) => setNewTripData({ ...newTripData, address: e.target.value })}
-                />
-              </div>
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Peso (t)</label>
+                        <input
+                          type="number"
+                          step="0.001"
+                          required
+                          placeholder="Es: 12.4"
+                          className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                          value={newTripData.weight}
+                          onChange={(e) => handleTripWeightChange(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Prezzo CER (€/t)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          required
+                          placeholder="Es: 17"
+                          className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                          value={newTripData.cerPrice}
+                          onChange={(e) => handleTripCerPriceChange(e.target.value)}
+                        />
+                      </div>
+                    </div>
 
-              <div>
-                <label className="block text-xs font-bold text-zinc-400 uppercase font-sans">Annotazioni</label>
-                <textarea
-                  rows={2}
-                  className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                  value={newTripData.notes}
-                  onChange={(e) => setNewTripData({ ...newTripData, notes: e.target.value })}
-                />
-              </div>
+                    <div className="border-t border-zinc-800 pt-4">
+                      <span className="text-sm font-semibold text-white block mb-3">Prezzi Contabili (€)</span>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Trasporto</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTripData.transportPrice}
+                            onChange={(e) => setNewTripData({ ...newTripData, transportPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Smaltimento</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTripData.disposalPrice}
+                            onChange={(e) => setNewTripData({ ...newTripData, disposalPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Fuori Roma</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTripData.fuoriRomaPrice}
+                            onChange={(e) => setNewTripData({ ...newTripData, fuoriRomaPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Noleggio Cassoni</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTripData.noleggioPrice}
+                            onChange={(e) => setNewTripData({ ...newTripData, noleggioPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Fornitura Big Bag</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTripData.bigBagPrice}
+                            onChange={(e) => setNewTripData({ ...newTripData, bigBagPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Analisi Rifiuto</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTripData.analisiPrice}
+                            onChange={(e) => setNewTripData({ ...newTripData, analisiPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Carico Ragno</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTripData.servRagnoPrice}
+                            onChange={(e) => setNewTripData({ ...newTripData, servRagnoPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Indennizzo Sosta</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTripData.sostaPrice}
+                            onChange={(e) => setNewTripData({ ...newTripData, sostaPrice: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-zinc-400 uppercase font-sans">Annotazioni</label>
+                      <textarea
+                        rows={2}
+                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                        value={newTripData.notes}
+                        onChange={(e) => setNewTripData({ ...newTripData, notes: e.target.value })}
+                      />
+                    </div>
+                  </>
+                );
+              })()}
 
               <div className="flex gap-4 justify-end pt-4 border-t border-zinc-800">
                 <button

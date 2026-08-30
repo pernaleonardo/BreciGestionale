@@ -1,0 +1,4192 @@
+[
+  {
+    "cerCode": "010101",
+    "description": "rifiuti da estrazione di minerali metalliferi",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010102",
+    "description": "rifiuti da estrazione di minerali non metalliferi",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010304*",
+    "description": "sterili che possono generare acido prodotti dalla lavorazione di minerale solforoso",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010305*",
+    "description": "altri sterili contenenti sostanze pericolose",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010306",
+    "description": "sterili diversi da quelli di cui alle voci 01 03 04 e 01 03 05",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010307*",
+    "description": "altri rifiuti contenenti sostanze pericolose prodotti da trattamenti chimici e fisici di",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010308",
+    "description": "polveri e residui affini diversi da quelli di cui alla voce 01 03 07",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010309",
+    "description": "fanghi rossi derivanti dalla produzione di allumina, diversi da quelli di cui alla voce",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010407*",
+    "description": "rifiuti contenenti sostanze pericolose, prodotti da trattamenti chimici e fisici di",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010408",
+    "description": "scarti di ghiaia e pietrisco, diversi da quelli di cui alla voce 01 04 07",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010409",
+    "description": "scarti di sabbia e argilla",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010410",
+    "description": "polveri e residui affini, diversi da quelli di cui alla voce 01 04 07",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010411",
+    "description": "rifiuti della lavorazione di potassa e salgemma, diversi da quelli di cui alla voce 01",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010412",
+    "description": "sterili ed altri residui del lavaggio e della pulitura di minerali, diversi da quelli di cui",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010413",
+    "description": "rifiuti prodotti dalla lavorazione della pietra, diversi da quelli di cui alla voce 01 04",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010499",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010504",
+    "description": "fanghi e rifiuti di perforazione di pozzi per acque dolci",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010505",
+    "description": "fanghi e rifiuti di perforazione contenenti oli",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010506*",
+    "description": "fanghi di perforazione ed altri rifiuti di perforazione contenenti sostanze pericolose",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010507",
+    "description": "fanghi e rifiuti di perforazione contenenti barite, diversi da quelli delle voci 01 05",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010508",
+    "description": "fanghi e rifiuti di perforazione contenenti cloruri, diversi da quelli delle voci 01 05",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "010599",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "01 - Rifiuti da estrazione e prospezione di miniere e cave"
+  },
+  {
+    "cerCode": "020101",
+    "description": "fanghi da operazioni di lavaggio e pulizia",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020102",
+    "description": "scarti di tessuti animali",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020103",
+    "description": "scarti di tessuti vegetali",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020104",
+    "description": "rifiuti plastici (ad esclusione degli imballaggi)",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020105",
+    "description": "rifiuti agrochimici",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020106",
+    "description": "feci animali, urine e letame (comprese le lettiere usate), effluenti, raccolti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020107",
+    "description": "rifiuti della silvicoltura",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020108",
+    "description": "rifiuti agrochimici contenenti sostanze pericolose",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020109",
+    "description": "rifiuti agrochimici diversi da quelli della voce 02 01 08",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020201",
+    "description": "fanghi da operazioni di lavaggio e pulizia",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020202",
+    "description": "scarti di tessuti animali",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020203",
+    "description": "scarti inutilizzabili per il consumo o la trasformazion",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020204",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020301",
+    "description": "fanghi prodotti da operazioni di lavaggio, pulizia, sbucciatura, centrifugazione e",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020302",
+    "description": "rifiuti legati all'impiego di conservanti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020303",
+    "description": "rifiuti prodotti dall'estrazione tramite solvente",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020304",
+    "description": "scarti inutilizzabili per il consumo o la trasformazione",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020305",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020401",
+    "description": "terriccio residuo delle operazioni di pulizia e lavaggio delle barbabietole",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020402",
+    "description": "carbonato di calcio fuori specifica",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020403",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020499",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020501",
+    "description": "scarti inutilizzabili per il consumo o la trasformazione",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020502",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020599",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020601",
+    "description": "scarti inutilizzabili per il consumo o la trasformazione",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020602",
+    "description": "rifiuti legati all'impiego di conservanti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020603",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020699",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020701",
+    "description": "rifiuti prodotti dalle operazioni di lavaggio, pulizia e macinazione della materia",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020702",
+    "description": "rifiuti prodotti dalla distillazione di bevande alcoliche",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020703",
+    "description": "rifiuti prodotti dai trattamenti chimici",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020704",
+    "description": "scarti inutilizzabili per il consumo o la trasformazione",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020705",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "020799",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "02 - Rifiuti da agricoltura, selvicoltura, caccia e pesca"
+  },
+  {
+    "cerCode": "030101",
+    "description": "scarti di corteccia e sughero",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030104",
+    "description": "segatura, trucioli, residui di taglio, legno, pannelli di truciolare e piallacci contenenti",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030105",
+    "description": "segatura, trucioli, residui di taglio, legno, pannelli di truciolare e piallacci diversi da",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030201*",
+    "description": "prodotti per i trattamenti conservativi del legno contenenti composti organici non",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030202*",
+    "description": "prodotti per i trattamenti conservativi del legno contenenti composti organici",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030203*",
+    "description": "prodotti per i trattamenti conservativi del legno contenenti composti",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030204*",
+    "description": "prodotti per i trattamenti conservativi del legno contenenti composti inorganici",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030205*",
+    "description": "altri prodotti per i trattamenti conservativi del legno contenenti sostanze",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030299",
+    "description": "prodotti per i trattamenti conservativi del legno non specificati altrimenti",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030301",
+    "description": "scarti di corteccia e legno",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030302",
+    "description": "fanghi di recupero dei bagni di macerazione (green liquor)",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030305",
+    "description": "fanghi prodotti dai processi di disinchiostrazione nel riciclaggio della carta",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030307",
+    "description": "scarti della separazione meccanica nella produzione di polpa da rifiuti di carta e",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030308",
+    "description": "scarti della selezione di carta e cartone destinati ad essere riciclati",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030309",
+    "description": "fanghi di scarto contenenti carbonato di calcio",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030310",
+    "description": "scarti di fibre e fanghi contenenti fibre, riempitivi e prodotti di rivestimento generati",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030311",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "030399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "03 - Rifiuti da lavorazione del legno, carta e cartone"
+  },
+  {
+    "cerCode": "040101",
+    "description": "carniccio e frammenti di calce",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040102",
+    "description": "rifiuti di calcinazione",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040103*",
+    "description": "bagni di sgrassatura esauriti contenenti solventi senza fase liquida",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040104",
+    "description": "liquido di concia contenente cromo",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040105",
+    "description": "liquido di concia non contenente cromo",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040106",
+    "description": "fanghi, prodotti in particolare dal trattamento in loco degli effluenti, contenenti",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040107",
+    "description": "fanghi, prodotti in particolare dal trattamento in loco degli effluenti, non contenenti",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040108",
+    "description": "cuoio conciato (scarti, cascami, ritagli, polveri di lucidatura) contenenti cromo",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040109",
+    "description": "rifiuti delle operazioni di confezionamento e finitura",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040209",
+    "description": "rifiuti da materiali compositi (fibre impregnate, elastomeri, plastomeri)",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040210",
+    "description": "materiale organico proveniente da prodotti naturali (ad es. grasso, cera)",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040214*",
+    "description": "rifiuti provenienti da operazioni di finitura, contenenti solventi organici",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040215",
+    "description": "rifiuti da operazioni di finitura, diversi da quelli di cui alla voce 04 02 14",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040216*",
+    "description": "tinture e pigmenti, contenenti sostanze pericolose",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040217",
+    "description": "tinture e pigmenti, diversi da quelli di cui alla voce 04 02 16",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040219*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040220",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040221",
+    "description": "rifiuti da fibre tessili grezze",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040222",
+    "description": "rifiuti da fibre tessili lavorate",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "040299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "04 - Rifiuti da industria tessile e conciaria"
+  },
+  {
+    "cerCode": "050102*",
+    "description": "fanghi da processi di dissalazione",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050103*",
+    "description": "morchie depositate sul fondo dei serbatoi",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050104*",
+    "description": "fanghi acidi prodotti da processi di alchilazione",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050105*",
+    "description": "perdite di olio",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050106*",
+    "description": "fanghi oleosi prodotti dalla manutenzione di impianti e apparecchiature",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050107*",
+    "description": "catrami acidi",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050108*",
+    "description": "altri catrami",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050109*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050110",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050111*",
+    "description": "rifiuti prodotti dalla purificazione di carburanti tramite basi",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050112*",
+    "description": "acidi contenenti oli",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050113",
+    "description": "fanghi residui dell'acqua di alimentazione delle caldaie",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050114",
+    "description": "rifiuti prodotti dalle torri di raffreddamento",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050115*",
+    "description": "filtri di argilla esauriti",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050116",
+    "description": "rifiuti contenenti zolfo prodotti dalla desolforizzazione del petrolio",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050117",
+    "description": "bitumi",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050601*",
+    "description": "catrami acidi",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050603*",
+    "description": "altri catrami",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050604",
+    "description": "rifiuti prodotti dalle torri di raffreddamento",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050699",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050701*",
+    "description": "rifiuti contenenti mercurio",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050702",
+    "description": "rifiuti contenenti zolfo",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "050799",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "05 - Rifiuti da raffinazione del petrolio e trattamento carbone"
+  },
+  {
+    "cerCode": "060101*",
+    "description": "acido solforico ed acido solforoso",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060102*",
+    "description": "acido cloridrico",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060103*",
+    "description": "acido fluoridrico",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060104*",
+    "description": "acido fosforico e fosforoso",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060105*",
+    "description": "acido nitrico e acido nitroso",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060106*",
+    "description": "altri acidi",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060201*",
+    "description": "idrossido di calcio",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060203*",
+    "description": "idrossido di ammonio",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060204*",
+    "description": "idrossido di sodio e di potassio",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060205*",
+    "description": "altre basi",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060311*",
+    "description": "sali e loro soluzioni, contenenti cianuri",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060313*",
+    "description": "sali e loro soluzioni, contenenti metalli pesanti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060314",
+    "description": "sali e loro soluzioni, diversi da quelli di cui alle voci 06 03 11 e 06 03 13",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060315*",
+    "description": "ossidi metallici contenenti metalli pesanti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060316",
+    "description": "ossidi metallici, diversi da quelli di cui alla voce 06 03 15",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060403*",
+    "description": "rifiuti contenenti arsenico",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060404*",
+    "description": "rifiuti contenenti mercurio",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060405*",
+    "description": "rifiuti contenenti altri metalli pesanti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060499",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060502*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060503",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060602*",
+    "description": "rifiuti contenenti solfuri pericolosi",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060603",
+    "description": "rifiuti contenenti solfuri, diversi da quelli di cui alla voce 06 06 02",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060699",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060701*",
+    "description": "rifiuti dei processi elettrolitici, contenenti amianto",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060702*",
+    "description": "carbone attivato dalla produzione di cloro",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060703*",
+    "description": "fanghi di solfati di bario, contenenti mercurio",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060704*",
+    "description": "soluzioni ed acidi, ad es. acido di contatto",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060799",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060802*",
+    "description": "rifiuti contenenti clorosilano",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060899",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060902",
+    "description": "scorie fosforose",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060903*",
+    "description": "rifiuti prodotti da reazioni a base di calcio contenenti o contaminati da sostanze",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060904",
+    "description": "rifiuti prodotti da reazioni a base di calcio, diversi da quelli di cui alla voce 06 09 03",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "060999",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061002*",
+    "description": "rifiuti contenenti sostanze pericolose",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061099",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061101",
+    "description": "rifiuti prodotti da reazioni a base di calcio nella produzione di diossido di titanio",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061301*",
+    "description": "prodotti fitosanitari, agenti conservativi del legno ed altri biocidi inorganici",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061302*",
+    "description": "carbone attivato esaurito (tranne 06 07 02)",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061303",
+    "description": "nerofumo",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061304*",
+    "description": "rifiuti della lavorazione dell'amianto",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061305*",
+    "description": "fuliggine",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "061399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "06 - Rifiuti da processi chimici inorganici"
+  },
+  {
+    "cerCode": "070101*",
+    "description": "soluzioni acquose di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070103*",
+    "description": "solventi organici alogenati, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070104*",
+    "description": "altri solventi organici, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070107*",
+    "description": "fondi e residui di reazione, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070108*",
+    "description": "altri fondi e residui di reazione",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070109*",
+    "description": "residui di filtrazione e assorbenti esauriti, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070110*",
+    "description": "altri residui di filtrazione e assorbenti esauriti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070111*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070112",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070201*",
+    "description": "soluzioni acquose di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070203*",
+    "description": "solventi organici alogenati, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070204*",
+    "description": "altri solventi organici, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070207*",
+    "description": "fondi e residui di reazione, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070208*",
+    "description": "altri fondi e residui di reazione",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070209*",
+    "description": "residui di filtrazione e assorbenti esauriti, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070210*",
+    "description": "altri residui di filtrazione e assorbenti esauriti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070211*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070212",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070213",
+    "description": "rifiuti plastici",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070214*",
+    "description": "rifiuti prodotti da additivi, contenenti sostanze pericolose",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070215",
+    "description": "rifiuti prodotti da additivi, diversi da quelli di cui alla voce 07 02 14",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070216*",
+    "description": "rifiuti contenenti silicone pericoloso",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070217",
+    "description": "rifiuti contenenti silicone diversi da quelli di cui alla voce 07 02 16",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070301*",
+    "description": "soluzioni acquose di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070303*",
+    "description": "solventi organici alogenati, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070304*",
+    "description": "altri solventi organici, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070307*",
+    "description": "fondi e residui di reazione alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070308*",
+    "description": "altri fondi e residui di reazione",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070309*",
+    "description": "residui di filtrazione e assorbenti esauriti alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070310*",
+    "description": "altri residui di filtrazione e assorbenti esauriti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070311*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070312",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070401*",
+    "description": "soluzioni acquose di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070403*",
+    "description": "solventi organici alogenati, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070404*",
+    "description": "altri solventi organici, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070407*",
+    "description": "fondi e residui di reazione alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070408*",
+    "description": "altri fondi e residui di reazione",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070409*",
+    "description": "residui di filtrazione e assorbenti esauriti alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070410*",
+    "description": "altri residui di filtrazione e assorbenti esauriti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070411*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070412",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070413*",
+    "description": "rifiuti solidi contenenti sostanze pericolose",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070499",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070501*",
+    "description": "soluzioni acquose di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070503*",
+    "description": "solventi organici alogenati, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070504*",
+    "description": "altri solventi organici, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070507*",
+    "description": "fondi e residui di reazione, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070508*",
+    "description": "altri fondi e residui di reazione",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070509*",
+    "description": "residui di filtrazione e assorbenti esauriti, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070510*",
+    "description": "altri residui di filtrazione e assorbenti esauriti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070511*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070512",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070513*",
+    "description": "rifiuti solidi contenenti sostanze pericolose",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070514",
+    "description": "rifiuti solidi, diversi da quelli di cui alla voce 07 05 13",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070599",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070601*",
+    "description": "soluzioni acquose di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070603*",
+    "description": "solventi organici alogenati, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070604*",
+    "description": "altri solventi organici, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070607*",
+    "description": "fondi e residui di reazione, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070608*",
+    "description": "altri fondi e residui di reazione",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070609*",
+    "description": "residui di filtrazione e assorbenti esauriti, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070610*",
+    "description": "altri residui di filtrazione e assorbenti esauriti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070611*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070612",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070699",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070701*",
+    "description": "soluzioni acquose di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070703*",
+    "description": "solventi organici alogenati, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070704*",
+    "description": "altri solventi organici, soluzioni di lavaggio ed acque madri",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070707*",
+    "description": "fondi e residui di reazione, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070708*",
+    "description": "altri fondi e residui di reazione",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070709*",
+    "description": "residui di filtrazione e assorbenti esauriti, alogenati",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070710*",
+    "description": "altri residui di filtrazione e assorbenti esauriti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070711*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070712",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "070799",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "07 - Rifiuti da processi chimici organici"
+  },
+  {
+    "cerCode": "080111*",
+    "description": "pitture e vernici di scarto, contenenti solventi organici o altre sostanze pericolose",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080112",
+    "description": "pitture e vernici di scarto, diverse da quelle di cui alla voce 08 01 11",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080113*",
+    "description": "fanghi prodotti da pitture e vernici, contenenti solventi organici o altre sostanze",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080114",
+    "description": "fanghi prodotti da pitture e vernici, diversi da quelli di cui alla voce 08 01 13",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080115*",
+    "description": "fanghi acquosi contenenti pitture e vernici, contenenti solventi organici o altre",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080116",
+    "description": "fanghi acquosi contenenti pitture e vernici, diversi da quelli di cui alla voce 08 01",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080117*",
+    "description": "fanghi prodotti dalla rimozione di pitture e vernici, contenenti solventi organici o",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080118",
+    "description": "fanghi prodotti dalla rimozione di pitture e vernici, diversi da quelli di cui alla voce",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080119*",
+    "description": "sospensioni acquose contenenti pitture e vernici, contenenti solventi organici o",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080120",
+    "description": "sospensioni acquose contenenti pitture e vernici, diverse da quelle di cui alla voce",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080121*",
+    "description": "residui di vernici o di sverniciatori",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080201",
+    "description": "polveri di scarto di rivestimenti",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080202",
+    "description": "fanghi acquosi contenenti materiali ceramici",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080203",
+    "description": "sospensioni acquose contenenti materiali ceramici",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080307",
+    "description": "fanghi acquosi contenenti inchiostro",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080308",
+    "description": "rifiuti liquidi acquosi contenenti inchiostro",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080312*",
+    "description": "scarti di inchiostro, contenenti sostanze pericolose",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080313",
+    "description": "scarti di inchiostro, diversi da quelli di cui alla voce 08 03 12",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080314*",
+    "description": "fanghi di inchiostro, contenenti sostanze pericolose",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080315",
+    "description": "fanghi di inchiostro, diversi da quelli di cui alla voce 08 03 14",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080316*",
+    "description": "residui di soluzioni chimiche per incisione",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080317*",
+    "description": "toner per stampa esauriti, contenenti sostanze pericolose",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080318",
+    "description": "toner per stampa esauriti, diversi da quelli di cui alla voce 08 03 17",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080319*",
+    "description": "oli dispersi",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080409*",
+    "description": "adesivi e sigillanti di scarto, contenenti solventi organici o altre sostanze",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080410",
+    "description": "adesivi e sigillanti di scarto, diversi da quelli di cui alla voce 08 04 09",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080411*",
+    "description": "fanghi di adesivi e sigillanti, contenenti solventi organici o altre sostanze",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080412",
+    "description": "fanghi di adesivi e sigillanti, diversi da quelli di cui alla voce 08 04 11",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080413*",
+    "description": "fanghi acquosi contenenti adesivi e sigillanti, contenenti solventi organici o altre",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080414",
+    "description": "fanghi acquosi contenenti adesivi e sigillanti, diversi da quelli di cui alla voce 08 04",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080415*",
+    "description": "rifiuti liquidi acquosi contenenti adesivi e sigillanti, contenenti solventi organici o",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080416",
+    "description": "rifiuti liquidi acquosi contenenti adesivi e sigillanti, diversi da quelli di cui alla voce",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080417*",
+    "description": "olio di resina",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080499",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "080501*",
+    "description": "isocianati di scarto",
+    "category": "08 - Rifiuti da produzione di vernici, pitture, inchiostri e adesivi"
+  },
+  {
+    "cerCode": "090101*",
+    "description": "soluzioni di sviluppo e attivanti a base acquosa",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090102*",
+    "description": "soluzioni di sviluppo per lastre offset a base acquosa",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090103*",
+    "description": "soluzioni di sviluppo a base di solventi",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090104*",
+    "description": "soluzioni fissative",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090105*",
+    "description": "soluzioni di lavaggio e soluzioni di arresto-fissaggio",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090106*",
+    "description": "rifiuti contenenti argento prodotti dal trattamento in loco di rifiuti fotografici",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090107",
+    "description": "carta e pellicole per fotografia, contenenti argento o composti dell'argento",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090108",
+    "description": "carta e pellicole per fotografia, non contenenti argento o composti dell'argento",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090110",
+    "description": "macchine fotografiche monouso senza batterie",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090111*",
+    "description": "macchine fotografiche monouso contenenti batterie incluse nelle voci 16 06 01,",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090112",
+    "description": "macchine fotografiche monouso diverse da quelle di cui alla voce 09 01 11",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090113*",
+    "description": "rifiuti liquidi acquosi prodotti dal recupero in loco dell'argento, diversi da quelli di",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "090199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "09 - Rifiuti dell'industria fotografica"
+  },
+  {
+    "cerCode": "100101",
+    "description": "ceneri pesanti, scorie e polveri di caldaia (tranne le polveri di caldaia di cui alla",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100102",
+    "description": "ceneri leggere di carbone",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100103",
+    "description": "ceneri leggere di torba e di legno non trattato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100104*",
+    "description": "ceneri leggere di olio combustibile e polveri di caldaia",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100105",
+    "description": "rifiuti solidi prodotti da reazioni a base di calcio nei processi di desolforazione dei",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100107",
+    "description": "rifiuti fangosi prodotti da reazioni a base di calcio nei processi di desolforazione dei",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100109*",
+    "description": "acido solforico",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100113*",
+    "description": "ceneri leggere prodotte da idrocarburi emulsionati usati come carburante",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100114*",
+    "description": "ceneri pesanti, scorie e polveri di caldaia prodotte dal coincenerimento,",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100115",
+    "description": "ceneri pesanti, scorie e polveri di caldaia prodotte dal coincenerimento, diverse da",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100116*",
+    "description": "ceneri leggere prodotte dal coincenerimento, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100117",
+    "description": "ceneri leggere prodotte dal coincenerimento, diverse da quelle di cui alla voce 10",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100118*",
+    "description": "rifiuti prodotti dalla depurazione dei fumi, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100119",
+    "description": "rifiuti prodotti dalla depurazione dei fumi, diversi da quelli di cui alle voci 10 01 05,",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100120*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100121",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100122*",
+    "description": "fanghi acquosi da operazioni di pulizia caldaie, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100123",
+    "description": "fanghi acquosi da operazioni di pulizia caldaie, diversi da quelli di cui alla voce 10",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100124",
+    "description": "sabbie dei reattori a letto fluidizzato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100125",
+    "description": "rifiuti dell'immagazzinamento e della preparazione del combustibile delle centrali",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100126",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100201",
+    "description": "rifiuti del trattamento delle scorie",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100202",
+    "description": "scorie non trattate",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100207*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100208",
+    "description": "rifiuti prodotti dal trattamento dei fumi, diversi da quelli di cui alla voce 10 02 07",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100210",
+    "description": "scaglie di laminazione",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100211*",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, contenti oli",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100212",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100213*",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi, contenenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100214",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi, diversi da quelli di",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100215",
+    "description": "altri fanghi e residui di filtrazione",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100302",
+    "description": "frammenti di anodi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100304*",
+    "description": "scorie della produzione primaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100305",
+    "description": "rifiuti di allumina",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100308*",
+    "description": "scorie saline della produzione secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100309*",
+    "description": "scorie nere della produzione secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100315*",
+    "description": "schiumature infiammabili o che rilasciano, al contatto con l'acqua, gas",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100316",
+    "description": "schiumature diverse da quelle di cui alla voce 10 03 15",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100317*",
+    "description": "rifiuti contenenti catrame della produzione degli anodi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100318",
+    "description": "rifiuti contenenti carbone della produzione degli anodi, diversi da quelli di cui alla",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100319*",
+    "description": "polveri dei gas di combustione, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100320",
+    "description": "polveri dei gas di combustione, diverse da quelle di cui alla voce 10 03 19",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100321*",
+    "description": "altre polveri e particolati (comprese quelle prodotte da mulini a palle), contenenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100322",
+    "description": "altre polveri e particolati (comprese quelle prodotte da mulini a palle), diverse da",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100323*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100324",
+    "description": "rifiuti prodotti dal trattamento dei fumi, diversi da quelli di cui alla voce 10 03 23",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100325*",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi, contenenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100326",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi, diversi da quelli di",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100327*",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, contenenti oli",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100328",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100329*",
+    "description": "rifiuti prodotti dal trattamento di scorie saline e scorie nere, contenenti sostanze",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100330",
+    "description": "rifiuti prodotti dal trattamento di scorie saline e scorie nere, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100401*",
+    "description": "scorie della produzione primaria e secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100402*",
+    "description": "impurità e schiumature della produzione primaria e secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100403*",
+    "description": "arsenato di calcio",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100404*",
+    "description": "polveri dei gas di combustione",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100405*",
+    "description": "altre polveri e particolato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100406*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100407*",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100409*",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, contenenti oli",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100410",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100499",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100501",
+    "description": "scorie della produzione primaria e secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100503*",
+    "description": "polveri dei gas di combustione",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100504",
+    "description": "altre polveri e particolato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100505*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100506*",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100508*",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, contenenti oli",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100509",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100510*",
+    "description": "scorie e schiumature infiammabili o che rilasciano, al contatto con l'acqua, gas",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100511",
+    "description": "scorie e schiumature diverse da quelle di cui alla voce 10 05 10",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100599",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100601",
+    "description": "scorie della produzione primaria e secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100602",
+    "description": "impurità e schiumature della produzione primaria e secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100603*",
+    "description": "polveri dei gas di combustione",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100604",
+    "description": "altre polveri e particolato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100606*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100607*",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100609*",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, contenenti oli",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100610",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100699",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100701",
+    "description": "scorie della produzione primaria e secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100702",
+    "description": "impurità e schiumature della produzione primaria e secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100703",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100704",
+    "description": "altre polveri e particolato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100705",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100707*",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, contenenti oli",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100708",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100799",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100804",
+    "description": "polveri e particolato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100808*",
+    "description": "scorie salate della produzione primaria e secondaria",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100809",
+    "description": "altre scorie",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100810*",
+    "description": "impurità e schiumature infiammabili o che rilasciano, al contatto con l'acqua, gas",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100811",
+    "description": "impurità e schiumature diverse da quelle di cui alla voce 10 08 10",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100812*",
+    "description": "rifiuti contenenti catrame derivante dalla produzione degli anodi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100813",
+    "description": "rifiuti contenenti carbone della produzione degli anodi, diversi da quelli di cui alla",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100814",
+    "description": "frammenti di anodi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100815*",
+    "description": "polveri dei gas di combustione, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100816",
+    "description": "polveri dei gas di combustione, diverse da quelle di cui alla voce 10 08 15",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100817*",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi, contenenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100818",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi, diversi da quelli di",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100819*",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, contenenti oli",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100820",
+    "description": "rifiuti prodotti dal trattamento delle acque di raffreddamento, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100899",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100903",
+    "description": "scorie di fusione",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100905*",
+    "description": "forme e anime da fonderia non utilizzate, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100906",
+    "description": "forme e anime da fonderia non utilizzate, diverse da quelle di cui alla voce 10 09",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100907*",
+    "description": "forme e anime da fonderia utilizzate, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100908",
+    "description": "forme e anime da fonderia utilizzate, diverse da quelle di cui alla voce 10 09 07",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100909*",
+    "description": "polveri dei gas di combustione contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100910",
+    "description": "polveri dei gas di combustione diverse da quelle di cui alla voce 10 09 09",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100911*",
+    "description": "altri particolati contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100912",
+    "description": "altri particolati diversi da quelli di cui alla voce 10 09 11",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100913*",
+    "description": "scarti di leganti contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100914",
+    "description": "scarti di leganti diversi da quelli di cui alla voce 10 09 13",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100915*",
+    "description": "scarti di prodotti rilevatori di crepe, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100916",
+    "description": "scarti di prodotti rilevatori di crepe, diversi da quelli di cui alla voce 10 09 15",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "100999",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101003",
+    "description": "scorie di fusione",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101005*",
+    "description": "forme e anime da fonderia non utilizzate, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101006",
+    "description": "forme e anime da fonderia non utilizzate, diverse da quelle di cui alla voce 10 10",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101007*",
+    "description": "forme e anime da fonderia utilizzate, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101008",
+    "description": "forme e anime da fonderia utilizzate, diverse da quelle di cui alla voce 10 10 07",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101009*",
+    "description": "polveri dei gas di combustione, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101010",
+    "description": "polveri dei gas di combustione, diverse da quelle di cui alla voce 10 10 09",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101011*",
+    "description": "altri particolati contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101012",
+    "description": "altri particolati diversi da quelli di cui alla voce 10 10 11",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101013*",
+    "description": "scarti di leganti contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101014",
+    "description": "scarti di leganti diversi da quelli di cui alla voce 10 10 13",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101015*",
+    "description": "scarti di prodotti rilevatori di crepe, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101016",
+    "description": "scarti di prodotti rilevatori di crepe, diversi da quelli di cui alla voce 10 10 15",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101099",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101103",
+    "description": "scarti di materiali in fibra a base di vetro",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101105",
+    "description": "polveri e particolato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101109*",
+    "description": "scarti di mescole non sottoposte a trattamento termico, contenenti sostanze",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101110",
+    "description": "scarti di mescole non sottoposte a trattamento termico, diverse da quelle di cui alla",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101111*",
+    "description": "rifiuti di vetro in forma di particolato e polveri di vetro contenenti metalli pesanti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101112",
+    "description": "rifiuti di vetro diversi da quelli di cui alla voce 10 11 11",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101113*",
+    "description": "lucidature di vetro e fanghi di macinazione, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101114",
+    "description": "lucidature di vetro e fanghi di macinazione, diversi da quelli di cui alla voce 10 11",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101115*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101116",
+    "description": "rifiuti prodotti dal trattamento dei fumi, diversi da quelli di cui alla voce 10 11 15",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101117*",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi, contenenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101118",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi, diversi da quelli di",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101119*",
+    "description": "rifiuti solidi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101120",
+    "description": "rifiuti solidi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101201",
+    "description": "scarti di mescole non sottoposte a trattamento termico",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101203",
+    "description": "polveri e particolato",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101205",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101206",
+    "description": "stampi di scarto",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101208",
+    "description": "scarti di ceramica, mattoni, mattonelle e materiali da costruzione (sottoposti a",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101209*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101210",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi, diversi da quelli di cui alla voce 10 12",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101211*",
+    "description": "rifiuti delle operazioni di smaltatura, contenenti metalli pesanti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101212",
+    "description": "rifiuti delle operazioni di smaltatura diversi da quelli di cui alla voce 10 12 11",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101213",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101301",
+    "description": "scarti di mescole non sottoposte a trattamento termico",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101304",
+    "description": "rifiuti di calcinazione e di idratazione della calce",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101306",
+    "description": "polveri e particolato (eccetto quelli delle voci 10 13 12 e 10 13 13)",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101307",
+    "description": "fanghi e residui di filtrazione prodotti dal trattamento dei fumi",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101309*",
+    "description": "rifiuti della fabbricazione di amianto cemento, contenenti amianto",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101310",
+    "description": "rifiuti della fabbricazione di amianto cemento, diversi da quelli di cui alla voce 10",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101311",
+    "description": "rifiuti della produzione di materiali compositi a base di cemento, diversi da quelli di",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101312*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi, contenenti sostanze pericolose",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101313",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi, diversi da quelli di cui alla voce 10 13",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101314",
+    "description": "rifiuti e fanghi di cemento",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "101399",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "10 - Rifiuti provenienti da processi termici"
+  },
+  {
+    "cerCode": "110105*",
+    "description": "acidi di decappaggio",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110106*",
+    "description": "acidi non specificati altrimenti",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110107*",
+    "description": "basi di decappaggio",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110108*",
+    "description": "fanghi di fosfatazione",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110109*",
+    "description": "fanghi e residui di filtrazione, contenenti sostanze pericolose",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110110",
+    "description": "fanghi e residui di filtrazione, diversi da quelli di cui alla voce 11 01 09",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110111*",
+    "description": "soluzioni acquose di lavaggio, contenenti sostanze pericolose",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110112",
+    "description": "soluzioni acquose di lavaggio, diverse da quelle di cui alla voce 10 01 11",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110113*",
+    "description": "rifiuti di sgrassaggio contenenti sostanze pericolose",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110114",
+    "description": "rifiuti di sgrassaggio diversi da quelli di cui alla voce 11 01 13",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110115*",
+    "description": "eluati e fanghi di sistemi a membrana e sistemi a scambio ionico, contenenti",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110116*",
+    "description": "resine a scambio ionico saturate o esaurite",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110198*",
+    "description": "altri rifiuti contenenti sostanze pericolose",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110202*",
+    "description": "rifiuti della lavorazione idrometallurgica dello zinco (compresi jarosite, goethite)",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110203",
+    "description": "rifiuti della produzione di anodi per processi elettrolitici acquosi",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110205*",
+    "description": "rifiuti della lavorazione idrometallurgica del rame, contenenti sostanze pericolose",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110206",
+    "description": "rifiuti della lavorazione idrometallurgica del rame, diversi da quelli della voce 11 02",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110207*",
+    "description": "altri rifiuti contenenti sostanze pericolose",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110301*",
+    "description": "rifiuti contenenti cianuro",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110302*",
+    "description": "altri rifiuti",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110501",
+    "description": "zinco solido",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110502",
+    "description": "ceneri di zinco",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110503*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110504*",
+    "description": "fondente esaurito",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "110599",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "11 - Rifiuti da trattamento chimico e rivestimento di metalli"
+  },
+  {
+    "cerCode": "120101",
+    "description": "limatura e trucioli di materiali ferrosi",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120102",
+    "description": "polveri e particolato di materiali ferrosi",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120103",
+    "description": "limatura e trucioli di materiali non ferrosi",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120104",
+    "description": "polveri e particolato di materiali non ferrosi",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120105",
+    "description": "limatura e trucioli di materiali plastici",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120106*",
+    "description": "oli minerali per macchinari, contenenti alogeni (eccetto emulsioni e soluzioni)",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120107*",
+    "description": "oli minerali per macchinari, non contenenti alogeni (eccetto emulsioni e soluzioni)",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120108*",
+    "description": "emulsioni e soluzioni per macchinari, contenenti alogeni",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120109*",
+    "description": "emulsioni e soluzioni per macchinari, non contenenti alogeni",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120110*",
+    "description": "oli sintetici per macchinari",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120112*",
+    "description": "cere e grassi esauriti",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120113",
+    "description": "rifiuti di saldatura",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120114*",
+    "description": "fanghi di lavorazione, contenenti sostanze pericolose",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120115",
+    "description": "fanghi di lavorazione, diversi da quelli di cui alla voce 12 01 14",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120116*",
+    "description": "materiale abrasivo di scarto, contenente sostanze pericolose",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120117",
+    "description": "materiale abrasivo di scarto, diverso da quello di cui alla voce 12 01 16",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120118*",
+    "description": "fanghi metallici (fanghi di rettifica, affilatura e lappatura) contenenti olio",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120119*",
+    "description": "oli per macchinari, facilmente biodegradabili",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120120*",
+    "description": "corpi d'utensile e materiali di rettifica esauriti, contenenti sostanze pericolose",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120121",
+    "description": "corpi d'utensile e materiali di rettifica esauriti, diversi da quelli di cui alla voce 12",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120301*",
+    "description": "soluzioni acquose di lavaggio",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "120302*",
+    "description": "rifiuti prodotti da processi di sgrassatura a vapore",
+    "category": "12 - Rifiuti da lavorazione fisica e meccanica di metalli e plastica"
+  },
+  {
+    "cerCode": "130101*",
+    "description": "oli per circuiti idraulici contenenti PCB",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130104*",
+    "description": "emulsioni clorurate",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130105*",
+    "description": "emulsioni non clorurate",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130109*",
+    "description": "oli minerali per circuiti idraulici, clorurati",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130110*",
+    "description": "oli minerali per circuiti idraulici, non clorurati",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130111*",
+    "description": "oli sintetici per circuiti idraulici",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130112*",
+    "description": "oli per circuiti idraulici, facilmente biodegradabili",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130113*",
+    "description": "altri oli per circuiti idraulici",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130204*",
+    "description": "scarti di olio minerale per motori, ingranaggi e lubrificazione, clorurati",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130205*",
+    "description": "scarti di olio minerale per motori, ingranaggi e lubrificazione, non clorurati",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130206*",
+    "description": "scarti di olio sintetico per motori, ingranaggi e lubrificazione",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130207*",
+    "description": "olio per motori, ingranaggi e lubrificazione, facilmente biodegradabile",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130208*",
+    "description": "altri oli per motori, ingranaggi e lubrificazione",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130301*",
+    "description": "oli isolanti e termoconduttori, contenenti PCB",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130306*",
+    "description": "oli minerali isolanti e termoconduttori clorurati, diversi da quelli di cui alla voce 13",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130307*",
+    "description": "oli minerali isolanti e termoconduttori non clorurati",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130308*",
+    "description": "oli sintetici isolanti e termoconduttori",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130309*",
+    "description": "oli isolanti e termoconduttori, facilmente biodegradabili",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130310*",
+    "description": "altri oli isolanti e termo conduttori",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130401*",
+    "description": "oli di sentina della navigazione interna",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130402*",
+    "description": "oli di sentina delle fognature dei moli",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130403*",
+    "description": "altri oli di sentina della navigazione",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130501*",
+    "description": "rifiuti solidi delle camere a sabbia e di prodotti di separazione olio/acqua",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130502*",
+    "description": "fanghi di prodotti di separazione olio/acqua",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130503*",
+    "description": "fanghi da collettori",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130506*",
+    "description": "oli prodotti dalla separazione olio/acqua",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130507*",
+    "description": "acque oleose prodotte dalla separazione olio/acqua",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130508*",
+    "description": "miscugli di rifiuti delle camere a sabbia e dei prodotti di separazione olio/acqua",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130701*",
+    "description": "olio combustibile e carburante diesel",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130702*",
+    "description": "petrolio",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130703*",
+    "description": "altri carburanti (comprese le miscele)",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130801*",
+    "description": "fanghi ed emulsioni prodotti dai processi di dissalazione",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130802*",
+    "description": "altre emulsioni",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "130899*",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "13 - Oli esausti e residui di combustibili liquidi"
+  },
+  {
+    "cerCode": "140601*",
+    "description": "clorofluorocarburi, HCFC, HFC1",
+    "category": "14 - Solventi organici e refrigeranti esausti"
+  },
+  {
+    "cerCode": "140602*",
+    "description": "altri solventi e miscele di solventi, alogenati",
+    "category": "14 - Solventi organici e refrigeranti esausti"
+  },
+  {
+    "cerCode": "140603*",
+    "description": "altri solventi e miscele di solventi",
+    "category": "14 - Solventi organici e refrigeranti esausti"
+  },
+  {
+    "cerCode": "140604*",
+    "description": "fanghi o rifiuti solidi, contenenti solventi alogenati",
+    "category": "14 - Solventi organici e refrigeranti esausti"
+  },
+  {
+    "cerCode": "140605*",
+    "description": "fanghi o rifiuti solidi, contenenti altri solventi",
+    "category": "14 - Solventi organici e refrigeranti esausti"
+  },
+  {
+    "cerCode": "150101",
+    "description": "imballaggi in carta e cartone",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150102",
+    "description": "imballaggi in plastica",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150103",
+    "description": "imballaggi in legno",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150104",
+    "description": "imballaggi metallici",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150105",
+    "description": "imballaggi in materiali compositi",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150106",
+    "description": "imballaggi in materiali misti",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150107",
+    "description": "imballaggi in vetro",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150109",
+    "description": "imballaggi in materia tessile",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150110*",
+    "description": "imballaggi contenenti residui di sostanze pericolose o contaminati da tali sostanze",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150111*",
+    "description": "imballaggi metallici contenenti matrici solide porose pericolose (ad esempio",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150202*",
+    "description": "assorbenti, materiali filtranti (inclusi filtri dell'olio non specificati altrimenti), stracci",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "150203",
+    "description": "assorbenti, materiali filtranti, stracci e indumenti protettivi, diversi da quelli di cui",
+    "category": "15 - Imballaggi, assorbenti, stracci e materiali filtranti"
+  },
+  {
+    "cerCode": "160103",
+    "description": "pneumatici fuori uso",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160104*",
+    "description": "veicoli fuori uso",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160106",
+    "description": "veicoli fuori uso, non contenenti liquidi né altre componenti pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160107*",
+    "description": "filtri dell'olio",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160108*",
+    "description": "componenti contenenti mercurio",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160109*",
+    "description": "componenti contenenti PCB",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160110*",
+    "description": "componenti esplosivi (ad esempio \"air bag\")",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160111*",
+    "description": "pastiglie per freni, contenenti amianto",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160112",
+    "description": "pastiglie per freni, diverse da quelle di cui alla voce 16 01 11",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160113*",
+    "description": "liquidi per freni",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160114*",
+    "description": "liquidi antigelo contenenti sostanze pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160115",
+    "description": "liquidi antigelo diversi da quelli di cui alla voce 16 01 14",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160116",
+    "description": "serbatoi per gas liquido",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160117",
+    "description": "metalli ferrosi",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160118",
+    "description": "metalli non ferrosi",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160119",
+    "description": "plastica",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160120",
+    "description": "vetro",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160121*",
+    "description": "componenti pericolosi diversi da quelli di cui alle voci da 16 01 07 a 16 01 11, 16",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160122",
+    "description": "componenti non specificati altrimenti",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160209*",
+    "description": "trasformatori e condensatori contenenti PCB",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160210*",
+    "description": "apparecchiature fuori uso contenenti PCB o da essi contaminate, diverse da quelle",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160211*",
+    "description": "apparecchiature fuori uso, contenenti clorofluorocarburi, HCFC, HFC",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160212*",
+    "description": "apparecchiature fuori uso, contenenti amianto in fibre libere",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160213*",
+    "description": "apparecchiature fuori uso, contenenti componenti pericolosi (2) diversi da quelli di",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160214",
+    "description": "apparecchiature fuori uso, diverse da quelle di cui alle voci da 16 02 09 a 16 02 13",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160215*",
+    "description": "componenti pericolosi rimossi da apparecchiature fuori uso",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160216",
+    "description": "componenti rimossi da apparecchiature fuori uso, diversi da quelli di cui alla voce",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160303*",
+    "description": "rifiuti inorganici, contenenti sostanze pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160304",
+    "description": "rifiuti inorganici, diversi da quelli di cui alla voce 16 03 03",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160305*",
+    "description": "rifiuti organici, contenenti sostanze pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160306",
+    "description": "rifiuti organici, diversi da quelli di cui alla voce 16 03 05",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160401*",
+    "description": "munizioni di scarto",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160402*",
+    "description": "fuochi artificiali di scarto",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160403*",
+    "description": "altri esplosivi di scarto",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160504*",
+    "description": "gas in contenitori a pressione (compresi gli halon), contenenti sostanze pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160505",
+    "description": "gas in contenitori a pressione, diversi da quelli di cui alla voce 16 05 04",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160506*",
+    "description": "sostanze chimiche di laboratorio contenenti o costituite da sostanze pericolose,",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160507*",
+    "description": "sostanze chimiche inorganiche di scarto contenenti o costituite da sostanze",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160508*",
+    "description": "sostanze chimiche organiche di scarto contenenti o costituite da sostanze",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160509",
+    "description": "sostanze chimiche di scarto diverse da quelle di cui alle voci 16 05 06, 16 05 07 e",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160601*",
+    "description": "batterie al piombo",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160602*",
+    "description": "batterie al nichel-cadmio",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160603*",
+    "description": "batterie contenenti mercurio",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160604",
+    "description": "batterie alcaline (tranne 16 06 03)",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160605",
+    "description": "altre batterie ed accumulatori",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160606*",
+    "description": "elettroliti di batterie ed accumulatori, oggetto di raccolta differenziata",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160708*",
+    "description": "rifiuti contenenti olio",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160709*",
+    "description": "rifiuti contenenti altre sostanze pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160799",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160801",
+    "description": "catalizzatori esauriti contenenti oro, argento, renio, rodio, palladio, iridio o platino",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160802*",
+    "description": "catalizzatori esauriti contenenti metalli di transizione (3) pericolosi o composti di",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160803",
+    "description": "catalizzatori esauriti contenenti metalli di transizione o composti di metalli di",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160804",
+    "description": "catalizzatori esauriti da cracking catalitico fluido (tranne 16 08 07)",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160805*",
+    "description": "catalizzatori esauriti contenenti acido fosforico",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160806*",
+    "description": "liquidi esauriti usati come catalizzatori",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160807*",
+    "description": "catalizzatori esauriti contaminati da sostanze pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160901*",
+    "description": "permanganati, ad esempio permanganato di potassio",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160902*",
+    "description": "cromati, ad esempio cromato di potassio, dicromato di potassio o di sodio",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160903*",
+    "description": "perossidi, ad esempio perossido d'idrogeno",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "160904*",
+    "description": "sostanze ossidanti non specificate altrimenti",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161001*",
+    "description": "soluzioni acquose di scarto, contenenti sostanze pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161002",
+    "description": "soluzioni acquose di scarto, diverse da quelle di cui alla voce 16 10 01",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161003*",
+    "description": "concentrati acquosi, contenenti sostanze pericolose",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161004",
+    "description": "concentrati acquosi, diversi da quelli di cui alla voce 16 10 03",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161101*",
+    "description": "rivestimenti e materiali refrattari a base di carbone provenienti dalle lavorazioni",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161102",
+    "description": "rivestimenti e materiali refrattari a base di carbone provenienti dalle lavorazioni",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161103*",
+    "description": "altri rivestimenti e materiali refrattari provenienti dalle lavorazioni metallurgiche,",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161104",
+    "description": "altri rivestimenti e materiali refrattari provenienti dalle lavorazioni metallurgiche,",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161105*",
+    "description": "rivestimenti e materiali refrattari provenienti da lavorazioni non metallurgiche,",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "161106",
+    "description": "rivestimenti e materiali refrattari provenienti da lavorazioni non metallurgiche,",
+    "category": "16 - Rifiuti non specificati altrove nel catalogo"
+  },
+  {
+    "cerCode": "170101",
+    "description": "cemento",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170102",
+    "description": "mattoni",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170103",
+    "description": "mattonelle e ceramiche",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170106*",
+    "description": "miscugli o scorie di cemento, mattoni, mattonelle e ceramiche, contenenti",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170107",
+    "description": "miscugli o scorie di cemento, mattoni, mattonelle e ceramiche, diverse da quelle di",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170201",
+    "description": "legno",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170202",
+    "description": "vetro",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170203",
+    "description": "plastica",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170204*",
+    "description": "vetro, plastica e legno contenenti sostanze pericolose o da esse contaminati",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170301*",
+    "description": "miscele bituminose contenenti catrame di carbone",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170302",
+    "description": "miscele bituminose diverse da quelle di cui alla voce 17 03 01",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170303*",
+    "description": "catrame di carbone e prodotti contenenti catrame",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170401",
+    "description": "rame, bronzo, ottone",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170402",
+    "description": "alluminio",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170403",
+    "description": "piombo",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170404",
+    "description": "zinco",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170405",
+    "description": "ferro e acciaio",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170406",
+    "description": "stagno",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170407",
+    "description": "metalli misti",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170409*",
+    "description": "rifiuti metallici contaminati da sostanze pericolose",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170410*",
+    "description": "cavi, impregnati di olio, di catrame di carbone o di altre sostanze pericolose",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170411",
+    "description": "cavi, diversi da quelli di cui alla voce 17 04 10",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170503*",
+    "description": "terra e rocce, contenenti sostanze pericolose",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170504",
+    "description": "terra e rocce, diverse da quelle di cui alla voce 17 05 03",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170505*",
+    "description": "fanghi di dragaggio, contenente sostanze pericolose",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170506",
+    "description": "fanghi di dragaggio, diversa da quella di cui alla voce 17 05 05",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170507*",
+    "description": "pietrisco per massicciate ferroviarie, contenente sostanze pericolose",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170508",
+    "description": "pietrisco per massicciate ferroviarie, diverso da quello di cui alla voce 17 05 07",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170601*",
+    "description": "materiali isolanti contenenti amianto",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170603*",
+    "description": "altri materiali isolanti contenenti o costituiti da sostanze pericolose",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170604",
+    "description": "materiali isolanti diversi da quelli di cui alle voci 17 06 01 e 17 06 03",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170605*",
+    "description": "materiali da costruzione contenenti amianto",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170801*",
+    "description": "materiali da costruzione a base di gesso contaminati da sostanze pericolose",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170802",
+    "description": "materiali da costruzione a base di gesso diversi da quelli di cui alla voce 17 08 01",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170901*",
+    "description": "rifiuti dell'attività di costruzione e demolizione, contenenti mercurio",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170902*",
+    "description": "rifiuti dell'attività di costruzione e demolizione, contenenti PCB (ad esempio",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170903*",
+    "description": "altri rifiuti dell'attività di costruzione e demolizione (compresi rifiuti misti)",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "170904",
+    "description": "rifiuti misti dell'attività di costruzione e demolizione, diversi da quelli di cui alle voci",
+    "category": "17 - Rifiuti da operazioni di costruzione e demolizione"
+  },
+  {
+    "cerCode": "180101",
+    "description": "oggetti da taglio (eccetto 18 01 03)",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180102",
+    "description": "parti anatomiche ed organi incluse le sacche per il plasma e le riserve di sangue",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180103*",
+    "description": "rifiuti che devono essere raccolti e smaltiti applicando precauzioni particolari per",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180104",
+    "description": "rifiuti che non devono essere raccolti e smaltiti applicando precauzioni particolari",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180106*",
+    "description": "sostanze chimiche pericolose o contenenti sostanze pericolose",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180107",
+    "description": "sostanze chimiche diverse da quelle di cui alla voce 18 01 06",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180108*",
+    "description": "medicinali citotossici e citostatici",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180109",
+    "description": "medicinali diversi da quelli di cui alla voce 18 01 08",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180110*",
+    "description": "rifiuti di amalgama prodotti da interventi odontoiatrici",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180201",
+    "description": "oggetti da taglio (eccetto 18 02 02)",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180202*",
+    "description": "rifiuti che devono essere raccolti e smaltiti applicando precauzioni particolari per",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180203",
+    "description": "rifiuti che non devono essere raccolti e smaltiti applicando precauzioni particolari",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180205*",
+    "description": "sostanze chimiche pericolose o contenenti sostanze pericolose",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180206",
+    "description": "sostanze chimiche diverse da quelle di cui alla voce 18 02 05",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180207*",
+    "description": "medicinali citotossici e citostatici",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "180208",
+    "description": "medicinali diversi da quelli di cui alla voce 18 02 07",
+    "category": "18 - Rifiuti sanitari e veterinari o da attività di ricerca"
+  },
+  {
+    "cerCode": "190102",
+    "description": "materiali ferrosi estratti da ceneri pesanti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190105*",
+    "description": "residui di filtrazione prodotti dal trattamento dei fumi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190106*",
+    "description": "rifiuti liquidi acquosi prodotti dal trattamento dei fumi e di altri rifiuti liquidi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190107*",
+    "description": "rifiuti solidi prodotti dal trattamento dei fumi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190110*",
+    "description": "carbone attivo esaurito, impiegato per il trattamento dei fumi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190111*",
+    "description": "ceneri pesanti e scorie, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190112",
+    "description": "ceneri pesanti e scorie, diverse da quelle di cui alla voce 19 01 11",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190113*",
+    "description": "ceneri leggere, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190114",
+    "description": "ceneri leggere, diverse da quelle di cui alla voce 19 01 13",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190115*",
+    "description": "ceneri di caldaia, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190116",
+    "description": "polveri di caldaia, diverse da quelle di cui alla voce 19 01 15",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190117*",
+    "description": "rifiuti della pirolisi, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190118",
+    "description": "rifiuti della pirolisi, diversi da quelli di cui alla voce 19 01 17",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190119",
+    "description": "sabbie dei reattori a letto fluidizzato",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190203",
+    "description": "miscugli di rifiuti composti esclusivamente da rifiuti non pericolosi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190204*",
+    "description": "miscugli di rifiuti contenenti almeno un rifiuto pericoloso",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190205*",
+    "description": "fanghi prodotti da trattamenti chimico-fisici, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190206",
+    "description": "fanghi prodotti da trattamenti chimico-fisici, diversi da quelli di cui alla voce 19 02",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190207*",
+    "description": "oli e concentrati prodotti da processi di separazione",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190208*",
+    "description": "rifiuti combustibili liquidi, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190209*",
+    "description": "rifiuti combustibili solidi, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190210",
+    "description": "rifiuti combustibili, diversi da quelli di cui alle voci 19 02 08 e 19 02 09",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190211*",
+    "description": "altri rifiuti contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190299",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190304*",
+    "description": "rifiuti contrassegnati come pericolosi, parzialmente (5) stabilizzati",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190305",
+    "description": "rifiuti stabilizzati diversi da quelli di cui alla voce 19 03 04",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190306*",
+    "description": "rifiuti contrassegnati come pericolosi, solidificati",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190307",
+    "description": "rifiuti solidificati diversi da quelli di cui alla voce 19 03 06",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190401",
+    "description": "rifiuti vetrificati",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190402*",
+    "description": "ceneri leggere ed altri rifiuti dal trattamento dei fumi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190403*",
+    "description": "fase solida non vetrificata",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190404",
+    "description": "rifiuti liquidi acquosi prodotti dalla tempra di rifiuti vetrificati",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190501",
+    "description": "parte di rifiuti urbani e simili non compostata",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190502",
+    "description": "parte di rifiuti animali e vegetali non compostata",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190503",
+    "description": "compost fuori specifica",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190599",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190603",
+    "description": "liquidi prodotti dal trattamento anaerobico di rifiuti urbani",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190604",
+    "description": "digestato prodotto dal trattamento anaerobico di rifiuti urbani",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190605",
+    "description": "liquidi prodotti dal trattamento anaerobico di rifiuti di origine animale o vegetale",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190606",
+    "description": "digestato prodotto dal trattamento anaerobico di rifiuti di origine animale o",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190699",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190702*",
+    "description": "percolato di discarica, contenente sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190703",
+    "description": "percolato di discarica, diverso da quello di cui alla voce 19 07 02",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190801",
+    "description": "vaglio",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190802",
+    "description": "rifiuti dell'eliminazione della sabbia",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190805",
+    "description": "fanghi prodotti dal trattamento delle acque reflue urbane",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190806*",
+    "description": "resine a scambio ionico saturate o esaurite",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190807*",
+    "description": "soluzioni e fanghi di rigenerazione delle resine a scambio ionico",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190808*",
+    "description": "rifiuti prodotti da sistemi a membrana, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190809",
+    "description": "miscele di oli e grassi prodotte dalla separazione olio/acqua, contenenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190810*",
+    "description": "miscele di oli e grassi prodotte dalla separazione olio/acqua, diverse da quelle di",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190811*",
+    "description": "fanghi prodotti dal trattamento biologico delle acque reflue industriali, contenenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190812",
+    "description": "fanghi prodotti dal trattamento biologico delle acque reflue industriali, diversi da",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190813*",
+    "description": "fanghi contenenti sostanze pericolose prodotti da altri trattamenti delle acque",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190814",
+    "description": "fanghi prodotti da altri trattamenti delle acque reflue industriali, diversi da quelli di",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190899",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190901",
+    "description": "rifiuti solidi prodotti dai processi di filtrazione e vaglio primari",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190902",
+    "description": "fanghi prodotti dai processi di chiarificazione dell'acqua",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190903",
+    "description": "fanghi prodotti dai processi di decarbonatazione",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190904",
+    "description": "carbone attivo esaurito",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190905",
+    "description": "resine a scambio ionico saturate o esaurite",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190906",
+    "description": "soluzioni e fanghi di rigenerazione delle resine a scambio ionico",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "190999",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191001",
+    "description": "rifiuti di ferro e acciaio",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191002",
+    "description": "rifiuti di metalli non ferrosi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191003*",
+    "description": "fluff - frazione leggera e polveri, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191004",
+    "description": "fluff - frazione leggera e polveri, diversi da quelli di cui alla voce 19 10 03",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191005*",
+    "description": "altre frazioni, contenenti sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191006",
+    "description": "altre frazioni, diverse da quelle di cui alla voce 19 10 05",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191101*",
+    "description": "filtri di argilla esauriti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191102*",
+    "description": "catrami acidi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191103*",
+    "description": "rifiuti liquidi acquosi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191104*",
+    "description": "rifiuti prodotti dalla purificazione di carburanti tramite basi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191105*",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, contenenti sostanze",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191106",
+    "description": "fanghi prodotti dal trattamento in loco degli effluenti, diversi da quelli di cui alla",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191107*",
+    "description": "rifiuti prodotti dalla purificazione dei fumi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191199",
+    "description": "rifiuti non specificati altrimenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191201",
+    "description": "carta e cartone",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191202",
+    "description": "metalli ferrosi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191203",
+    "description": "metalli non ferrosi",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191204",
+    "description": "plastica e gomma",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191205",
+    "description": "vetro",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191206*",
+    "description": "legno contenente sostanze pericolose",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191207",
+    "description": "legno diverso da quello di cui alla voce 19 12 06",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191208",
+    "description": "prodotti tessili",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191209",
+    "description": "minerali (ad esempio sabbia, rocce)",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191210",
+    "description": "rifiuti combustibili (CDR: combustibile derivato da rifiuti)",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191211*",
+    "description": "altri rifiuti (compresi materiali misti) prodotti dal trattamento meccanico dei rifiuti,",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191212",
+    "description": "altri rifiuti (compresi materiali misti) prodotti dal trattamento meccanico dei rifiuti,",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191301*",
+    "description": "rifiuti solidi prodotti dalle operazioni di bonifica dei terreni, contenenti sostanze",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191302",
+    "description": "rifiuti solidi prodotti dalle operazioni di bonifica dei terreni, diversi da quelli di cui",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191303*",
+    "description": "fanghi prodotti dalle operazioni di bonifica dei terreni, contenenti sostanze",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191304",
+    "description": "fanghi prodotti dalle operazioni di bonifica dei terreni, diversi da quelli di cui alla",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191305*",
+    "description": "fanghi prodotti dalle operazioni di risanamento delle acque di falda, contenenti",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191306",
+    "description": "fanghi prodotti dalle operazioni di risanamento delle acque di falda, diversi da",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191307*",
+    "description": "rifiuti liquidi acquosi e concentrati acquosi prodotti dalle operazioni di risanamento",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "191308",
+    "description": "rifiuti liquidi acquosi e concentrati acquosi prodotti dalle operazioni di risanamento",
+    "category": "19 - Rifiuti da impianti di trattamento rifiuti e acque reflue"
+  },
+  {
+    "cerCode": "200101",
+    "description": "carta e cartone",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200102",
+    "description": "vetro",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200108",
+    "description": "rifiuti biodegradabili di cucine e mense",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200110",
+    "description": "abbigliamento",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200111",
+    "description": "prodotti tessili",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200113*",
+    "description": "solventi",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200114*",
+    "description": "acidi",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200115*",
+    "description": "sostanze alcaline",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200117*",
+    "description": "prodotti fotochimici",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200119*",
+    "description": "pesticidi",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200121*",
+    "description": "tubi fluorescenti ed altri rifiuti contenenti mercurio",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200123*",
+    "description": "apparecchiature fuori uso contenenti clorofluorocarburi",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200125",
+    "description": "oli e grassi commestibili",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200126*",
+    "description": "oli e grassi diversi da quelli di cui alla voce 20 01 25",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200127*",
+    "description": "vernici, inchiostri, adesivi e resine contenenti sostanze pericolose",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200128",
+    "description": "vernici, inchiostri, adesivi e resine diversi da quelli di cui alla voce 20 01 27",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200129*",
+    "description": "detergenti contenenti sostanze pericolose",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200130",
+    "description": "detergenti diversi da quelli di cui alla voce 20 01 29",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200131*",
+    "description": "medicinali citotossici e citostatici",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200132",
+    "description": "medicinali diversi da quelli di cui alla voce 20 01 31",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200133*",
+    "description": "batterie e accumulatori di cui alle voci 16 06 01, 16 06 02 e 16 06 03 nonché",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200134",
+    "description": "batterie e accumulatori diversi da quelli di cui alla voce 20 01 33",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200135*",
+    "description": "apparecchiature elettriche ed elettroniche fuori uso, diverse da quelle di cui alla",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200136",
+    "description": "apparecchiature elettriche ed elettroniche fuori uso, diverse da quelle di cui alle",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200137*",
+    "description": "legno, contenente sostanze pericolose",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200138",
+    "description": "legno, diverso da quello di cui alla voce 20 01 37",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200139",
+    "description": "plastica",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200140",
+    "description": "metallo",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200141",
+    "description": "rifiuti prodotti dalla pulizia di camini e ciminiere",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200199",
+    "description": "altre frazioni non specificate altrimenti",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200201",
+    "description": "rifiuti biodegradabili",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200202",
+    "description": "terra e roccia",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200203",
+    "description": "altri rifiuti non biodegradabili",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200301",
+    "description": "rifiuti urbani non differenziati",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200302",
+    "description": "rifiuti dei mercati",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200303",
+    "description": "residui della pulizia stradale",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200304",
+    "description": "fanghi delle fosse settiche",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200306",
+    "description": "rifiuti della pulizia delle fognature",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200307",
+    "description": "rifiuti ingombranti",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  },
+  {
+    "cerCode": "200399",
+    "description": "rifiuti urbani non specificati altrimenti",
+    "category": "20 - Rifiuti urbani e domestici della raccolta differenziata"
+  }
+]
