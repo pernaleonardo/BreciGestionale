@@ -1,0 +1,242 @@
+[
+  {
+    "id": "table.schedule",
+    "label": "Create table \"schedule\"",
+    "summary": "Creates table \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"schedule\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"schedule\"",
+        "sql": "CREATE TABLE \"public\".\"schedule\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"date\" text NOT NULL,\n  \"driverId\" int4 NOT NULL,\n  \"endDate\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"notes\" text,\n  \"startDate\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"vehicleId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"schedule\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.schedule.schedule_driverId_idx_8eed3317",
+    "label": "Create index \"schedule_driverId_idx_8eed3317\" on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "schedule_driverId_idx_8eed3317",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"schedule_driverId_idx_8eed3317\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule_driverId_idx_8eed3317\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"schedule_driverId_idx_8eed3317\"",
+        "sql": "CREATE INDEX \"schedule_driverId_idx_8eed3317\" ON \"public\".\"schedule\" (\"driverId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"schedule_driverId_idx_8eed3317\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule_driverId_idx_8eed3317\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.schedule.schedule_vehicleId_idx_e2df58fc",
+    "label": "Create index \"schedule_vehicleId_idx_e2df58fc\" on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "schedule_vehicleId_idx_e2df58fc",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"schedule_vehicleId_idx_e2df58fc\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule_vehicleId_idx_e2df58fc\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"schedule_vehicleId_idx_e2df58fc\"",
+        "sql": "CREATE INDEX \"schedule_vehicleId_idx_e2df58fc\" ON \"public\".\"schedule\" (\"vehicleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"schedule_vehicleId_idx_e2df58fc\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule_vehicleId_idx_e2df58fc\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.schedule.schedule_driverId_fkey",
+    "label": "Add foreign key \"schedule_driverId_fkey\" on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "schedule_driverId_fkey",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"schedule_driverId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "schedule_driverId_fkey",
+          "public",
+          "\"public\".\"schedule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"schedule_driverId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\"\nADD CONSTRAINT \"schedule_driverId_fkey\"\nFOREIGN KEY (\"driverId\")\nREFERENCES \"public\".\"driver\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"schedule_driverId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "schedule_driverId_fkey",
+          "public",
+          "\"public\".\"schedule\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.schedule.schedule_vehicleId_fkey",
+    "label": "Add foreign key \"schedule_vehicleId_fkey\" on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "schedule_vehicleId_fkey",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"schedule_vehicleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "schedule_vehicleId_fkey",
+          "public",
+          "\"public\".\"schedule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"schedule_vehicleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\"\nADD CONSTRAINT \"schedule_vehicleId_fkey\"\nFOREIGN KEY (\"vehicleId\")\nREFERENCES \"public\".\"vehicle\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"schedule_vehicleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "schedule_vehicleId_fkey",
+          "public",
+          "\"public\".\"schedule\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.schedule",
+    "label": "Enable row-level security on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"schedule\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "schedule"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"schedule\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"schedule\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "schedule"
+        ]
+      }
+    ]
+  }
+]

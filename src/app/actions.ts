@@ -199,6 +199,7 @@ export async function createTrip(data: any) {
 
 export async function deleteTrip(id: number) {
   try {
+    await db.orm.public.GPSLog.where({ tripId: id }).deleteAll();
     await db.orm.public.Trip.where({ id }).delete();
     return { success: true };
   } catch (e: any) {
@@ -427,5 +428,59 @@ export async function deleteTransportPrice(id: number) {
   } catch (e: any) {
     console.error('deleteTransportPrice error:', e);
     return { success: false, error: e.message || 'Errore nella rimozione del listino trasporto.' };
+  }
+}
+
+// ----------------- PIANIFICAZIONE (SCHEDULES) -----------------
+
+export async function getSchedulesData(date: string) {
+  try {
+    const schedules = await db.orm.public.Schedule
+      .where({ date })
+      .include('driver')
+      .include('vehicle')
+      .all();
+    return { success: true, schedules };
+  } catch (e: any) {
+    console.error('getSchedulesData error:', e);
+    return { success: false, error: e.message || 'Errore nel recupero della pianificazione.' };
+  }
+}
+
+export async function createSchedule(data: {
+  date: string;
+  startDate: string;
+  endDate: string;
+  driverId: number;
+  vehicleId: number;
+  notes?: string;
+}) {
+  try {
+    if (new Date(data.startDate) >= new Date(data.endDate)) {
+      return { success: false, error: 'La data/ora di inizio deve essere precedente alla data/ora di fine.' };
+    }
+
+    const newSchedule = await db.orm.public.Schedule.create({
+      date: data.date,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      driverId: Number(data.driverId),
+      vehicleId: Number(data.vehicleId),
+      notes: data.notes || '',
+    });
+    return { success: true, schedule: newSchedule };
+  } catch (e: any) {
+    console.error('createSchedule error:', e);
+    return { success: false, error: e.message || 'Errore nella creazione della pianificazione.' };
+  }
+}
+
+export async function deleteSchedule(id: number) {
+  try {
+    await db.orm.public.Schedule.where({ id }).delete();
+    return { success: true };
+  } catch (e: any) {
+    console.error('deleteSchedule error:', e);
+    return { success: false, error: e.message || 'Errore nella rimozione della pianificazione.' };
   }
 }

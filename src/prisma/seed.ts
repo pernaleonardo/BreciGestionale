@@ -14,6 +14,7 @@ async function main() {
   await db.orm.public.Destination.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.DisposalPrice.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.TransportPrice.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.Schedule.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.Client.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.Driver.where((f) => f.id.gt(0)).deleteAll();
   await db.orm.public.Vehicle.where((f) => f.id.gt(0)).deleteAll();

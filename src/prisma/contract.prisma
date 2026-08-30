@@ -46,6 +46,7 @@ model Driver {
   licenseNumber String?
   status        String   @default("AVAILABLE") // AVAILABLE, BUSY, INACTIVE
   trips         Trip[]
+  schedules     Schedule[]
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
   @@rls
@@ -59,6 +60,7 @@ model Vehicle {
   status          String           @default("ACTIVE") // ACTIVE, MAINTENANCE, INACTIVE
   trips           Trip[]
   transportPrices TransportPrice[]
+  schedules       Schedule[]
   createdAt       TimestamptzString @default(now())
   updatedAt       temporal.updatedAtString()
   @@rls
@@ -147,6 +149,21 @@ model TransportPrice {
   vehicleId Int
   vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
   price     Float    @default(0.0) // Flat rate for transport (€)
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+  @@rls
+}
+
+model Schedule {
+  id        Int      @id @default(autoincrement())
+  date      String   // Data pianificata (formato YYYY-MM-DD)
+  startDate String   // Inizio viaggio (formato YYYY-MM-DDTHH:MM)
+  endDate   String   // Fine viaggio (formato YYYY-MM-DDTHH:MM)
+  driverId  Int
+  driver    Driver   @relation(fields: [driverId], references: [id])
+  vehicleId Int
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  notes     String?
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
   @@rls

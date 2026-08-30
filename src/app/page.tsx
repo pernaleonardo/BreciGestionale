@@ -25,6 +25,9 @@ import {
   deleteVehicle,
   createWasteType,
   deleteWasteType,
+  getSchedulesData,
+  createSchedule,
+  deleteSchedule,
 } from './actions';
 
 // Helper per formattare i numeri come valuta (€)
@@ -45,7 +48,7 @@ const formatWeight = (value: number) => {
 
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'registro' | 'anagrafiche' | 'utenti'>('registro');
+  const [activeTab, setActiveTab] = useState<'registro' | 'pianificazione' | 'anagrafiche' | 'utenti'>('registro');
   const [anagraficaSubTab, setAnagraficaSubTab] = useState<'clienti' | 'destinatari' | 'autisti' | 'mezzi' | 'cer' | 'listinoSmaltimento' | 'listinoTrasporti'>('clienti');
   
   // Dati dal database
@@ -58,6 +61,24 @@ export default function Home() {
   const [disposalPrices, setDisposalPrices] = useState<any[]>([]);
   const [transportPrices, setTransportPrices] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+
+  // Stati per la pianificazione
+  const [schedules, setSchedules] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  });
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [newScheduleData, setNewScheduleData] = useState({
+    driverId: '',
+    vehicleId: '',
+    startDate: '',
+    endDate: '',
+    notes: '',
+  });
 
   // Caricamento stati
   const [loading, setLoading] = useState(true);
@@ -160,12 +181,33 @@ export default function Home() {
         const userList = await getUsers();
         setUsers(userList || []);
       }
+
+      await refreshSchedules(selectedDate);
     } catch (e) {
       console.error('Errore ricaricamento dati:', e);
     } finally {
       setLoading(false);
     }
   }
+
+  async function refreshSchedules(date = selectedDate) {
+    try {
+      const res = await getSchedulesData(date);
+      if (res.success) {
+        setSchedules(res.schedules || []);
+      } else {
+        console.error('Errore caricamento pianificazioni:', res.error);
+      }
+    } catch (e) {
+      console.error('refreshSchedules error:', e);
+    }
+  }
+
+  useEffect(() => {
+    if (currentUser && activeTab === 'pianificazione') {
+      refreshSchedules(selectedDate);
+    }
+  }, [selectedDate, activeTab, currentUser]);
 
   // Azione di Login
   const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -253,6 +295,8 @@ export default function Home() {
     0
   );
   const totalTaxable = totalTransport + totalDisposal + totalAccessories;
+  const totalIva = totalTaxable * 0.22;
+  const totalIvato = totalTaxable * 1.22;
 
   // ----------------- AZIONI MUTATIVE (CRUD) -----------------
 
@@ -279,6 +323,46 @@ export default function Home() {
       const res = await deleteTrip(id);
       if (res.success) await refreshData();
       else alert(res.error);
+    }
+  };
+
+  const handleCreateSchedule = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newScheduleData.driverId || !newScheduleData.vehicleId || !newScheduleData.startDate || !newScheduleData.endDate) {
+      alert('Tutti i campi sono obbligatori.');
+      return;
+    }
+    const res = await createSchedule({
+      date: selectedDate,
+      startDate: newScheduleData.startDate,
+      endDate: newScheduleData.endDate,
+      driverId: Number(newScheduleData.driverId),
+      vehicleId: Number(newScheduleData.vehicleId),
+      notes: newScheduleData.notes,
+    });
+    if (res.success) {
+      setIsScheduleModalOpen(false);
+      setNewScheduleData({
+        driverId: '',
+        vehicleId: '',
+        startDate: '',
+        endDate: '',
+        notes: '',
+      });
+      await refreshSchedules(selectedDate);
+    } else {
+      alert(res.error);
+    }
+  };
+
+  const handleDeleteSchedule = async (id: number) => {
+    if (confirm('Confermi di voler rimuovere questo viaggio pianificato?')) {
+      const res = await deleteSchedule(id);
+      if (res.success) {
+        await refreshSchedules(selectedDate);
+      } else {
+        alert(res.error);
+      }
     }
   };
 
@@ -668,6 +752,13 @@ export default function Home() {
                   <span>Registro Giornaliero</span>
                 </button>
                 <button
+                  onClick={() => { setActiveTab('pianificazione'); setIsMenuOpen(false); }}
+                  className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'pianificazione' ? 'bg-blue-600 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
+                >
+                  <span>📅</span>
+                  <span>Pianificazione Turni</span>
+                </button>
+                <button
                   onClick={() => { setActiveTab('anagrafiche'); setIsMenuOpen(false); }}
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'anagrafiche' ? 'bg-blue-600 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
                 >
@@ -761,26 +852,34 @@ export default function Home() {
                 </div>
 
                 {/* KPI Cards (based on filters) */}
-                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4 mb-6">
                   <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm">
                     <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Viaggi Filtrati</p>
                     <p className="text-xl font-bold mt-2 text-white">{totalTrips}</p>
                   </div>
                   <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm">
-                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Peso Gestito (t)</p>
+                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Peso (t)</p>
                     <p className="text-xl font-bold mt-2 text-white">{formatWeight(totalWeight)} t</p>
                   </div>
                   <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm">
-                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Totale Trasporti</p>
+                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Trasporti</p>
                     <p className="text-xl font-bold mt-2 text-blue-400">{formatCurrency(totalTransport)}</p>
                   </div>
                   <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm">
-                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Totale Smaltimenti</p>
+                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Smaltimenti</p>
                     <p className="text-xl font-bold mt-2 text-amber-400">{formatCurrency(totalDisposal)}</p>
                   </div>
                   <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm">
-                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Imponibile Totale</p>
-                    <p className="text-xl font-bold mt-2 text-emerald-400">{formatCurrency(totalTaxable)}</p>
+                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Imponibile</p>
+                    <p className="text-xl font-bold mt-2 text-zinc-300">{formatCurrency(totalTaxable)}</p>
+                  </div>
+                  <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm">
+                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">IVA (22%)</p>
+                    <p className="text-xl font-bold mt-2 text-indigo-400">{formatCurrency(totalIva)}</p>
+                  </div>
+                  <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm text-emerald-400 border-emerald-950 bg-emerald-950/5">
+                    <p className="text-xs font-bold uppercase tracking-wider">Tot. Ivato</p>
+                    <p className="text-xl font-extrabold mt-2">{formatCurrency(totalIvato)}</p>
                   </div>
                 </section>
 
@@ -801,14 +900,16 @@ export default function Home() {
                           <th className="p-3 text-right">Trasporto</th>
                           <th className="p-3 text-right">Smaltimento</th>
                           <th className="p-3 text-right">Accessori</th>
-                          <th className="p-3 text-right font-bold">Imponibile</th>
+                          <th className="p-3 text-right font-bold text-zinc-350">Imponibile</th>
+                          <th className="p-3 text-right font-bold text-indigo-400">IVA (22%)</th>
+                          <th className="p-3 text-right font-bold text-emerald-400">Totale Ivato</th>
                           <th className="p-3 text-center">Azioni</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-zinc-800 text-sm">
                         {filteredTrips.length === 0 ? (
                           <tr>
-                            <td colSpan={13} className="p-8 text-center text-zinc-500">Nessun viaggio trovato con i filtri selezionati.</td>
+                            <td colSpan={15} className="p-8 text-center text-zinc-500">Nessun viaggio trovato con i filtri selezionati.</td>
                           </tr>
                         ) : (
                           filteredTrips.map((trip) => {
@@ -821,6 +922,8 @@ export default function Home() {
                               (trip.servRagnoPrice || 0) +
                               (trip.sostaPrice || 0);
                             const rowTaxable = rowTransport + rowDisposal + rowAccessories;
+                            const rowIva = rowTaxable * 0.22;
+                            const rowTotal = rowTaxable * 1.22;
 
                             return (
                               <tr key={trip.id} className="hover:bg-zinc-800/40 transition-colors">
@@ -855,8 +958,14 @@ export default function Home() {
                                 <td className="p-3 text-right text-zinc-500">
                                   {rowAccessories > 0 ? formatCurrency(rowAccessories) : "-"}
                                 </td>
-                                <td className="p-3 text-right font-bold text-emerald-400">
+                                <td className="p-3 text-right font-bold text-zinc-300">
                                   {formatCurrency(rowTaxable)}
+                                </td>
+                                <td className="p-3 text-right text-indigo-400">
+                                  {formatCurrency(rowIva)}
+                                </td>
+                                <td className="p-3 text-right font-bold text-emerald-400">
+                                  {formatCurrency(rowTotal)}
                                 </td>
                                 <td className="p-3 text-center">
                                   <button
@@ -882,7 +991,9 @@ export default function Home() {
                           <td className="p-3 text-right text-blue-400">{formatCurrency(totalTransport)}</td>
                           <td className="p-3 text-right text-amber-400">{formatCurrency(totalDisposal)}</td>
                           <td className="p-3 text-right text-zinc-400">{formatCurrency(totalAccessories)}</td>
-                          <td className="p-3 text-right text-emerald-400">{formatCurrency(totalTaxable)}</td>
+                          <td className="p-3 text-right text-zinc-350">{formatCurrency(totalTaxable)}</td>
+                          <td className="p-3 text-right text-indigo-400">{formatCurrency(totalIva)}</td>
+                          <td className="p-3 text-right text-emerald-400">{formatCurrency(totalIvato)}</td>
                           <td></td>
                         </tr>
                       </tfoot>
@@ -891,6 +1002,163 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            {/* TAB: PIANIFICAZIONE */}
+            {activeTab === 'pianificazione' && (() => {
+              // Rilevamento conflitti in tempo reale per autisti e veicoli
+              const driverCounts = schedules.reduce((acc: { [key: number]: number }, s) => {
+                if (s.driverId) acc[s.driverId] = (acc[s.driverId] || 0) + 1;
+                return acc;
+              }, {});
+
+              const vehicleCounts = schedules.reduce((acc: { [key: number]: number }, s) => {
+                if (s.vehicleId) acc[s.vehicleId] = (acc[s.vehicleId] || 0) + 1;
+                return acc;
+              }, {});
+
+              // Helper per formattare data e ora locale in modo leggibile
+              const formatDateTime = (dateTimeStr: string) => {
+                if (!dateTimeStr) return '-';
+                try {
+                  const d = new Date(dateTimeStr);
+                  return d.toLocaleString('it-IT', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+                } catch (e) {
+                  return dateTimeStr;
+                }
+              };
+
+              return (
+                <div>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">Pianificazione Giornaliera Turni & Viaggi</h2>
+                      <p className="text-sm text-zinc-400">Assegna un autista e un camion per una singola giornata alla volta.</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        // Prefilla le date con il giorno attualmente selezionato nel filtro
+                        setNewScheduleData({
+                          driverId: '',
+                          vehicleId: '',
+                          startDate: `${selectedDate}T08:00`,
+                          endDate: `${selectedDate}T17:00`,
+                          notes: '',
+                        });
+                        setIsScheduleModalOpen(true);
+                      }}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors cursor-pointer self-start md:self-auto"
+                    >
+                      <span>+</span> Pianifica Nuovo Viaggio
+                    </button>
+                  </div>
+
+                  {/* Selettore Giorno */}
+                  <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl mb-6 flex flex-wrap gap-4 items-center justify-between">
+                    <div className="flex flex-col">
+                      <label className="text-xs text-zinc-400 font-semibold mb-1 uppercase tracking-wider">Seleziona Giorno da Pianificare</label>
+                      <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
+                      />
+                    </div>
+                    <div className="text-right text-sm text-zinc-400">
+                      Giorno Selezionato: <strong className="text-white">
+                        {(() => {
+                          try {
+                            const d = new Date(selectedDate);
+                            return d.toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                          } catch (e) {
+                            return selectedDate;
+                          }
+                        })()}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {/* Lista Pianificazioni */}
+                  <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden shadow-sm">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-zinc-800/50 text-xs font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800">
+                          <th className="p-3.5">Autista</th>
+                          <th className="p-3.5">Automezzo (Camion)</th>
+                          <th className="p-3.5">Inizio Viaggio</th>
+                          <th className="p-3.5">Fine Viaggio</th>
+                          <th className="p-3.5">Stato / Conflitti</th>
+                          <th className="p-3.5">Note</th>
+                          <th className="p-3.5 text-center">Azioni</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-zinc-800 text-sm">
+                        {schedules.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} className="p-10 text-center text-zinc-500">
+                              Nessun viaggio pianificato per questa data. Clicca su "Pianifica Nuovo Viaggio" per iniziare.
+                            </td>
+                          </tr>
+                        ) : (
+                          schedules.map((s) => {
+                            const hasDriverConflict = driverCounts[s.driverId] > 1;
+                            const hasVehicleConflict = vehicleCounts[s.vehicleId] > 1;
+                            return (
+                              <tr key={s.id} className="hover:bg-zinc-800/40 transition-colors">
+                                <td className="p-3.5 font-semibold text-white">
+                                  {s.driver?.name || 'Sconosciuto'}
+                                </td>
+                                <td className="p-3.5">
+                                  <span className="font-mono font-bold text-xs bg-blue-900/30 text-blue-400 px-2 py-1 rounded border border-blue-800">
+                                    {s.vehicle?.plateNumber || 'Mezzo rimosso'}
+                                  </span>
+                                  <span className="text-xs text-zinc-400 ml-2">({s.vehicle?.model})</span>
+                                </td>
+                                <td className="p-3.5 text-zinc-300">
+                                  {formatDateTime(s.startDate)}
+                                </td>
+                                <td className="p-3.5 text-zinc-300">
+                                  {formatDateTime(s.endDate)}
+                                </td>
+                                <td className="p-3.5">
+                                  <div className="flex flex-col gap-1">
+                                    {hasDriverConflict && (
+                                      <span className="inline-flex items-center text-xs font-semibold text-amber-400 bg-amber-950/30 px-2 py-0.5 rounded border border-amber-900/40">
+                                        ⚠️ Doppio impegno Autista
+                                      </span>
+                                    )}
+                                    {hasVehicleConflict && (
+                                      <span className="inline-flex items-center text-xs font-semibold text-red-400 bg-red-950/30 px-2 py-0.5 rounded border border-red-900/40">
+                                        ⚠️ Camion occupato
+                                      </span>
+                                    )}
+                                    {!hasDriverConflict && !hasVehicleConflict && (
+                                      <span className="inline-flex items-center text-xs font-semibold text-emerald-400 bg-emerald-950/20 px-2 py-0.5 rounded border border-emerald-900/30">
+                                        ✓ Pianificazione OK
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="p-3.5 text-zinc-400 truncate max-w-[200px]" title={s.notes || ''}>
+                                  {s.notes || '-'}
+                                </td>
+                                <td className="p-3.5 text-center">
+                                  <button
+                                    onClick={() => handleDeleteSchedule(s.id)}
+                                    className="px-2.5 py-1 text-xs font-bold bg-red-950/20 text-red-450 hover:bg-red-900/30 rounded border border-red-900/50 cursor-pointer transition-colors"
+                                  >
+                                    Elimina
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* TAB: ANAGRAFICHE */}
             {activeTab === 'anagrafiche' && (
@@ -1903,6 +2171,39 @@ export default function Home() {
                       </div>
                     </div>
 
+                    <div className="border-t border-zinc-800 pt-4 bg-zinc-850/50 p-4 rounded-xl border">
+                      <span className="text-sm font-semibold text-white block mb-2">Anteprima Totale Contabile (Calcolato)</span>
+                      {(() => {
+                        const tPrice = Number(newTripData.transportPrice || 0) + Number(newTripData.fuoriRomaPrice || 0);
+                        const dPrice = Number(newTripData.disposalPrice || 0);
+                        const accPrice =
+                          Number(newTripData.noleggioPrice || 0) +
+                          Number(newTripData.bigBagPrice || 0) +
+                          Number(newTripData.analisiPrice || 0) +
+                          Number(newTripData.servRagnoPrice || 0) +
+                          Number(newTripData.sostaPrice || 0);
+                        const previewTaxable = tPrice + dPrice + accPrice;
+                        const previewIva = previewTaxable * 0.22;
+                        const previewTotal = previewTaxable * 1.22;
+                        return (
+                          <div className="grid grid-cols-3 gap-4 text-center">
+                            <div className="bg-zinc-900/60 p-2.5 rounded border border-zinc-800">
+                              <span className="block text-xs text-zinc-400 font-medium">Imponibile Anteprima</span>
+                              <span className="text-sm font-bold text-zinc-200">{formatCurrency(previewTaxable)}</span>
+                            </div>
+                            <div className="bg-zinc-900/60 p-2.5 rounded border border-zinc-800">
+                              <span className="block text-xs text-zinc-400 font-medium">IVA (22%) Anteprima</span>
+                              <span className="text-sm font-bold text-indigo-400">{formatCurrency(previewIva)}</span>
+                            </div>
+                            <div className="bg-zinc-900/60 p-2.5 rounded border border-zinc-800 bg-emerald-950/20 border-emerald-900/50">
+                              <span className="block text-xs text-emerald-450 font-bold font-sans">Totale Ivato Anteprima</span>
+                              <span className="text-sm font-extrabold text-emerald-400">{formatCurrency(previewTotal)}</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
                     <div>
                       <label className="block text-xs font-bold text-zinc-400 uppercase font-sans">Annotazioni</label>
                       <textarea
@@ -2359,6 +2660,103 @@ export default function Home() {
                   className="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer"
                 >
                   Salva Utente
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* SCHEDULE MODAL */}
+      {isScheduleModalOpen && (
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
+              <h3 className="text-lg font-bold text-white font-sans">Pianifica Nuovo Viaggio</h3>
+              <button onClick={() => setIsScheduleModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateSchedule} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400 font-sans">Autista (Trasportatore)</label>
+                <select
+                  required
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                  value={newScheduleData.driverId}
+                  onChange={(e) => setNewScheduleData({ ...newScheduleData, driverId: e.target.value })}
+                >
+                  <option value="">Seleziona Autista...</option>
+                  {drivers.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name} ({d.phone})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400 font-sans">Automezzo (Camion)</label>
+                <select
+                  required
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                  value={newScheduleData.vehicleId}
+                  onChange={(e) => setNewScheduleData({ ...newScheduleData, vehicleId: e.target.value })}
+                >
+                  <option value="">Seleziona Veicolo...</option>
+                  {vehicles.map((v) => (
+                    <option key={v.id} value={v.id}>{v.plateNumber} - {v.model}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400 font-sans">Data e Ora Inizio Viaggio</label>
+                <input
+                  type="datetime-local"
+                  required
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                  value={newScheduleData.startDate}
+                  onChange={(e) => setNewScheduleData({ ...newScheduleData, startDate: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400 font-sans">Data e Ora Fine Viaggio</label>
+                <input
+                  type="datetime-local"
+                  required
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                  value={newScheduleData.endDate}
+                  onChange={(e) => setNewScheduleData({ ...newScheduleData, endDate: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400 font-sans">Note / Indicazioni cantiere</label>
+                <textarea
+                  rows={2}
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                  placeholder="Es. Consegna prevista per le ore 10:00 al cantiere Colosseo."
+                  value={newScheduleData.notes}
+                  onChange={(e) => setNewScheduleData({ ...newScheduleData, notes: e.target.value })}
+                />
+              </div>
+
+              <div className="flex gap-4 justify-end pt-4 border-t border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setIsScheduleModalOpen(false)}
+                  className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-xs font-semibold cursor-pointer"
+                >
+                  Annulla
+                </button>
+                <button
+                  type="submit"
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer"
+                >
+                  Salva Pianificazione
                 </button>
               </div>
             </form>

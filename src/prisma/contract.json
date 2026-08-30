@@ -24,6 +24,10 @@
       "model": "GPSLog",
       "namespace": "public"
     },
+    "schedule": {
+      "model": "Schedule",
+      "namespace": "public"
+    },
     "transportPrice": {
       "model": "TransportPrice",
       "namespace": "public"
@@ -450,6 +454,21 @@
               }
             },
             "relations": {
+              "schedules": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "driverId"
+                  ]
+                },
+                "to": {
+                  "model": "Schedule",
+                  "namespace": "public"
+                }
+              },
               "trips": {
                 "cardinality": "1:N",
                 "on": {
@@ -572,6 +591,138 @@
               },
               "namespaceId": "public",
               "table": "gPSLog"
+            }
+          },
+          "Schedule": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "date": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "driverId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "endDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "notes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "vehicleId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "driver": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "driverId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Driver",
+                  "namespace": "public"
+                }
+              },
+              "vehicle": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "vehicleId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Vehicle",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "date": {
+                  "column": "date"
+                },
+                "driverId": {
+                  "column": "driverId"
+                },
+                "endDate": {
+                  "column": "endDate"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "notes": {
+                  "column": "notes"
+                },
+                "startDate": {
+                  "column": "startDate"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "vehicleId": {
+                  "column": "vehicleId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "schedule"
             }
           },
           "TransportPrice": {
@@ -1127,6 +1278,21 @@
               }
             },
             "relations": {
+              "schedules": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "vehicleId"
+                  ]
+                },
+                "to": {
+                  "model": "Schedule",
+                  "namespace": "public"
+                }
+              },
               "transportPrices": {
                 "cardinality": "1:N",
                 "on": {
@@ -1321,6 +1487,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "gPSLog"
+            },
+            "schedule": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "schedule"
             },
             "transportPrice": {
               "kind": "rls",
@@ -1737,6 +1908,121 @@
                   ],
                   "name": "gPSLog_tripId_idx_75da6d97",
                   "prefix": "gPSLog_tripId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "schedule": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "date": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "driverId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "endDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "notes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "startDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "vehicleId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "driverId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "schedule"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "driver"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "vehicleId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "schedule"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "vehicle"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "driverId"
+                  ],
+                  "name": "schedule_driverId_idx_8eed3317",
+                  "prefix": "schedule_driverId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "vehicleId"
+                  ],
+                  "name": "schedule_vehicleId_idx_e2df58fc",
+                  "prefix": "schedule_vehicleId_idx",
                   "unique": false
                 }
               ],
@@ -2334,10 +2620,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "84dc69f56d65da05c89458680b6780499e030ec9de2ff94414bc569bedd6188a"
+    "storageHash": "0afb6b39d87df17dbc84a223238104be464009fd6df9e5f65944cff945107ae6"
   },
   "execution": {
-    "executionHash": "8a635120ef7e4a8735d62c54ad4e904186c58d8c9ce2a481de7b8821ff46a308",
+    "executionHash": "ba1d35e37e2fd1d5b34c2ddba1ca02e497c17dff3be4fa622902416d35c3fc41",
     "mutations": {
       "defaults": [
         {
@@ -2398,6 +2684,21 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "driver"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "schedule"
           }
         },
         {
