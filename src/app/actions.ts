@@ -118,39 +118,39 @@ export async function deleteUser(id: number) {
 export async function getTripsData() {
   try {
     const trips = await db.orm.public.Trip
-      .include('producer')
-      .include('recipient')
+      .include('destination', (dest) => dest.include('client'))
       .include('driver')
       .include('vehicle')
       .all();
     
-    const companies = await db.orm.public.Company.all();
+    const clients = await db.orm.public.Client.all();
+    const destinations = await db.orm.public.Destination.include('client').all();
     const drivers = await db.orm.public.Driver.all();
     const vehicles = await db.orm.public.Vehicle.all();
     const wasteTypes = await db.orm.public.WasteType.all();
 
     return {
       trips,
-      companies,
+      clients,
+      destinations,
       drivers,
       vehicles,
       wasteTypes
     };
   } catch (e) {
     console.error('getTripsData error:', e);
-    return { trips: [], companies: [], drivers: [], vehicles: [], wasteTypes: [] };
+    return { trips: [], clients: [], destinations: [], drivers: [], vehicles: [], wasteTypes: [] };
   }
 }
 
 export async function createTrip(data: any) {
   try {
     // Carichiamo le entità collegate per assicurarci che i dati siano coerenti
-    const producer = await db.orm.public.Company.where({ id: Number(data.producerId) }).first();
-    const recipient = await db.orm.public.Company.where({ id: Number(data.recipientId) }).first();
+    const destination = await db.orm.public.Destination.where({ id: Number(data.destinationId) }).first();
     const wasteType = await db.orm.public.WasteType.where({ id: Number(data.wasteTypeId) }).first();
 
-    if (!producer || !recipient || !wasteType) {
-      return { success: false, error: 'Produttore, Destinatario o Codice CER non trovato.' };
+    if (!destination || !wasteType) {
+      return { success: false, error: 'Destinazione o Codice CER non trovato.' };
     }
 
     const tripData = {
@@ -167,11 +167,10 @@ export async function createTrip(data: any) {
       analisiPrice: Number(data.analisiPrice || 0),
       servRagnoPrice: Number(data.servRagnoPrice || 0),
       sostaPrice: Number(data.sostaPrice || 0),
-      address: data.address || '',
+      address: destination.address,
       notes: data.notes || '',
       status: 'DELIVERED',
-      producerId: producer.id,
-      recipientId: recipient.id,
+      destinationId: destination.id,
       driverId: data.driverId ? Number(data.driverId) : null,
       vehicleId: data.vehicleId ? Number(data.vehicleId) : null,
       wasteTypeId: wasteType.id,
@@ -197,32 +196,61 @@ export async function deleteTrip(id: number) {
 
 // ----------------- ANAGRAFICHE -----------------
 
-// Company
-export async function createCompany(data: { name: string; address?: string; vatNumber?: string; role: string }) {
+// Client
+export async function createClient(data: { name: string; billingAddress?: string; vatNumber?: string; clientCode: string }) {
   try {
-    const newCompany = await db.orm.public.Company.create({
+    const newClient = await db.orm.public.Client.create({
       name: data.name,
-      address: data.address || '',
+      billingAddress: data.billingAddress || '',
       vatNumber: data.vatNumber || null,
-      role: data.role,
+      clientCode: data.clientCode,
     });
-    return { success: true, company: newCompany };
+    return { success: true, client: newClient };
   } catch (e: any) {
-    console.error('createCompany error:', e);
-    return { success: false, error: e.message || 'Errore nella creazione dell\'azienda.' };
+    console.error('createClient error:', e);
+    return { success: false, error: e.message || 'Errore nella creazione del cliente.' };
   }
 }
 
-export async function deleteCompany(id: number) {
+export async function deleteClient(id: number) {
   try {
-    // Rimuoviamo prima i viaggi collegati o avvisiamo (Prisma Next gestirà i vincoli di foreign key)
-    await db.orm.public.Trip.where({ producerId: id }).delete();
-    await db.orm.public.Trip.where({ recipientId: id }).delete();
-    await db.orm.public.Company.where({ id }).delete();
+    const destinations = await db.orm.public.Destination.where({ clientId: id }).all();
+    for (const dest of destinations) {
+      await db.orm.public.Trip.where({ destinationId: dest.id }).deleteAll();
+    }
+    await db.orm.public.Destination.where({ clientId: id }).deleteAll();
+    await db.orm.public.Client.where({ id }).deleteAll();
     return { success: true };
   } catch (e: any) {
-    console.error('deleteCompany error:', e);
-    return { success: false, error: e.message || 'Errore nella rimozione dell\'azienda.' };
+    console.error('deleteClient error:', e);
+    return { success: false, error: e.message || 'Errore nella rimozione del cliente.' };
+  }
+}
+
+// Destination
+export async function createDestination(data: { name: string; address: string; shippingCode: string; clientId: number }) {
+  try {
+    const newDestination = await db.orm.public.Destination.create({
+      name: data.name,
+      address: data.address,
+      shippingCode: data.shippingCode,
+      clientId: Number(data.clientId),
+    });
+    return { success: true, destination: newDestination };
+  } catch (e: any) {
+    console.error('createDestination error:', e);
+    return { success: false, error: e.message || 'Errore nella creazione della destinazione.' };
+  }
+}
+
+export async function deleteDestination(id: number) {
+  try {
+    await db.orm.public.Trip.where({ destinationId: id }).deleteAll();
+    await db.orm.public.Destination.where({ id }).deleteAll();
+    return { success: true };
+  } catch (e: any) {
+    console.error('deleteDestination error:', e);
+    return { success: false, error: e.message || 'Errore nella rimozione della destinazione.' };
   }
 }
 

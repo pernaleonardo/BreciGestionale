@@ -11,8 +11,10 @@ import {
   getTripsData,
   createTrip,
   deleteTrip,
-  createCompany,
-  deleteCompany,
+  createClient,
+  deleteClient,
+  createDestination,
+  deleteDestination,
   createDriver,
   deleteDriver,
   createVehicle,
@@ -40,11 +42,12 @@ const formatWeight = (value: number) => {
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'registro' | 'anagrafiche' | 'utenti'>('registro');
-  const [anagraficaSubTab, setAnagraficaSubTab] = useState<'aziende' | 'autisti' | 'mezzi' | 'cer'>('aziende');
+  const [anagraficaSubTab, setAnagraficaSubTab] = useState<'clienti' | 'destinatari' | 'autisti' | 'mezzi' | 'cer'>('clienti');
   
   // Dati dal database
   const [trips, setTrips] = useState<any[]>([]);
-  const [companies, setCompanies] = useState<any[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
+  const [destinations, setDestinations] = useState<any[]>([]);
   const [drivers, setDrivers] = useState<any[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [wasteTypes, setWasteTypes] = useState<any[]>([]);
@@ -61,7 +64,8 @@ export default function Home() {
 
   // Modali inserimento
   const [isTripModalOpen, setIsTripModalOpen] = useState(false);
-  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [isDestinationModalOpen, setIsDestinationModalOpen] = useState(false);
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isWasteModalOpen, setIsWasteModalOpen] = useState(false);
@@ -69,6 +73,7 @@ export default function Home() {
 
   // Form states
   const [loginError, setLoginError] = useState('');
+  const [selectedTripClientId, setSelectedTripClientId] = useState('');
   const [newTripData, setNewTripData] = useState({
     date: '',
     firNumber: '',
@@ -85,13 +90,13 @@ export default function Home() {
     sostaPrice: '0',
     address: '',
     notes: '',
-    producerId: '',
-    recipientId: '',
+    destinationId: '',
     driverId: '',
     vehicleId: '',
   });
 
-  const [newCompanyData, setNewCompanyData] = useState({ name: '', address: '', vatNumber: '', role: 'PRODUCER' });
+  const [newClientData, setNewClientData] = useState({ name: '', billingAddress: '', vatNumber: '', clientCode: '' });
+  const [newDestinationData, setNewDestinationData] = useState({ name: '', address: '', shippingCode: '', clientId: '' });
   const [newDriverData, setNewDriverData] = useState({ name: '', email: '', phone: '', licenseNumber: '' });
   const [newVehicleData, setNewVehicleData] = useState({ plateNumber: '', model: '', capacity: '' });
   const [newWasteData, setNewWasteData] = useState({ cerCode: '', description: '' });
@@ -125,7 +130,8 @@ export default function Home() {
     try {
       const data = await getTripsData();
       setTrips(data.trips || []);
-      setCompanies(data.companies || []);
+      setClients(data.clients || []);
+      setDestinations(data.destinations || []);
       setDrivers(data.drivers || []);
       setVehicles(data.vehicles || []);
       setWasteTypes(data.wasteTypes || []);
@@ -165,10 +171,10 @@ export default function Home() {
 
   // Filtraggio viaggi
   const filteredTrips = trips.filter((trip) => {
-    // Filtro per Cliente (produttore o destinatario)
+    // Filtro per Cliente di fatturazione (legato alla destinazione del viaggio)
     if (filterCliente !== 'ALL') {
       const clientId = Number(filterCliente);
-      if (trip.producerId !== clientId && trip.recipientId !== clientId) {
+      if (trip.destination?.clientId !== clientId) {
         return false;
       }
     }
@@ -235,11 +241,12 @@ export default function Home() {
     const res = await createTrip(newTripData);
     if (res.success) {
       setIsTripModalOpen(false);
+      setSelectedTripClientId('');
       setNewTripData({
         date: '', firNumber: '', wasteTypeId: '', weight: '', cerPrice: '',
         transportPrice: '', disposalPrice: '', fuoriRomaPrice: '0', noleggioPrice: '0',
         bigBagPrice: '0', analisiPrice: '0', servRagnoPrice: '0', sostaPrice: '0',
-        address: '', notes: '', producerId: '', recipientId: '', driverId: '', vehicleId: '',
+        address: '', notes: '', destinationId: '', driverId: '', vehicleId: '',
       });
       await refreshData();
     } else {
@@ -255,21 +262,44 @@ export default function Home() {
     }
   };
 
-  const handleCreateCompany = async (e: React.FormEvent) => {
+  const handleCreateClient = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await createCompany(newCompanyData);
+    const res = await createClient(newClientData);
     if (res.success) {
-      setIsCompanyModalOpen(false);
-      setNewCompanyData({ name: '', address: '', vatNumber: '', role: 'PRODUCER' });
+      setIsClientModalOpen(false);
+      setNewClientData({ name: '', billingAddress: '', vatNumber: '', clientCode: '' });
       await refreshData();
     } else {
       alert(res.error);
     }
   };
 
-  const handleDeleteCompany = async (id: number) => {
-    if (confirm('Rimuovendo l\'azienda verranno cancellati anche i viaggi ad essa associati. Continuare?')) {
-      const res = await deleteCompany(id);
+  const handleDeleteClient = async (id: number) => {
+    if (confirm('Rimuovendo il cliente verranno cancellati anche tutti i viaggi e le destinazioni ad esso associati. Continuare?')) {
+      const res = await deleteClient(id);
+      if (res.success) await refreshData();
+      else alert(res.error);
+    }
+  };
+
+  const handleCreateDestination = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await createDestination({
+      ...newDestinationData,
+      clientId: Number(newDestinationData.clientId)
+    });
+    if (res.success) {
+      setIsDestinationModalOpen(false);
+      setNewDestinationData({ name: '', address: '', shippingCode: '', clientId: '' });
+      await refreshData();
+    } else {
+      alert(res.error);
+    }
+  };
+
+  const handleDeleteDestination = async (id: number) => {
+    if (confirm('Sicuro di voler rimuovere questa destinazione? I viaggi associati verranno cancellati.')) {
+      const res = await deleteDestination(id);
       if (res.success) await refreshData();
       else alert(res.error);
     }
@@ -539,8 +569,8 @@ export default function Home() {
                       className="bg-zinc-800 border border-zinc-700 rounded-lg p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
                       <option value="ALL">Tutti i Clienti</option>
-                      {companies.map((c) => (
-                        <option key={c.id} value={c.id}>{c.name} ({c.role === 'PRODUCER' ? 'Produttore' : 'Destinatario'})</option>
+                      {clients.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
                       ))}
                     </select>
                   </div>
@@ -602,8 +632,8 @@ export default function Home() {
                           <th className="p-3">Data</th>
                           <th className="p-3">N. FIR</th>
                           <th className="p-3">CER</th>
-                          <th className="p-3">Produttore</th>
-                          <th className="p-3">Destinatario</th>
+                          <th className="p-3">Cliente</th>
+                          <th className="p-3">Destinazione</th>
                           <th className="p-3 text-right">Peso (t)</th>
                           <th className="p-3">Mezzo</th>
                           <th className="p-3">Autista</th>
@@ -644,11 +674,11 @@ export default function Home() {
                                     {trip.cerCode}
                                   </span>
                                 </td>
-                                <td className="p-3 truncate max-w-[150px]" title={trip.producer?.name || ''}>
-                                  {trip.producer?.name || '-'}
+                                <td className="p-3 truncate max-w-[150px]" title={trip.destination?.client?.name || ''}>
+                                  {trip.destination?.client?.name || '-'}
                                 </td>
-                                <td className="p-3 truncate max-w-[150px]" title={trip.recipient?.name || ''}>
-                                  {trip.recipient?.name || '-'}
+                                <td className="p-3 truncate max-w-[150px]" title={trip.destination?.name || ''}>
+                                  {trip.destination?.name || '-'}
                                 </td>
                                 <td className="p-3 text-right font-semibold">{formatWeight(trip.weight)}</td>
                                 <td className="p-3">
@@ -710,12 +740,18 @@ export default function Home() {
                 </div>
 
                 {/* Sub Tab Navigation */}
-                <div className="flex border-b border-zinc-800 mb-6 gap-2">
+                <div className="flex border-b border-zinc-800 mb-6 gap-2 flex-wrap">
                   <button
-                    onClick={() => setAnagraficaSubTab('aziende')}
-                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${anagraficaSubTab === 'aziende' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
+                    onClick={() => setAnagraficaSubTab('clienti')}
+                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${anagraficaSubTab === 'clienti' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
                   >
-                    🏢 Aziende (Prod/Dest)
+                    👥 Clienti
+                  </button>
+                  <button
+                    onClick={() => setAnagraficaSubTab('destinatari')}
+                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${anagraficaSubTab === 'destinatari' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
+                  >
+                    📍 Destinazioni (Cantieri)
                   </button>
                   <button
                     onClick={() => setAnagraficaSubTab('autisti')}
@@ -737,16 +773,16 @@ export default function Home() {
                   </button>
                 </div>
 
-                {/* SUB TAB: AZIENDE */}
-                {anagraficaSubTab === 'aziende' && (
+                {/* SUB TAB: CLIENTI */}
+                {anagraficaSubTab === 'clienti' && (
                   <div>
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-bold text-white">Anagrafica Produttori & Destinatari</h3>
+                      <h3 className="text-lg font-bold text-white">Anagrafica Clienti</h3>
                       <button
-                        onClick={() => setIsCompanyModalOpen(true)}
+                        onClick={() => setIsClientModalOpen(true)}
                         className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold transition-colors cursor-pointer"
                       >
-                        + Aggiungi Azienda
+                        + Aggiungi Cliente
                       </button>
                     </div>
 
@@ -754,27 +790,72 @@ export default function Home() {
                       <table className="w-full text-left border-collapse">
                         <thead>
                           <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
+                            <th className="p-3">Codice Cliente</th>
                             <th className="p-3">Ragione Sociale</th>
-                            <th className="p-3">Indirizzo</th>
+                            <th className="p-3">Indirizzo Fatturazione</th>
                             <th className="p-3">Cod. Fiscale / P.IVA</th>
-                            <th className="p-3">Ruolo</th>
                             <th className="p-3 text-center">Rimuovi</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-800 text-sm">
-                          {companies.map((c) => (
+                          {clients.map((c) => (
                             <tr key={c.id} className="hover:bg-zinc-800/20">
+                              <td className="p-3 font-mono font-bold text-blue-400">{c.clientCode}</td>
                               <td className="p-3 font-semibold text-white">{c.name}</td>
-                              <td className="p-3 text-zinc-300">{c.address || '-'}</td>
+                              <td className="p-3 text-zinc-300">{c.billingAddress || '-'}</td>
                               <td className="p-3 font-mono text-zinc-400">{c.vatNumber || '-'}</td>
-                              <td className="p-3">
-                                <span className={`px-2 py-0.5 rounded text-xs font-bold ${c.role === 'PRODUCER' ? 'bg-amber-950/40 text-amber-400 border border-amber-900' : 'bg-emerald-950/40 text-emerald-400 border border-emerald-900'}`}>
-                                  {c.role === 'PRODUCER' ? 'Produttore' : 'Destinatario'}
-                                </span>
+                              <td className="p-3 text-center">
+                                <button
+                                  onClick={() => handleDeleteClient(c.id)}
+                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-800 rounded cursor-pointer"
+                                >
+                                  Elimina
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUB TAB: DESTINATARI */}
+                {anagraficaSubTab === 'destinatari' && (
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-bold text-white">Destinazioni (Cantieri di Spedizione)</h3>
+                      <button
+                        onClick={() => setIsDestinationModalOpen(true)}
+                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        + Aggiungi Destinazione
+                      </button>
+                    </div>
+
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
+                            <th className="p-3">Codice Spedizione</th>
+                            <th className="p-3">Nome Cantiere / Indirizzo</th>
+                            <th className="p-3">Indirizzo di Spedizione</th>
+                            <th className="p-3">Cliente Collegato (Fatturazione)</th>
+                            <th className="p-3 text-center">Rimuovi</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-800 text-sm">
+                          {destinations.map((d) => (
+                            <tr key={d.id} className="hover:bg-zinc-800/20">
+                              <td className="p-3 font-mono font-bold text-amber-400">{d.shippingCode}</td>
+                              <td className="p-3 font-semibold text-white">{d.name}</td>
+                              <td className="p-3 text-zinc-300">{d.address}</td>
+                              <td className="p-3 text-zinc-400">
+                                {d.client?.name} ({d.client?.clientCode})
                               </td>
                               <td className="p-3 text-center">
                                 <button
-                                  onClick={() => handleDeleteCompany(c.id)}
+                                  onClick={() => handleDeleteDestination(d.id)}
                                   className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-800 rounded cursor-pointer"
                                 >
                                   Elimina
@@ -1135,30 +1216,42 @@ export default function Home() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Produttore (Mittente)</label>
+                  <label className="block text-xs font-bold text-zinc-400 uppercase">Cliente di Fatturazione</label>
                   <select
                     required
                     className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.producerId}
-                    onChange={(e) => setNewTripData({ ...newTripData, producerId: e.target.value })}
+                    value={selectedTripClientId}
+                    onChange={(e) => {
+                      setSelectedTripClientId(e.target.value);
+                      setNewTripData({ ...newTripData, destinationId: '', address: '' });
+                    }}
                   >
-                    <option value="">Seleziona Produttore...</option>
-                    {companies.filter(c => c.role === 'PRODUCER' || c.role === 'BOTH').map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
+                    <option value="">Seleziona Cliente...</option>
+                    {clients.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase">Destinatario (Impianto)</label>
+                  <label className="block text-xs font-bold text-zinc-400 uppercase">Destinazione (Cantiere)</label>
                   <select
                     required
-                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                    value={newTripData.recipientId}
-                    onChange={(e) => setNewTripData({ ...newTripData, recipientId: e.target.value })}
+                    disabled={!selectedTripClientId}
+                    className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm disabled:opacity-50"
+                    value={newTripData.destinationId}
+                    onChange={(e) => {
+                      const destId = e.target.value;
+                      const chosen = destinations.find(d => d.id === Number(destId));
+                      setNewTripData({
+                        ...newTripData,
+                        destinationId: destId,
+                        address: chosen ? chosen.address : ''
+                      });
+                    }}
                   >
-                    <option value="">Seleziona Destinatario...</option>
-                    {companies.filter(c => c.role === 'RECIPIENT' || c.role === 'BOTH').map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
+                    <option value="">Seleziona Destinazione...</option>
+                    {destinations.filter(d => d.clientId === Number(selectedTripClientId)).map((d) => (
+                      <option key={d.id} value={d.id}>{d.name} - {d.shippingCode}</option>
                     ))}
                   </select>
                 </div>
@@ -1344,37 +1437,48 @@ export default function Home() {
         </div>
       )}
 
-      {/* COMPANY MODAL */}
-      {isCompanyModalOpen && (
+      {/* CLIENT MODAL */}
+      {isClientModalOpen && (
         <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
-              <h3 className="text-lg font-bold text-white font-sans">Aggiungi Azienda</h3>
-              <button onClick={() => setIsCompanyModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
+              <h3 className="text-lg font-bold text-white font-sans">Aggiungi Cliente</h3>
+              <button onClick={() => setIsClientModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <form onSubmit={handleCreateCompany} className="space-y-4">
+            <form onSubmit={handleCreateClient} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">Codice Cliente</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Es: CL001"
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white font-mono uppercase"
+                  value={newClientData.clientCode}
+                  onChange={(e) => setNewClientData({ ...newClientData, clientCode: e.target.value })}
+                />
+              </div>
               <div>
                 <label className="block text-xs font-semibold text-zinc-400">Ragione Sociale</label>
                 <input
                   type="text"
                   required
                   className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white"
-                  value={newCompanyData.name}
-                  onChange={(e) => setNewCompanyData({ ...newCompanyData, name: e.target.value })}
+                  value={newClientData.name}
+                  onChange={(e) => setNewClientData({ ...newClientData, name: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-400">Indirizzo Sede/Cantiere</label>
+                <label className="block text-xs font-semibold text-zinc-400">Indirizzo Sede (Fatturazione)</label>
                 <input
                   type="text"
                   className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white"
-                  value={newCompanyData.address}
-                  onChange={(e) => setNewCompanyData({ ...newCompanyData, address: e.target.value })}
+                  value={newClientData.billingAddress}
+                  onChange={(e) => setNewClientData({ ...newClientData, billingAddress: e.target.value })}
                 />
               </div>
               <div>
@@ -1382,27 +1486,15 @@ export default function Home() {
                 <input
                   type="text"
                   className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white font-mono"
-                  value={newCompanyData.vatNumber}
-                  onChange={(e) => setNewCompanyData({ ...newCompanyData, vatNumber: e.target.value })}
+                  value={newClientData.vatNumber}
+                  onChange={(e) => setNewClientData({ ...newClientData, vatNumber: e.target.value })}
                 />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400">Ruolo Azienda</label>
-                <select
-                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white"
-                  value={newCompanyData.role}
-                  onChange={(e) => setNewCompanyData({ ...newCompanyData, role: e.target.value })}
-                >
-                  <option value="PRODUCER">Produttore (Speditore)</option>
-                  <option value="RECIPIENT">Destinatario (Impianto)</option>
-                  <option value="BOTH">Entrambi (Produttore & Destinatario)</option>
-                </select>
               </div>
 
               <div className="flex gap-4 justify-end pt-4 border-t border-zinc-800">
                 <button
                   type="button"
-                  onClick={() => setIsCompanyModalOpen(false)}
+                  onClick={() => setIsClientModalOpen(false)}
                   className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-xs font-semibold cursor-pointer"
                 >
                   Annulla
@@ -1411,7 +1503,89 @@ export default function Home() {
                   type="submit"
                   className="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer"
                 >
-                  Salva Azienda
+                  Salva Cliente
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* DESTINATION MODAL */}
+      {isDestinationModalOpen && (
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
+              <h3 className="text-lg font-bold text-white font-sans">Aggiungi Destinazione</h3>
+              <button onClick={() => setIsDestinationModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateDestination} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">Cliente Collegato (Fatturazione)</label>
+                <select
+                  required
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                  value={newDestinationData.clientId}
+                  onChange={(e) => setNewDestinationData({ ...newDestinationData, clientId: e.target.value })}
+                >
+                  <option value="">Seleziona Cliente...</option>
+                  {clients.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">Codice Spedizione</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Es: SP001"
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white font-mono uppercase"
+                  value={newDestinationData.shippingCode}
+                  onChange={(e) => setNewDestinationData({ ...newDestinationData, shippingCode: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">Nome Destinazione/Cantiere</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Es: Cantiere Colosseo"
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white"
+                  value={newDestinationData.name}
+                  onChange={(e) => setNewDestinationData({ ...newDestinationData, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">Indirizzo di Spedizione</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Es: Piazza del Colosseo 1, Roma"
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white"
+                  value={newDestinationData.address}
+                  onChange={(e) => setNewDestinationData({ ...newDestinationData, address: e.target.value })}
+                />
+              </div>
+
+              <div className="flex gap-4 justify-end pt-4 border-t border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setIsDestinationModalOpen(false)}
+                  className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-xs font-semibold cursor-pointer"
+                >
+                  Annulla
+                </button>
+                <button
+                  type="submit"
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer"
+                >
+                  Salva Destinazione
                 </button>
               </div>
             </form>

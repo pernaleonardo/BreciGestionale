@@ -11,16 +11,28 @@ model User {
   @@rls
 }
 
-model Company {
-  id            Int      @id @default(autoincrement())
-  name          String   // Denominazione (es. P&M GROUP SRL)
-  address       String?  // Indirizzo Unità Locale
-  vatNumber     String?  @unique // Codice Fiscale / P.IVA
-  role          String   // PRODUCER (Produttore), RECIPIENT (Destinatario)
-  producedTrips Trip[]   @relation("ProducedTrips")
-  receivedTrips Trip[]   @relation("ReceivedTrips")
-  createdAt     TimestamptzString @default(now())
-  updatedAt     temporal.updatedAtString()
+model Client {
+  id             Int           @id @default(autoincrement())
+  name           String        // Denominazione (es. P&M GROUP SRL)
+  billingAddress String?       // Indirizzo di fatturazione
+  vatNumber      String?       @unique // Codice Fiscale / P.IVA
+  clientCode     String        @unique // Codice Cliente di fatturazione
+  destinations   Destination[]
+  createdAt      TimestamptzString @default(now())
+  updatedAt      temporal.updatedAtString()
+  @@rls
+}
+
+model Destination {
+  id           Int      @id @default(autoincrement())
+  name         String   // Denominazione destinazione (es. VIA DEI MILLE)
+  address      String   // Indirizzo cantiere/destinazione
+  shippingCode String   @unique // Codice di spedizione
+  clientId     Int
+  client       Client   @relation(fields: [clientId], references: [id])
+  trips        Trip[]
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
   @@rls
 }
 
@@ -86,10 +98,8 @@ model Trip {
   status             String   @default("PENDING") // PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED
 
   // Relazioni
-  producerId         Int      // ID del Produttore (Mittente)
-  producer           Company  @relation("ProducedTrips", fields: [producerId], references: [id])
-  recipientId        Int      // ID del Destinatario (Discarica/Impianto)
-  recipient          Company  @relation("ReceivedTrips", fields: [recipientId], references: [id])
+  destinationId      Int
+  destination        Destination @relation(fields: [destinationId], references: [id])
   
   driverId           Int?     // Autista assegnato
   driver             Driver?  @relation(fields: [driverId], references: [id])

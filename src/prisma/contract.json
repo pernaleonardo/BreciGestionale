@@ -4,8 +4,12 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "company": {
-      "model": "Company",
+    "client": {
+      "model": "Client",
+      "namespace": "public"
+    },
+    "destination": {
+      "model": "Destination",
       "namespace": "public"
     },
     "driver": {
@@ -37,10 +41,17 @@
     "namespaces": {
       "public": {
         "models": {
-          "Company": {
+          "Client": {
             "fields": {
-              "address": {
+              "billingAddress": {
                 "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "clientCode": {
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -67,13 +78,6 @@
                   "kind": "scalar"
                 }
               },
-              "role": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -90,29 +94,126 @@
               }
             },
             "relations": {
-              "producedTrips": {
+              "destinations": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
                     "id"
                   ],
                   "targetFields": [
-                    "producerId"
+                    "clientId"
                   ]
                 },
                 "to": {
-                  "model": "Trip",
+                  "model": "Destination",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "billingAddress": {
+                  "column": "billingAddress"
+                },
+                "clientCode": {
+                  "column": "clientCode"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "vatNumber": {
+                  "column": "vatNumber"
+                }
+              },
+              "namespaceId": "public",
+              "table": "client"
+            }
+          },
+          "Destination": {
+            "fields": {
+              "address": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "clientId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "shippingCode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "client": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "clientId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Client",
                   "namespace": "public"
                 }
               },
-              "receivedTrips": {
+              "trips": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
                     "id"
                   ],
                   "targetFields": [
-                    "recipientId"
+                    "destinationId"
                   ]
                 },
                 "to": {
@@ -126,6 +227,9 @@
                 "address": {
                   "column": "address"
                 },
+                "clientId": {
+                  "column": "clientId"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -135,18 +239,15 @@
                 "name": {
                   "column": "name"
                 },
-                "role": {
-                  "column": "role"
+                "shippingCode": {
+                  "column": "shippingCode"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
-                },
-                "vatNumber": {
-                  "column": "vatNumber"
                 }
               },
               "namespaceId": "public",
-              "table": "company"
+              "table": "destination"
             }
           },
           "Driver": {
@@ -384,6 +485,13 @@
                   "kind": "scalar"
                 }
               },
+              "destinationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "disposalPrice": {
                 "nullable": false,
                 "type": {
@@ -430,20 +538,6 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "producerId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "recipientId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -505,6 +599,21 @@
               }
             },
             "relations": {
+              "destination": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "destinationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Destination",
+                  "namespace": "public"
+                }
+              },
               "driver": {
                 "cardinality": "N:1",
                 "on": {
@@ -532,36 +641,6 @@
                 },
                 "to": {
                   "model": "GPSLog",
-                  "namespace": "public"
-                }
-              },
-              "producer": {
-                "cardinality": "N:1",
-                "on": {
-                  "localFields": [
-                    "producerId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Company",
-                  "namespace": "public"
-                }
-              },
-              "recipient": {
-                "cardinality": "N:1",
-                "on": {
-                  "localFields": [
-                    "recipientId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Company",
                   "namespace": "public"
                 }
               },
@@ -619,6 +698,9 @@
                 "date": {
                   "column": "date"
                 },
+                "destinationId": {
+                  "column": "destinationId"
+                },
                 "disposalPrice": {
                   "column": "disposalPrice"
                 },
@@ -639,12 +721,6 @@
                 },
                 "notes": {
                   "column": "notes"
-                },
-                "producerId": {
-                  "column": "producerId"
-                },
-                "recipientId": {
-                  "column": "recipientId"
                 },
                 "servRagnoPrice": {
                   "column": "servRagnoPrice"
@@ -949,10 +1025,15 @@
       "public": {
         "entries": {
           "rls": {
-            "company": {
+            "client": {
               "kind": "rls",
               "namespaceId": "public",
-              "tableName": "company"
+              "tableName": "client"
+            },
+            "destination": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "destination"
             },
             "driver": {
               "kind": "rls",
@@ -986,12 +1067,17 @@
             }
           },
           "table": {
-            "company": {
+            "client": {
               "columns": {
-                "address": {
+                "billingAddress": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "clientCode": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
                 },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -1012,11 +1098,6 @@
                   "nullable": false
                 },
                 "name": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": false
-                },
-                "role": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
@@ -1043,6 +1124,98 @@
                 {
                   "columns": [
                     "vatNumber"
+                  ]
+                },
+                {
+                  "columns": [
+                    "clientCode"
+                  ]
+                }
+              ]
+            },
+            "destination": {
+              "columns": {
+                "address": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "clientId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "shippingCode": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "clientId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "destination"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "client"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "clientId"
+                  ],
+                  "name": "destination_clientId_idx_153a9a49",
+                  "prefix": "destination_clientId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "shippingCode"
                   ]
                 }
               ]
@@ -1241,6 +1414,11 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "destinationId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
                 "disposalPrice": {
                   "codecId": "pg/float8@1",
                   "default": {
@@ -1291,16 +1469,6 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
-                },
-                "producerId": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": false
-                },
-                "recipientId": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": false
                 },
                 "servRagnoPrice": {
                   "codecId": "pg/float8@1",
@@ -1367,7 +1535,7 @@
                 {
                   "source": {
                     "columns": [
-                      "producerId"
+                      "destinationId"
                     ],
                     "namespaceId": "public",
                     "tableName": "trip"
@@ -1377,23 +1545,7 @@
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "company"
-                  }
-                },
-                {
-                  "source": {
-                    "columns": [
-                      "recipientId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "trip"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "company"
+                    "tableName": "destination"
                   }
                 },
                 {
@@ -1448,26 +1600,18 @@
               "indexes": [
                 {
                   "columns": [
+                    "destinationId"
+                  ],
+                  "name": "trip_destinationId_idx_1646ee5c",
+                  "prefix": "trip_destinationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
                     "driverId"
                   ],
                   "name": "trip_driverId_idx_8eed3317",
                   "prefix": "trip_driverId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "producerId"
-                  ],
-                  "name": "trip_producerId_idx_a32fa932",
-                  "prefix": "trip_producerId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "recipientId"
-                  ],
-                  "name": "trip_recipientId_idx_c9527cf8",
-                  "prefix": "trip_recipientId_idx",
                   "unique": false
                 },
                 {
@@ -1700,10 +1844,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "7419a6d2b13749927e17997a6f1f3033762c7cd839541ae1b02b7597fd10a1ad"
+    "storageHash": "67cabadf70f854179e5e3dff47a3a7e3544e7f191e0200a8cd1ef6fb3b7b75cd"
   },
   "execution": {
-    "executionHash": "d07a4ed52f7e76a3c9254bca3c82bf8840dc5714a3f5c0b12007dab0c66850a7",
+    "executionHash": "6cc7e61331c61f697a7c171a8456774002a4efd8744a7bbdb626a393fda41a0e",
     "mutations": {
       "defaults": [
         {
@@ -1718,7 +1862,22 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "company"
+            "table": "client"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "destination"
           }
         },
         {

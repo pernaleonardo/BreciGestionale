@@ -1,7 +1,16 @@
-import { db } from './db';
+// @ts-ignore
+import { db } from './db.ts';
 
 async function main() {
-  console.log('Starting seed...');
+  console.log('Cleaning up database...');
+  await db.orm.public.GPSLog.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.Trip.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.Destination.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.Client.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.Driver.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.Vehicle.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.WasteType.where((f) => f.id.gt(0)).deleteAll();
+  await db.orm.public.User.where((f) => f.id.gt(0)).deleteAll();
 
   // Create users
   console.log('Creating default users...');
@@ -19,26 +28,41 @@ async function main() {
     role: 'OPERATOR',
   });
 
-  // Create companies
-  const pmGroup = await db.orm.public.Company.create({
+  // Create clients
+  const pmGroup = await db.orm.public.Client.create({
     name: 'P&M GROUP SRL',
-    address: "VIA DELL'AMBA ARADAM 22 Roma 00184 RM",
+    billingAddress: "VIA DELL'AMBA ARADAM 22 Roma 00184 RM",
     vatNumber: '15517251003',
-    role: 'PRODUCER',
+    clientCode: 'PM-001',
   });
 
-  const rime1 = await db.orm.public.Company.create({
+  const rime1 = await db.orm.public.Client.create({
     name: 'RIME 1 SRL',
-    address: 'VIA DI MAGLIANA, 1098 Roma 00148 RM',
+    billingAddress: 'VIA DI MAGLIANA, 1098 Roma 00148 RM',
     vatNumber: '04764321008',
-    role: 'RECIPIENT',
+    clientCode: 'RIME-001',
   });
 
-  const breciTrasporti = await db.orm.public.Company.create({
+  const breciTrasporti = await db.orm.public.Client.create({
     name: 'BRECI TRASPORTI SRL',
-    address: 'Via dei Trasporti, 45 Roma',
+    billingAddress: 'Via dei Trasporti, 45 Roma',
     vatNumber: '13656521005',
-    role: 'BOTH',
+    clientCode: 'BRECI-001',
+  });
+
+  // Create destinations for clients
+  const destViaDeiMille = await db.orm.public.Destination.create({
+    name: 'VIA DEI MILLE',
+    address: 'VIA DEI MILLE, Roma',
+    shippingCode: 'MILLE-01',
+    clientId: pmGroup.id,
+  });
+
+  const destViaDeiGiubb = await db.orm.public.Destination.create({
+    name: 'VIA DEI GIUBB...',
+    address: 'VIA DEI GIUBBONARI, Roma',
+    shippingCode: 'GIUBB-01',
+    clientId: pmGroup.id,
   });
 
   // Create drivers
@@ -112,8 +136,7 @@ async function main() {
     sostaPrice: 0.0,
     address: 'VIA DEI MILLE',
     status: 'DELIVERED',
-    producerId: pmGroup.id,
-    recipientId: rime1.id,
+    destinationId: destViaDeiMille.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle1.id,
     wasteTypeId: waste170107.id,
@@ -135,8 +158,7 @@ async function main() {
     sostaPrice: 0.0,
     address: 'VIA DEI GIUBB...',
     status: 'DELIVERED',
-    producerId: pmGroup.id,
-    recipientId: rime1.id,
+    destinationId: destViaDeiGiubb.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle2.id,
     wasteTypeId: waste170107.id,
@@ -158,8 +180,7 @@ async function main() {
     sostaPrice: 0.0,
     address: 'VIA DEI MILLE',
     status: 'DELIVERED',
-    producerId: pmGroup.id,
-    recipientId: rime1.id,
+    destinationId: destViaDeiMille.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle1.id,
     wasteTypeId: waste170107.id,
@@ -181,8 +202,7 @@ async function main() {
     sostaPrice: 0.0,
     address: 'VIA DEI MILLE',
     status: 'DELIVERED',
-    producerId: pmGroup.id,
-    recipientId: rime1.id,
+    destinationId: destViaDeiMille.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle3.id,
     wasteTypeId: waste170107.id,
@@ -204,8 +224,7 @@ async function main() {
     sostaPrice: 0.0,
     address: 'VIA DEI MILLE',
     status: 'DELIVERED',
-    producerId: pmGroup.id,
-    recipientId: rime1.id,
+    destinationId: destViaDeiMille.id,
     driverId: driverLeonardo.id,
     vehicleId: vehicle2.id,
     wasteTypeId: waste170904.id,
