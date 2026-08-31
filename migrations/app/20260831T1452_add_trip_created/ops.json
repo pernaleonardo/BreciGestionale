@@ -1,0 +1,44 @@
+[
+  {
+    "id": "column.public.schedule.tripCreated",
+    "label": "Add column \"tripCreated\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "tripCreated",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"tripCreated\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "tripCreated"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"tripCreated\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"tripCreated\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"tripCreated\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "tripCreated"
+        ]
+      }
+    ]
+  }
+]

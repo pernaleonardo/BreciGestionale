@@ -178,6 +178,7 @@ model Schedule {
   wasteTypeId    Int?
   wasteType      WasteType?   @relation(fields: [wasteTypeId], references: [id])
   firNumber      String?
+  tripCreated    Boolean      @default(false)
 
   // Nuovi campi prezzi opzionali pianificati
   cerPrice       Float?       @default(0.0)

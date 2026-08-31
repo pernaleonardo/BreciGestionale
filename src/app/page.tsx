@@ -32,6 +32,7 @@ import {
   createSchedule,
   updateSchedule,
   deleteSchedule,
+  importExecutedSchedulesToTrips,
 } from './actions';
 
 // Helper per formattare i numeri come valuta (€)
@@ -576,6 +577,23 @@ const handleDeleteTrip = async (id: number) => {
     }
   };
 
+  const handleImportExecutedSchedules = async () => {
+    if (confirm('Vuoi importare tutti i turni eseguiti (con peso e FIR) nel registro viaggi?')) {
+      const res = await importExecutedSchedulesToTrips();
+      if (res.success) {
+        let msg = `Importazione completata con successo! ${res.count} viaggi importati.`;
+        if (res.skipped && res.skipped > 0) {
+          msg += `\n\n${res.skipped} turni eseguiti sono stati saltati perché privi di destinazione, codice CER o numero formulario FIR.`;
+        }
+        alert(msg);
+        await refreshData();
+        await refreshSchedules(selectedDate);
+      } else {
+        alert(res.error);
+      }
+    }
+  };
+
   const handleCreateClient = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await createClient(newClientData);
@@ -1067,12 +1085,23 @@ const handleDeleteTrip = async (id: number) => {
                     <h2 className="text-2xl font-bold text-white">Registro Viaggi Giornaliero</h2>
                     <p className="text-sm text-zinc-400">Modifica o visualizza le movimentazioni dei rifiuti.</p>
                   </div>
-                  <button
-                    onClick={() => setIsTripModalOpen(true)}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors cursor-pointer self-start md:self-auto"
-                  >
-                    <span>+</span> Aggiungi Riga Viaggio
-                  </button>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={handleImportExecutedSchedules}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors cursor-pointer self-start md:self-auto"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h10a2.25 2.25 0 0 0 2.25-2.25V10.5A2.25 2.25 0 0 0 17.5 8.25H16M12 3v11.25m0-11.25L9.75 5.25M12 3l2.25 2.25" />
+                      </svg>
+                      Importa da Pianificazione
+                    </button>
+                    <button
+                      onClick={() => setIsTripModalOpen(true)}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors cursor-pointer self-start md:self-auto"
+                    >
+                      <span>+</span> Aggiungi Riga Viaggio
+                    </button>
+                  </div>
                 </div>
 
                 {/* Filters Row */}
@@ -1402,6 +1431,15 @@ const handleDeleteTrip = async (id: number) => {
                         <option value="week">Settimana</option>
                         <option value="day">Giorno</option>
                       </select>
+                      <button
+                        onClick={handleImportExecutedSchedules}
+                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors cursor-pointer"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h10a2.25 2.25 0 0 0 2.25-2.25V10.5A2.25 2.25 0 0 0 17.5 8.25H16M12 3v11.25m0-11.25L9.75 5.25M12 3l2.25 2.25" />
+                        </svg>
+                        Importa Eseguiti
+                      </button>
                       <button
                         onClick={() => {
                           const target = new Date(currentCalendarDate);

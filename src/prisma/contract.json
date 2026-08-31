@@ -750,6 +750,13 @@
                   "kind": "scalar"
                 }
               },
+              "tripCreated": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -895,6 +902,9 @@
                 },
                 "transportPrice": {
                   "column": "transportPrice"
+                },
+                "tripCreated": {
+                  "column": "tripCreated"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -2268,6 +2278,15 @@
                   "nativeType": "float8",
                   "nullable": true
                 },
+                "tripCreated": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
@@ -2978,7 +2997,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "fc51112c9f7da7c854aa2131a2dd63b83cf52bb22d174f323896ed9fbcbf16e6"
+    "storageHash": "67cb877df0894e9e05390cc26c40a3a7e7916594086b98c310dd4bb00ee1669d"
   },
   "execution": {
     "executionHash": "ba1d35e37e2fd1d5b34c2ddba1ca02e497c17dff3be4fa622902416d35c3fc41",

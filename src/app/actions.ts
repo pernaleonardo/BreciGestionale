@@ -648,3 +648,80 @@ export async function deleteSchedule(id: number) {
     return { success: false, error: e.message || 'Errore nella rimozione della pianificazione.' };
   }
 }
+
+export async function importExecutedSchedulesToTrips() {
+  try {
+    const pendingSchedules = await db.orm.public.Schedule
+      .where({ status: 'ESEGUITO', tripCreated: false })
+      .include('destination')
+      .include('wasteType')
+      .all() as any[];
+
+    if (pendingSchedules.length === 0) {
+      return { success: true, count: 0, message: 'Nessun viaggio eseguito in attesa di importazione.' };
+    }
+
+    let importCount = 0;
+    let skippedCount = 0;
+    const warnings: string[] = [];
+
+    for (const s of pendingSchedules) {
+      if (!s.destinationId || !s.wasteTypeId || !s.firNumber) {
+        skippedCount++;
+        warnings.push(`Turno ID ${s.id}: mancano destinazione, codice CER o numero formulario FIR.`);
+        continue;
+      }
+
+      let tripDate = s.date;
+      if (tripDate && tripDate.includes('-')) {
+        const parts = tripDate.split('-');
+        if (parts.length === 3) {
+          tripDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+      }
+
+      const weight = s.loadedQuantity || 0;
+      const cerPrice = s.cerPrice || 0;
+      const disposalPrice = weight * cerPrice;
+
+      const existingTrip = await db.orm.public.Trip.where({ firNumber: s.firNumber }).first();
+      if (!existingTrip) {
+        await db.orm.public.Trip.create({
+          date: tripDate,
+          firNumber: s.firNumber,
+          cerCode: s.wasteType.cerCode,
+          cerPrice: cerPrice,
+          weight: weight,
+          transportPrice: s.transportPrice || 0,
+          disposalPrice: disposalPrice,
+          fuoriRomaPrice: s.fuoriRomaPrice || 0,
+          noleggioPrice: s.noleggioPrice || 0,
+          bigBagPrice: s.bigBagPrice || 0,
+          analisiPrice: s.analisiPrice || 0,
+          servRagnoPrice: s.servRagnoPrice || 0,
+          sostaPrice: s.sostaPrice || 0,
+          address: s.destination.address,
+          notes: s.notes || '',
+          status: 'DELIVERED',
+          destinationId: s.destinationId,
+          driverId: s.driverId,
+          vehicleId: s.vehicleId,
+          wasteTypeId: s.wasteTypeId,
+        });
+      }
+
+      await db.orm.public.Schedule.where({ id: s.id }).update({ tripCreated: true });
+      importCount++;
+    }
+
+    return { 
+      success: true, 
+      count: importCount, 
+      skipped: skippedCount, 
+      warnings 
+    };
+  } catch (e: any) {
+    console.error('importExecutedSchedulesToTrips error:', e);
+    return { success: false, error: e.message || 'Errore durante l\'importazione dei viaggi.' };
+  }
+}
