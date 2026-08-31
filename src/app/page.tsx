@@ -1251,7 +1251,7 @@ export default function Home() {
               };
 
               // Helper per calcolare lo stile del blocco evento
-              const getEventStyle = (startDateStr: string, endDateStr: string) => {
+              const getEventStyle = (startDateStr: string, endDateStr: string, overlapCol = 0, overlapCount = 1) => {
                 const s = new Date(startDateStr);
                 const e = new Date(endDateStr);
                 
@@ -1266,13 +1266,16 @@ export default function Home() {
                 const duration = Math.max(0.5, eDecimal - Math.max(sDecimal, START_HOUR)); 
 
                 const HOUR_HEIGHT = 48;
+                const widthPerc = 100 / overlapCount;
+                const leftPerc = overlapCol * widthPerc;
+
                 return {
                   top: `${startOffset * HOUR_HEIGHT}px`,
                   height: `${duration * HOUR_HEIGHT}px`,
                   position: 'absolute' as const,
-                  left: '4px',
-                  right: '4px',
-                  zIndex: 10
+                  left: `calc(${leftPerc}% + 2px)`,
+                  width: `calc(${widthPerc}% - 4px)`,
+                  zIndex: 10 + overlapCol
                 };
               };
 
@@ -1377,8 +1380,56 @@ export default function Home() {
                         {weekDays.map((d, i) => {
                           const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                           // Filtra i turni per questo giorno
-                          const daySchedules = schedules.filter(s => s.startDate.startsWith(dateStr) || s.date === dateStr);
+                          const daySchedulesRaw = schedules.filter(s => s.startDate.startsWith(dateStr) || s.date === dateStr);
                           const isToday = new Date().toDateString() === d.toDateString();
+
+                          // --- Algoritmo Sovrapposizioni (Overlaps) ---
+                          const sortedSchedules = [...daySchedulesRaw].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+                          const layout = new Map<number, { col: number, count: number }>();
+                          const groups: (typeof sortedSchedules)[] = [];
+                          let lastGroupEnd = 0;
+                          let currentGroup: typeof sortedSchedules = [];
+                          
+                          sortedSchedules.forEach(s => {
+                            const start = new Date(s.startDate).getTime();
+                            const end = new Date(s.endDate).getTime();
+                            if (start >= lastGroupEnd) {
+                              if (currentGroup.length > 0) groups.push(currentGroup);
+                              currentGroup = [s];
+                              lastGroupEnd = end;
+                            } else {
+                              currentGroup.push(s);
+                              lastGroupEnd = Math.max(lastGroupEnd, end);
+                            }
+                          });
+                          if (currentGroup.length > 0) groups.push(currentGroup);
+                          
+                          groups.forEach(group => {
+                            const colsEndTimes: number[] = [];
+                            group.forEach(s => {
+                              const start = new Date(s.startDate).getTime();
+                              const end = new Date(s.endDate).getTime();
+                              let placedCol = -1;
+                              for (let i = 0; i < colsEndTimes.length; i++) {
+                                if (start >= colsEndTimes[i]) {
+                                  colsEndTimes[i] = end;
+                                  placedCol = i;
+                                  break;
+                                }
+                              }
+                              if (placedCol === -1) {
+                                colsEndTimes.push(end);
+                                placedCol = colsEndTimes.length - 1;
+                              }
+                              layout.set(s.id, { col: placedCol, count: 0 });
+                            });
+                            const maxCols = colsEndTimes.length;
+                            group.forEach(s => {
+                              layout.get(s.id)!.count = maxCols;
+                            });
+                          });
+                          const daySchedules = sortedSchedules;
+                          // ------------------------------------------
 
                           return (
                             <div 
@@ -1413,28 +1464,45 @@ export default function Home() {
 
                               {/* Eventi */}
                               {daySchedules.map(s => {
-                                const style = getEventStyle(s.startDate, s.endDate);
+                                const layoutInfo = layout.get(s.id) || { col: 0, count: 1 };
+                                const style = getEventStyle(s.startDate, s.endDate, layoutInfo.col, layoutInfo.count);
                                 const colorClass = getDriverColorClass(s.driverId);
                                 
                                 return (
                                   <div
                                     key={s.id}
                                     style={style}
-                                    className={`${colorClass} opacity-95 hover:opacity-100 border rounded-md p-1.5 overflow-hidden text-xs text-white cursor-pointer transition-opacity shadow-sm group flex flex-col gap-0.5`}
+                                    className={`${colorClass} opacity-95 hover:opacity-100 border rounded-md p-1.5 overflow-visible text-xs text-white cursor-pointer transition-opacity shadow-sm group flex flex-col gap-0.5`}
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (confirm('Vuoi eliminare questo turno?')) {
-                                        handleDeleteSchedule(s.id);
-                                      }
+                                      setNewScheduleData({
+                                        id: s.id,
+                                        driverId: s.driverId.toString(),
+                                        vehicleId: s.vehicleId.toString(),
+                                        startDate: s.startDate,
+                                        endDate: s.endDate,
+                                        notes: s.notes || ''
+                                      });
+                                      setIsScheduleModalOpen(true);
                                     }}
                                   >
                                     <div className="font-bold truncate">{s.driver?.name || 'Sconosciuto'}</div>
                                     <div className="font-mono text-[10px] text-white/80 truncate">{s.vehicle?.plateNumber} - {s.vehicle?.model}</div>
                                     {s.notes && (
-                                      <div className="text-[10px] italic text-white/70 mt-0.5 truncate group-hover:whitespace-normal group-hover:overflow-visible group-hover:bg-black/50 group-hover:p-1 group-hover:rounded group-hover:z-50 relative">
+                                      <div className="text-[10px] italic text-white/70 mt-0.5 truncate">
                                         {s.notes}
                                       </div>
                                     )}
+
+                                    {/* Tooltip Hover */}
+                                    <div className="hidden group-hover:flex flex-col gap-1 absolute top-0 left-[calc(100%+4px)] min-w-[200px] p-3 bg-zinc-900 border border-zinc-700 shadow-2xl rounded-lg z-[9999] pointer-events-none text-left font-sans">
+                                      <div className="font-bold text-white border-b border-zinc-700 pb-1 mb-1">Dettagli Turno</div>
+                                      <div><span className="text-zinc-400 font-semibold">Autista:</span> {s.driver?.name}</div>
+                                      <div><span className="text-zinc-400 font-semibold">Mezzo:</span> {s.vehicle?.plateNumber}</div>
+                                      <div><span className="text-zinc-400 font-semibold">Inizio:</span> {new Date(s.startDate).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
+                                      <div><span className="text-zinc-400 font-semibold">Fine:</span> {new Date(s.endDate).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
+                                      {s.notes && <div className="mt-1 pt-1 border-t border-zinc-700/50"><span className="text-zinc-400 font-semibold">Note:</span> {s.notes}</div>}
+                                    </div>
                                   </div>
                                 );
                               })}
