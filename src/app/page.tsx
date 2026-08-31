@@ -30,6 +30,7 @@ import {
   getSchedulesData,
   getWeeklySchedulesData,
   createSchedule,
+  updateSchedule,
   deleteSchedule,
 } from './actions';
 
