@@ -97,12 +97,36 @@ export default function Home() {
     startDate: string;
     endDate: string;
     notes: string;
+    destinationId: string;
+    wasteTypeId: string;
+    firNumber: string;
+    cerPrice: string;
+    transportPrice: string;
+    disposalPrice: string;
+    fuoriRomaPrice: string;
+    noleggioPrice: string;
+    bigBagPrice: string;
+    analisiPrice: string;
+    servRagnoPrice: string;
+    sostaPrice: string;
   }>({
     driverId: '',
     vehicleId: '',
     startDate: '',
     endDate: '',
     notes: '',
+    destinationId: '',
+    wasteTypeId: '',
+    firNumber: '',
+    cerPrice: '0',
+    transportPrice: '0',
+    disposalPrice: '0',
+    fuoriRomaPrice: '0',
+    noleggioPrice: '0',
+    bigBagPrice: '0',
+    analisiPrice: '0',
+    servRagnoPrice: '0',
+    sostaPrice: '0',
   });
 
   // Caricamento stati
@@ -132,6 +156,12 @@ export default function Home() {
   const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
   const [destSearchInput, setDestSearchInput] = useState('');
   const [isDestDropdownOpen, setIsDestDropdownOpen] = useState(false);
+
+  // Search input state for schedule searchable selectors
+  const [schedCerSearchInput, setSchedCerSearchInput] = useState('');
+  const [isSchedCerDropdownOpen, setIsSchedCerDropdownOpen] = useState(false);
+  const [schedDestSearchInput, setSchedDestSearchInput] = useState('');
+  const [isSchedDestDropdownOpen, setIsSchedDestDropdownOpen] = useState(false);
 
   // Form states
   const [loginError, setLoginError] = useState('');
@@ -430,7 +460,7 @@ export default function Home() {
 
 
 
-  const handleDeleteTrip = async (id: number) => {
+const handleDeleteTrip = async (id: number) => {
     if (confirm('Confermi di voler rimuovere questa riga di viaggio?')) {
       const res = await deleteTrip(id);
       if (res.success) await refreshData();
@@ -438,42 +468,97 @@ export default function Home() {
     }
   };
 
+  const resetScheduleForm = () => {
+    setNewScheduleData({
+      driverId: '',
+      vehicleId: '',
+      startDate: '',
+      endDate: '',
+      notes: '',
+      destinationId: '',
+      wasteTypeId: '',
+      firNumber: '',
+      cerPrice: '0',
+      transportPrice: '0',
+      disposalPrice: '0',
+      fuoriRomaPrice: '0',
+      noleggioPrice: '0',
+      bigBagPrice: '0',
+      analisiPrice: '0',
+      servRagnoPrice: '0',
+      sostaPrice: '0',
+    });
+    setSchedCerSearchInput('');
+    setSchedDestSearchInput('');
+  };
+
+  const handleScheduleDestinationChange = (destId: string) => {
+    const calculated = calculatePrefilledPrices(destId, newScheduleData.wasteTypeId, newScheduleData.vehicleId, '0');
+    setNewScheduleData(prev => ({
+      ...prev,
+      destinationId: destId,
+      cerPrice: calculated.cerPrice !== '' ? calculated.cerPrice : prev.cerPrice,
+      transportPrice: calculated.transportPrice !== '' ? calculated.transportPrice : prev.transportPrice,
+      disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : prev.disposalPrice
+    }));
+  };
+
+  const handleScheduleWasteTypeChange = (wasteTypeId: string) => {
+    const calculated = calculatePrefilledPrices(newScheduleData.destinationId, wasteTypeId, newScheduleData.vehicleId, '0');
+    setNewScheduleData(prev => ({
+      ...prev,
+      wasteTypeId: wasteTypeId,
+      cerPrice: calculated.cerPrice !== '' ? calculated.cerPrice : prev.cerPrice,
+      disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : prev.disposalPrice
+    }));
+  };
+
+  const handleScheduleVehicleChange = (vehicleId: string) => {
+    const calculated = calculatePrefilledPrices(newScheduleData.destinationId, newScheduleData.wasteTypeId, vehicleId, '0');
+    setNewScheduleData(prev => ({
+      ...prev,
+      vehicleId: vehicleId,
+      transportPrice: calculated.transportPrice !== '' ? calculated.transportPrice : prev.transportPrice
+    }));
+  };
+
   const handleCreateSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newScheduleData.driverId || !newScheduleData.vehicleId || !newScheduleData.startDate || !newScheduleData.endDate) {
-      alert('Tutti i campi sono obbligatori.');
+      alert('Autista, automezzo, data/ora inizio e fine sono obbligatori.');
       return;
     }
+    const schedulePayload = {
+      date: newScheduleData.startDate.split('T')[0],
+      startDate: newScheduleData.startDate,
+      endDate: newScheduleData.endDate,
+      driverId: Number(newScheduleData.driverId),
+      vehicleId: Number(newScheduleData.vehicleId),
+      notes: newScheduleData.notes,
+      destinationId: newScheduleData.destinationId || null,
+      wasteTypeId: newScheduleData.wasteTypeId || null,
+      firNumber: newScheduleData.firNumber || '',
+      cerPrice: newScheduleData.cerPrice || '0',
+      transportPrice: newScheduleData.transportPrice || '0',
+      disposalPrice: newScheduleData.disposalPrice || '0',
+      fuoriRomaPrice: newScheduleData.fuoriRomaPrice || '0',
+      noleggioPrice: newScheduleData.noleggioPrice || '0',
+      bigBagPrice: newScheduleData.bigBagPrice || '0',
+      analisiPrice: newScheduleData.analisiPrice || '0',
+      servRagnoPrice: newScheduleData.servRagnoPrice || '0',
+      sostaPrice: newScheduleData.sostaPrice || '0',
+    };
+
     let res;
     if (newScheduleData.id) {
-      res = await updateSchedule(newScheduleData.id, {
-        date: newScheduleData.startDate.split('T')[0],
-        startDate: newScheduleData.startDate,
-        endDate: newScheduleData.endDate,
-        driverId: Number(newScheduleData.driverId),
-        vehicleId: Number(newScheduleData.vehicleId),
-        notes: newScheduleData.notes,
-      });
+      res = await updateSchedule(newScheduleData.id, schedulePayload);
     } else {
-      res = await createSchedule({
-        date: newScheduleData.startDate.split('T')[0],
-        startDate: newScheduleData.startDate,
-        endDate: newScheduleData.endDate,
-        driverId: Number(newScheduleData.driverId),
-        vehicleId: Number(newScheduleData.vehicleId),
-        notes: newScheduleData.notes,
-      });
+      res = await createSchedule(schedulePayload);
     }
 
     if (res.success) {
       setIsScheduleModalOpen(false);
-      setNewScheduleData({
-        driverId: '',
-        vehicleId: '',
-        startDate: '',
-        endDate: '',
-        notes: '',
-      });
+      resetScheduleForm();
       await refreshSchedules(newScheduleData.startDate.split('T')[0]);
     } else {
       alert(res.error);
@@ -1330,6 +1415,18 @@ export default function Home() {
                             startDate: `${yyyy}-${mm}-${dd}T08:00`,
                             endDate: `${yyyy}-${mm}-${dd}T17:00`,
                             notes: '',
+                            destinationId: '',
+                            wasteTypeId: '',
+                            firNumber: '',
+                            cerPrice: '0',
+                            transportPrice: '0',
+                            disposalPrice: '0',
+                            fuoriRomaPrice: '0',
+                            noleggioPrice: '0',
+                            bigBagPrice: '0',
+                            analisiPrice: '0',
+                            servRagnoPrice: '0',
+                            sostaPrice: '0',
                           });
                           setIsScheduleModalOpen(true);
                         }}
@@ -1452,6 +1549,18 @@ export default function Home() {
                                     startDate: `${dateStr}T${hStr}:00`,
                                     endDate: `${dateStr}T${endHStr}:00`,
                                     notes: '',
+                                    destinationId: '',
+                                    wasteTypeId: '',
+                                    firNumber: '',
+                                    cerPrice: '0',
+                                    transportPrice: '0',
+                                    disposalPrice: '0',
+                                    fuoriRomaPrice: '0',
+                                    noleggioPrice: '0',
+                                    bigBagPrice: '0',
+                                    analisiPrice: '0',
+                                    servRagnoPrice: '0',
+                                    sostaPrice: '0',
                                   });
                                   setIsScheduleModalOpen(true);
                                 }
@@ -1481,7 +1590,19 @@ export default function Home() {
                                         vehicleId: s.vehicleId.toString(),
                                         startDate: s.startDate,
                                         endDate: s.endDate,
-                                        notes: s.notes || ''
+                                        notes: s.notes || '',
+                                        destinationId: s.destinationId ? s.destinationId.toString() : '',
+                                        wasteTypeId: s.wasteTypeId ? s.wasteTypeId.toString() : '',
+                                        firNumber: s.firNumber || '',
+                                        cerPrice: s.cerPrice !== null && s.cerPrice !== undefined ? s.cerPrice.toString() : '0',
+                                        transportPrice: s.transportPrice !== null && s.transportPrice !== undefined ? s.transportPrice.toString() : '0',
+                                        disposalPrice: s.disposalPrice !== null && s.disposalPrice !== undefined ? s.disposalPrice.toString() : '0',
+                                        fuoriRomaPrice: s.fuoriRomaPrice !== null && s.fuoriRomaPrice !== undefined ? s.fuoriRomaPrice.toString() : '0',
+                                        noleggioPrice: s.noleggioPrice !== null && s.noleggioPrice !== undefined ? s.noleggioPrice.toString() : '0',
+                                        bigBagPrice: s.bigBagPrice !== null && s.bigBagPrice !== undefined ? s.bigBagPrice.toString() : '0',
+                                        analisiPrice: s.analisiPrice !== null && s.analisiPrice !== undefined ? s.analisiPrice.toString() : '0',
+                                        servRagnoPrice: s.servRagnoPrice !== null && s.servRagnoPrice !== undefined ? s.servRagnoPrice.toString() : '0',
+                                        sostaPrice: s.sostaPrice !== null && s.sostaPrice !== undefined ? s.sostaPrice.toString() : '0',
                                       });
                                       setIsScheduleModalOpen(true);
                                     }}
@@ -3192,82 +3313,304 @@ export default function Home() {
 
       {/* SCHEDULE MODAL */}
       {isScheduleModalOpen && (
-        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
-              <h3 className="text-lg font-bold text-white font-sans">
+              <h3 className="text-xl font-bold text-white font-sans">
                 {newScheduleData.id ? 'Modifica Pianificazione' : 'Pianifica Nuovo Viaggio'}
               </h3>
-              <button onClick={() => setIsScheduleModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
+              <button onClick={() => { setIsScheduleModalOpen(false); resetScheduleForm(); }} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <form onSubmit={handleCreateSchedule} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 font-sans">Autista (Trasportatore)</label>
-                <select
-                  required
-                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                  value={newScheduleData.driverId}
-                  onChange={(e) => setNewScheduleData({ ...newScheduleData, driverId: e.target.value })}
-                >
-                  <option value="">Seleziona Autista...</option>
-                  {drivers.map((d) => (
-                    <option key={d.id} value={d.id}>{d.name} ({d.phone})</option>
-                  ))}
-                </select>
-              </div>
+            <form onSubmit={handleCreateSchedule} className="space-y-6">
+              {(() => {
+                const chosenDest = destinations.find(d => d.id === Number(newScheduleData.destinationId));
+                const destDisplayValue = chosenDest ? `${chosenDest.name} (${chosenDest.client?.name} - ${chosenDest.shippingCode})` : '';
+                return (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-zinc-400 font-sans">Autista (Trasportatore)</label>
+                        <select
+                          required
+                          className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                          value={newScheduleData.driverId}
+                          onChange={(e) => setNewScheduleData({ ...newScheduleData, driverId: e.target.value })}
+                        >
+                          <option value="">Seleziona Autista...</option>
+                          {drivers.map((d) => (
+                            <option key={d.id} value={d.id}>{d.name} ({d.phone})</option>
+                          ))}
+                        </select>
+                      </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 font-sans">Automezzo (Camion)</label>
-                <select
-                  required
-                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                  value={newScheduleData.vehicleId}
-                  onChange={(e) => setNewScheduleData({ ...newScheduleData, vehicleId: e.target.value })}
-                >
-                  <option value="">Seleziona Veicolo...</option>
-                  {vehicles.map((v) => (
-                    <option key={v.id} value={v.id}>{v.plateNumber} - {v.model}</option>
-                  ))}
-                </select>
-              </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-zinc-400 font-sans">Automezzo (Camion)</label>
+                        <select
+                          required
+                          className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                          value={newScheduleData.vehicleId}
+                          onChange={(e) => handleScheduleVehicleChange(e.target.value)}
+                        >
+                          <option value="">Seleziona Veicolo...</option>
+                          {vehicles.map((v) => (
+                            <option key={v.id} value={v.id}>{v.plateNumber} - {v.model}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 font-sans">Data e Ora Inizio Viaggio</label>
-                <input
-                  type="datetime-local"
-                  required
-                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                  value={newScheduleData.startDate}
-                  onChange={(e) => setNewScheduleData({ ...newScheduleData, startDate: e.target.value })}
-                />
-              </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-zinc-400 font-sans">Data e Ora Inizio Viaggio</label>
+                        <input
+                          type="datetime-local"
+                          required
+                          className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                          value={newScheduleData.startDate}
+                          onChange={(e) => setNewScheduleData({ ...newScheduleData, startDate: e.target.value })}
+                        />
+                      </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 font-sans">Data e Ora Fine Viaggio</label>
-                <input
-                  type="datetime-local"
-                  required
-                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                  value={newScheduleData.endDate}
-                  onChange={(e) => setNewScheduleData({ ...newScheduleData, endDate: e.target.value })}
-                />
-              </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-zinc-400 font-sans">Data e Ora Fine Viaggio</label>
+                        <input
+                          type="datetime-local"
+                          required
+                          className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                          value={newScheduleData.endDate}
+                          onChange={(e) => setNewScheduleData({ ...newScheduleData, endDate: e.target.value })}
+                        />
+                      </div>
+                    </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 font-sans">Note / Indicazioni cantiere</label>
-                <textarea
-                  rows={2}
-                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
-                  placeholder="Es. Consegna prevista per le ore 10:00 al cantiere Colosseo."
-                  value={newScheduleData.notes}
-                  onChange={(e) => setNewScheduleData({ ...newScheduleData, notes: e.target.value })}
-                />
-              </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Searchable Destination selector */}
+                      <div className="relative md:col-span-2">
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Destinazione (Cantiere / Cliente)</label>
+                        <div className="relative mt-1">
+                          <input
+                            type="text"
+                            placeholder="Cerca e seleziona destinazione..."
+                            className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                            value={isSchedDestDropdownOpen ? schedDestSearchInput : destDisplayValue}
+                            onFocus={() => {
+                              setIsSchedDestDropdownOpen(true);
+                              setSchedDestSearchInput('');
+                            }}
+                            onChange={(e) => setSchedDestSearchInput(e.target.value)}
+                          />
+                          {isSchedDestDropdownOpen && (
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                              {destinations
+                                .filter(d => {
+                                  const query = schedDestSearchInput.toLowerCase();
+                                  return d.name.toLowerCase().includes(query) || 
+                                         (d.client?.name || '').toLowerCase().includes(query) ||
+                                         d.shippingCode.toLowerCase().includes(query);
+                                })
+                                .map(d => (
+                                  <div
+                                    key={d.id}
+                                    className="p-2 text-sm text-zinc-200 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors"
+                                    onClick={() => {
+                                      handleScheduleDestinationChange(String(d.id));
+                                      setIsSchedDestDropdownOpen(false);
+                                    }}
+                                  >
+                                    <span className="font-bold">{d.name}</span>
+                                    <span className="text-xs ml-2 text-zinc-400">
+                                      (Cod: {d.shippingCode} - Client: {d.client?.name})
+                                    </span>
+                                  </div>
+                                ))}
+                              {destinations.filter(d => {
+                                const query = schedDestSearchInput.toLowerCase();
+                                return d.name.toLowerCase().includes(query) || 
+                                       (d.client?.name || '').toLowerCase().includes(query) ||
+                                       d.shippingCode.toLowerCase().includes(query);
+                              }).length === 0 && (
+                                <div className="p-2 text-xs text-zinc-500 text-center">Nessuna destinazione trovata.</div>
+                              )}
+                            </div>
+                          )}
+                          {isSchedDestDropdownOpen && (
+                            <div className="fixed inset-0 z-40" onClick={() => setIsSchedDestDropdownOpen(false)} />
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Numero Formulario (FIR)</label>
+                        <input
+                          type="text"
+                          placeholder="Es: NVBNH006245YQ"
+                          className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                          value={newScheduleData.firNumber}
+                          onChange={(e) => setNewScheduleData({ ...newScheduleData, firNumber: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Searchable CER Code dropdown */}
+                      <div className="relative">
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Codice CER</label>
+                        <div className="relative mt-1">
+                          <input
+                            type="text"
+                            placeholder="Cerca CER..."
+                            className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                            value={isSchedCerDropdownOpen ? schedCerSearchInput : (wasteTypes.find(w => w.id === Number(newScheduleData.wasteTypeId))?.cerCode || '')}
+                            onFocus={() => {
+                              setIsSchedCerDropdownOpen(true);
+                              setSchedCerSearchInput('');
+                            }}
+                            onChange={(e) => setSchedCerSearchInput(e.target.value)}
+                          />
+                          {isSchedCerDropdownOpen && (
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                              {wasteTypes
+                                .filter(w => {
+                                  const query = schedCerSearchInput.toLowerCase();
+                                  return w.cerCode.toLowerCase().includes(query) || 
+                                         (w.description || '').toLowerCase().includes(query);
+                                })
+                                .slice(0, 50)
+                                .map(w => (
+                                  <div
+                                    key={w.id}
+                                    className="p-2 text-xs text-zinc-200 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors"
+                                    onClick={() => {
+                                      handleScheduleWasteTypeChange(String(w.id));
+                                      setIsSchedCerDropdownOpen(false);
+                                    }}
+                                  >
+                                    <span className="font-mono font-bold bg-zinc-900 text-emerald-400 px-1.5 py-0.5 rounded mr-2">{w.cerCode}</span>
+                                    <span>{w.description?.substring(0, 60)}...</span>
+                                  </div>
+                                ))}
+                              {wasteTypes.filter(w => {
+                                const query = schedCerSearchInput.toLowerCase();
+                                return w.cerCode.toLowerCase().includes(query) || 
+                                       (w.description || '').toLowerCase().includes(query);
+                              }).length === 0 && (
+                                <div className="p-2 text-xs text-zinc-500 text-center">Nessun codice CER trovato.</div>
+                              )}
+                            </div>
+                          )}
+                          {isSchedCerDropdownOpen && (
+                            <div className="fixed inset-0 z-40" onClick={() => setIsSchedCerDropdownOpen(false)} />
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-zinc-400 uppercase">Prezzo CER (€/t)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="Prefill da listino"
+                          className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                          value={newScheduleData.cerPrice}
+                          onChange={(e) => setNewScheduleData({ ...newScheduleData, cerPrice: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-t border-zinc-800 pt-4">
+                      <span className="text-sm font-semibold text-white block mb-3">Prezzi Pianificati (€)</span>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Trasporto</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newScheduleData.transportPrice}
+                            onChange={(e) => setNewScheduleData({ ...newScheduleData, transportPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Fuori Roma</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newScheduleData.fuoriRomaPrice}
+                            onChange={(e) => setNewScheduleData({ ...newScheduleData, fuoriRomaPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Noleggio Cassoni</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newScheduleData.noleggioPrice}
+                            onChange={(e) => setNewScheduleData({ ...newScheduleData, noleggioPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Fornitura Big Bag</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newScheduleData.bigBagPrice}
+                            onChange={(e) => setNewScheduleData({ ...newScheduleData, bigBagPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Analisi Rifiuto</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newScheduleData.analisiPrice}
+                            onChange={(e) => setNewScheduleData({ ...newScheduleData, analisiPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Carico Ragno</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newScheduleData.servRagnoPrice}
+                            onChange={(e) => setNewScheduleData({ ...newScheduleData, servRagnoPrice: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-zinc-400">Indennizzo Sosta</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newScheduleData.sostaPrice}
+                            onChange={(e) => setNewScheduleData({ ...newScheduleData, sostaPrice: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-400 font-sans">Note / Indicazioni cantiere</label>
+                      <textarea
+                        rows={2}
+                        className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                        placeholder="Es. Consegna prevista per le ore 10:00 al cantiere Colosseo."
+                        value={newScheduleData.notes}
+                        onChange={(e) => setNewScheduleData({ ...newScheduleData, notes: e.target.value })}
+                      />
+                    </div>
+                  </>
+                );
+              })()}
 
               <div className="flex justify-between items-center pt-4 border-t border-zinc-800">
                 <div>
@@ -3287,7 +3630,7 @@ export default function Home() {
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    onClick={() => setIsScheduleModalOpen(false)}
+                    onClick={() => { setIsScheduleModalOpen(false); resetScheduleForm(); }}
                     className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-xs font-semibold cursor-pointer"
                   >
                     Annulla

@@ -13,6 +13,8 @@ export async function GET(request: Request) {
     const schedules = await db.orm.public.Schedule
       .where({ driverId: Number(driverId) })
       .include('vehicle')
+      .include('destination', (dest) => dest.include('client'))
+      .include('wasteType')
       .all();
 
     schedules.sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());

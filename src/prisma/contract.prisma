@@ -33,6 +33,7 @@ model Destination {
   clientId     Int
   client       Client   @relation(fields: [clientId], references: [id])
   trips        Trip[]
+  schedules    Schedule[]
   createdAt    TimestamptzString @default(now())
   updatedAt    temporal.updatedAtString()
   @@rls
@@ -73,6 +74,7 @@ model WasteType {
   category       String          @default("Altro")
   trips          Trip[]
   disposalPrices DisposalPrice[]
+  schedules      Schedule[]
   createdAt      TimestamptzString @default(now())
   updatedAt      temporal.updatedAtString()
   @@rls
@@ -155,20 +157,38 @@ model TransportPrice {
 }
 
 model Schedule {
-  id        Int      @id @default(autoincrement())
-  date      String   // Data pianificata (formato YYYY-MM-DD)
-  startDate String   // Inizio viaggio (formato YYYY-MM-DDTHH:MM)
-  endDate   String   // Fine viaggio (formato YYYY-MM-DDTHH:MM)
-  driverId  Int
-  driver    Driver   @relation(fields: [driverId], references: [id])
-  vehicleId Int
-  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
-  notes     String?
-  status         String   @default("PIANIFICATO") // PIANIFICATO, ESEGUITO, ANNULLATO
-  loadedQuantity Float?   // Quantità caricata dichiarata dall'autista
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+  id             Int          @id @default(autoincrement())
+  date           String       // Data pianificata (formato YYYY-MM-DD)
+  startDate      String       // Inizio viaggio (formato YYYY-MM-DDTHH:MM)
+  endDate        String       // Fine viaggio (formato YYYY-MM-DDTHH:MM)
+  driverId       Int
+  driver         Driver       @relation(fields: [driverId], references: [id])
+  vehicleId      Int
+  vehicle        Vehicle      @relation(fields: [vehicleId], references: [id])
+  notes          String?
+  status         String       @default("PIANIFICATO") // PIANIFICATO, ESEGUITO, ANNULLATO
+  loadedQuantity Float?       // Quantità caricata dichiarata dall'autista
+  createdAt      TimestamptzString @default(now())
+  updatedAt      temporal.updatedAtString()
   @@rls
+
+  // Nuovi campi per collegare ed auto-creare il viaggio eseguito
+  destinationId  Int?
+  destination    Destination? @relation(fields: [destinationId], references: [id])
+  wasteTypeId    Int?
+  wasteType      WasteType?   @relation(fields: [wasteTypeId], references: [id])
+  firNumber      String?
+
+  // Nuovi campi prezzi opzionali pianificati
+  cerPrice       Float?       @default(0.0)
+  transportPrice Float?       @default(0.0)
+  disposalPrice  Float?       @default(0.0)
+  fuoriRomaPrice Float?       @default(0.0)
+  noleggioPrice  Float?       @default(0.0)
+  bigBagPrice    Float?       @default(0.0)
+  analisiPrice   Float?       @default(0.0)
+  servRagnoPrice Float?       @default(0.0)
+  sostaPrice     Float?       @default(0.0)
 }
 
 

@@ -1,0 +1,752 @@
+[
+  {
+    "id": "column.public.schedule.analisiPrice",
+    "label": "Add column \"analisiPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "analisiPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"analisiPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "analisiPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"analisiPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"analisiPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"analisiPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "analisiPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.bigBagPrice",
+    "label": "Add column \"bigBagPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "bigBagPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"bigBagPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "bigBagPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"bigBagPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"bigBagPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"bigBagPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "bigBagPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.cerPrice",
+    "label": "Add column \"cerPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "cerPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"cerPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "cerPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"cerPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"cerPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"cerPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "cerPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.destinationId",
+    "label": "Add column \"destinationId\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "destinationId",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"destinationId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "destinationId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"destinationId\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"destinationId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"destinationId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "destinationId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.disposalPrice",
+    "label": "Add column \"disposalPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "disposalPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"disposalPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "disposalPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"disposalPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"disposalPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"disposalPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "disposalPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.firNumber",
+    "label": "Add column \"firNumber\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "firNumber",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"firNumber\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "firNumber"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"firNumber\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"firNumber\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"firNumber\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "firNumber"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.fuoriRomaPrice",
+    "label": "Add column \"fuoriRomaPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "fuoriRomaPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"fuoriRomaPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "fuoriRomaPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"fuoriRomaPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"fuoriRomaPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"fuoriRomaPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "fuoriRomaPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.loadedQuantity",
+    "label": "Add column \"loadedQuantity\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "loadedQuantity",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"loadedQuantity\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "loadedQuantity"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"loadedQuantity\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"loadedQuantity\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"loadedQuantity\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "loadedQuantity"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.noleggioPrice",
+    "label": "Add column \"noleggioPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "noleggioPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"noleggioPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "noleggioPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"noleggioPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"noleggioPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"noleggioPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "noleggioPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.servRagnoPrice",
+    "label": "Add column \"servRagnoPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "servRagnoPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"servRagnoPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "servRagnoPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"servRagnoPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"servRagnoPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"servRagnoPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "servRagnoPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.sostaPrice",
+    "label": "Add column \"sostaPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sostaPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sostaPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "sostaPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sostaPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"sostaPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sostaPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "sostaPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.status",
+    "label": "Add column \"status\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "status",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"status\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "status"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"status\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"status\" text DEFAULT 'PIANIFICATO' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"status\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "status"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.transportPrice",
+    "label": "Add column \"transportPrice\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "transportPrice",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"transportPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "transportPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"transportPrice\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"transportPrice\" float8 DEFAULT 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"transportPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "transportPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.schedule.wasteTypeId",
+    "label": "Add column \"wasteTypeId\" to \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "wasteTypeId",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"wasteTypeId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "wasteTypeId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"wasteTypeId\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\" ADD COLUMN \"wasteTypeId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"wasteTypeId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "schedule",
+          "wasteTypeId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.schedule.schedule_destinationId_idx_1646ee5c",
+    "label": "Create index \"schedule_destinationId_idx_1646ee5c\" on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "schedule_destinationId_idx_1646ee5c",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"schedule_destinationId_idx_1646ee5c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule_destinationId_idx_1646ee5c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"schedule_destinationId_idx_1646ee5c\"",
+        "sql": "CREATE INDEX \"schedule_destinationId_idx_1646ee5c\" ON \"public\".\"schedule\" (\"destinationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"schedule_destinationId_idx_1646ee5c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule_destinationId_idx_1646ee5c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.schedule.schedule_wasteTypeId_idx_26e4c367",
+    "label": "Create index \"schedule_wasteTypeId_idx_26e4c367\" on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "schedule_wasteTypeId_idx_26e4c367",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"schedule_wasteTypeId_idx_26e4c367\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule_wasteTypeId_idx_26e4c367\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"schedule_wasteTypeId_idx_26e4c367\"",
+        "sql": "CREATE INDEX \"schedule_wasteTypeId_idx_26e4c367\" ON \"public\".\"schedule\" (\"wasteTypeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"schedule_wasteTypeId_idx_26e4c367\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"schedule_wasteTypeId_idx_26e4c367\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.schedule.schedule_destinationId_fkey",
+    "label": "Add foreign key \"schedule_destinationId_fkey\" on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "schedule_destinationId_fkey",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"schedule_destinationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "schedule_destinationId_fkey",
+          "public",
+          "\"public\".\"schedule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"schedule_destinationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\"\nADD CONSTRAINT \"schedule_destinationId_fkey\"\nFOREIGN KEY (\"destinationId\")\nREFERENCES \"public\".\"destination\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"schedule_destinationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "schedule_destinationId_fkey",
+          "public",
+          "\"public\".\"schedule\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.schedule.schedule_wasteTypeId_fkey",
+    "label": "Add foreign key \"schedule_wasteTypeId_fkey\" on \"schedule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "schedule_wasteTypeId_fkey",
+        "table": "schedule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"schedule_wasteTypeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "schedule_wasteTypeId_fkey",
+          "public",
+          "\"public\".\"schedule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"schedule_wasteTypeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"schedule\"\nADD CONSTRAINT \"schedule_wasteTypeId_fkey\"\nFOREIGN KEY (\"wasteTypeId\")\nREFERENCES \"public\".\"wasteType\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"schedule_wasteTypeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "schedule_wasteTypeId_fkey",
+          "public",
+          "\"public\".\"schedule\""
+        ]
+      }
+    ]
+  }
+]

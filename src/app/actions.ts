@@ -498,7 +498,12 @@ export async function getWeeklySchedulesData(startDateStr: string, endDateStr: s
     }
 
     const promises = dates.map(date => 
-      db.orm.public.Schedule.where({ date }).include('driver').include('vehicle').all()
+      db.orm.public.Schedule.where({ date })
+        .include('driver')
+        .include('vehicle')
+        .include('destination', (dest) => dest.include('client'))
+        .include('wasteType')
+        .all()
     );
     
     const results = await Promise.all(promises);
@@ -517,6 +522,8 @@ export async function getSchedulesData(date: string) {
       .where({ date })
       .include('driver')
       .include('vehicle')
+      .include('destination', (dest) => dest.include('client'))
+      .include('wasteType')
       .all();
     return { success: true, schedules };
   } catch (e: any) {
@@ -532,6 +539,18 @@ export async function createSchedule(data: {
   driverId: number;
   vehicleId: number;
   notes?: string;
+  destinationId?: number | string | null;
+  wasteTypeId?: number | string | null;
+  firNumber?: string;
+  cerPrice?: number | string;
+  transportPrice?: number | string;
+  disposalPrice?: number | string;
+  fuoriRomaPrice?: number | string;
+  noleggioPrice?: number | string;
+  bigBagPrice?: number | string;
+  analisiPrice?: number | string;
+  servRagnoPrice?: number | string;
+  sostaPrice?: number | string;
 }) {
   try {
     if (new Date(data.startDate) >= new Date(data.endDate)) {
@@ -545,6 +564,18 @@ export async function createSchedule(data: {
       driverId: Number(data.driverId),
       vehicleId: Number(data.vehicleId),
       notes: data.notes || '',
+      destinationId: data.destinationId && data.destinationId !== '' ? Number(data.destinationId) : null,
+      wasteTypeId: data.wasteTypeId && data.wasteTypeId !== '' ? Number(data.wasteTypeId) : null,
+      firNumber: data.firNumber || null,
+      cerPrice: data.cerPrice ? Number(data.cerPrice) : 0,
+      transportPrice: data.transportPrice ? Number(data.transportPrice) : 0,
+      disposalPrice: data.disposalPrice ? Number(data.disposalPrice) : 0,
+      fuoriRomaPrice: data.fuoriRomaPrice ? Number(data.fuoriRomaPrice) : 0,
+      noleggioPrice: data.noleggioPrice ? Number(data.noleggioPrice) : 0,
+      bigBagPrice: data.bigBagPrice ? Number(data.bigBagPrice) : 0,
+      analisiPrice: data.analisiPrice ? Number(data.analisiPrice) : 0,
+      servRagnoPrice: data.servRagnoPrice ? Number(data.servRagnoPrice) : 0,
+      sostaPrice: data.sostaPrice ? Number(data.sostaPrice) : 0,
     });
     return { success: true, schedule: newSchedule };
   } catch (e: any) {
@@ -560,12 +591,47 @@ export async function updateSchedule(id: number, data: {
   driverId?: number;
   vehicleId?: number;
   notes?: string;
+  destinationId?: number | string | null;
+  wasteTypeId?: number | string | null;
+  firNumber?: string | null;
+  cerPrice?: number | string;
+  transportPrice?: number | string;
+  disposalPrice?: number | string;
+  fuoriRomaPrice?: number | string;
+  noleggioPrice?: number | string;
+  bigBagPrice?: number | string;
+  analisiPrice?: number | string;
+  servRagnoPrice?: number | string;
+  sostaPrice?: number | string;
 }) {
   try {
     if (data.startDate && data.endDate && new Date(data.startDate) >= new Date(data.endDate)) {
       return { success: false, error: 'La data/ora di inizio deve essere precedente alla data/ora di fine.' };
     }
-    const s = await db.orm.public.Schedule.where({ id }).update(data);
+
+    const updateData: any = { ...data };
+    if (data.driverId) updateData.driverId = Number(data.driverId);
+    if (data.vehicleId) updateData.vehicleId = Number(data.vehicleId);
+    if (data.destinationId !== undefined) {
+      updateData.destinationId = data.destinationId && data.destinationId !== '' ? Number(data.destinationId) : null;
+    }
+    if (data.wasteTypeId !== undefined) {
+      updateData.wasteTypeId = data.wasteTypeId && data.wasteTypeId !== '' ? Number(data.wasteTypeId) : null;
+    }
+    if (data.firNumber !== undefined) {
+      updateData.firNumber = data.firNumber || null;
+    }
+    if (data.cerPrice !== undefined) updateData.cerPrice = Number(data.cerPrice || 0);
+    if (data.transportPrice !== undefined) updateData.transportPrice = Number(data.transportPrice || 0);
+    if (data.disposalPrice !== undefined) updateData.disposalPrice = Number(data.disposalPrice || 0);
+    if (data.fuoriRomaPrice !== undefined) updateData.fuoriRomaPrice = Number(data.fuoriRomaPrice || 0);
+    if (data.noleggioPrice !== undefined) updateData.noleggioPrice = Number(data.noleggioPrice || 0);
+    if (data.bigBagPrice !== undefined) updateData.bigBagPrice = Number(data.bigBagPrice || 0);
+    if (data.analisiPrice !== undefined) updateData.analisiPrice = Number(data.analisiPrice || 0);
+    if (data.servRagnoPrice !== undefined) updateData.servRagnoPrice = Number(data.servRagnoPrice || 0);
+    if (data.sostaPrice !== undefined) updateData.sostaPrice = Number(data.sostaPrice || 0);
+
+    const s = await db.orm.public.Schedule.where({ id }).update(updateData);
     return { success: true, schedule: s };
   } catch (e: any) {
     console.error('updateSchedule error:', e);

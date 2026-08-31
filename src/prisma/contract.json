@@ -248,6 +248,21 @@
                   "namespace": "public"
                 }
               },
+              "schedules": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "destinationId"
+                  ]
+                },
+                "to": {
+                  "model": "Schedule",
+                  "namespace": "public"
+                }
+              },
               "trips": {
                 "cardinality": "1:N",
                 "on": {
@@ -595,6 +610,27 @@
           },
           "Schedule": {
             "fields": {
+              "analisiPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "bigBagPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "cerPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -606,6 +642,20 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "destinationId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "disposalPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
                   "kind": "scalar"
                 }
               },
@@ -623,6 +673,20 @@
                   "kind": "scalar"
                 }
               },
+              "firNumber": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fuoriRomaPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -637,10 +701,31 @@
                   "kind": "scalar"
                 }
               },
+              "noleggioPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
               "notes": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "servRagnoPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "sostaPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
                   "kind": "scalar"
                 }
               },
@@ -658,6 +743,13 @@
                   "kind": "scalar"
                 }
               },
+              "transportPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -671,9 +763,31 @@
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
+              },
+              "wasteTypeId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
+              "destination": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "destinationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Destination",
+                  "namespace": "public"
+                }
+              },
               "driver": {
                 "cardinality": "N:1",
                 "on": {
@@ -703,15 +817,45 @@
                   "model": "Vehicle",
                   "namespace": "public"
                 }
+              },
+              "wasteType": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "wasteTypeId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "WasteType",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
               "fields": {
+                "analisiPrice": {
+                  "column": "analisiPrice"
+                },
+                "bigBagPrice": {
+                  "column": "bigBagPrice"
+                },
+                "cerPrice": {
+                  "column": "cerPrice"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
                 "date": {
                   "column": "date"
+                },
+                "destinationId": {
+                  "column": "destinationId"
+                },
+                "disposalPrice": {
+                  "column": "disposalPrice"
                 },
                 "driverId": {
                   "column": "driverId"
@@ -719,14 +863,29 @@
                 "endDate": {
                   "column": "endDate"
                 },
+                "firNumber": {
+                  "column": "firNumber"
+                },
+                "fuoriRomaPrice": {
+                  "column": "fuoriRomaPrice"
+                },
                 "id": {
                   "column": "id"
                 },
                 "loadedQuantity": {
                   "column": "loadedQuantity"
                 },
+                "noleggioPrice": {
+                  "column": "noleggioPrice"
+                },
                 "notes": {
                   "column": "notes"
+                },
+                "servRagnoPrice": {
+                  "column": "servRagnoPrice"
+                },
+                "sostaPrice": {
+                  "column": "sostaPrice"
                 },
                 "startDate": {
                   "column": "startDate"
@@ -734,11 +893,17 @@
                 "status": {
                   "column": "status"
                 },
+                "transportPrice": {
+                  "column": "transportPrice"
+                },
                 "updatedAt": {
                   "column": "updatedAt"
                 },
                 "vehicleId": {
                   "column": "vehicleId"
+                },
+                "wasteTypeId": {
+                  "column": "wasteTypeId"
                 }
               },
               "namespaceId": "public",
@@ -1433,6 +1598,21 @@
                   "namespace": "public"
                 }
               },
+              "schedules": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "wasteTypeId"
+                  ]
+                },
+                "to": {
+                  "model": "Schedule",
+                  "namespace": "public"
+                }
+              },
               "trips": {
                 "cardinality": "1:N",
                 "on": {
@@ -1940,6 +2120,33 @@
             },
             "schedule": {
               "columns": {
+                "analisiPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": true
+                },
+                "bigBagPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": true
+                },
+                "cerPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -1954,6 +2161,20 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "destinationId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "disposalPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": true
+                },
                 "driverId": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
@@ -1963,6 +2184,20 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "firNumber": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "fuoriRomaPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": true
                 },
                 "id": {
                   "codecId": "pg/int4@1",
@@ -1978,9 +2213,36 @@
                   "nativeType": "float8",
                   "nullable": true
                 },
+                "noleggioPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": true
+                },
                 "notes": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": true
+                },
+                "servRagnoPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": true
+                },
+                "sostaPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
                   "nullable": true
                 },
                 "startDate": {
@@ -1997,6 +2259,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "transportPrice": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": true
+                },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
@@ -2006,6 +2277,11 @@
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
                   "nullable": false
+                },
+                "wasteTypeId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -2040,9 +2316,49 @@
                     "namespaceId": "public",
                     "tableName": "vehicle"
                   }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "destinationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "schedule"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "destination"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "wasteTypeId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "schedule"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "wasteType"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "destinationId"
+                  ],
+                  "name": "schedule_destinationId_idx_1646ee5c",
+                  "prefix": "schedule_destinationId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "driverId"
@@ -2057,6 +2373,14 @@
                   ],
                   "name": "schedule_vehicleId_idx_e2df58fc",
                   "prefix": "schedule_vehicleId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "wasteTypeId"
+                  ],
+                  "name": "schedule_wasteTypeId_idx_26e4c367",
+                  "prefix": "schedule_wasteTypeId_idx",
                   "unique": false
                 }
               ],
@@ -2654,7 +2978,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "a01b52986e6a6f016fc29696354027060145751d0613a32fd82a85097de9d668"
+    "storageHash": "fc51112c9f7da7c854aa2131a2dd63b83cf52bb22d174f323896ed9fbcbf16e6"
   },
   "execution": {
     "executionHash": "ba1d35e37e2fd1d5b34c2ddba1ca02e497c17dff3be4fa622902416d35c3fc41",
