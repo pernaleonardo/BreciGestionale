@@ -431,7 +431,85 @@ export async function deleteTransportPrice(id: number) {
   }
 }
 
+export async function upsertDisposalPrice(data: { clientId?: number | null; wasteTypeId: number; pricePerQuintal: number }) {
+  try {
+    const cId = data.clientId ?? null;
+    const existing = await db.orm.public.DisposalPrice
+      .where({ wasteTypeId: Number(data.wasteTypeId), clientId: cId })
+      .first();
+
+    if (existing) {
+      await db.orm.public.DisposalPrice
+        .where({ id: existing.id })
+        .update({ pricePerQuintal: Number(data.pricePerQuintal) });
+      return { success: true, action: 'updated' };
+    } else {
+      await db.orm.public.DisposalPrice.create({
+        clientId: cId,
+        wasteTypeId: Number(data.wasteTypeId),
+        pricePerQuintal: Number(data.pricePerQuintal),
+      });
+      return { success: true, action: 'created' };
+    }
+  } catch (e: any) {
+    console.error('upsertDisposalPrice error:', e);
+    return { success: false, error: e.message || 'Errore nell\'aggiornamento del listino smaltimento.' };
+  }
+}
+
+export async function upsertTransportPrice(data: { clientId?: number | null; vehicleId: number; price: number }) {
+  try {
+    const cId = data.clientId ?? null;
+    const existing = await db.orm.public.TransportPrice
+      .where({ vehicleId: Number(data.vehicleId), clientId: cId })
+      .first();
+
+    if (existing) {
+      await db.orm.public.TransportPrice
+        .where({ id: existing.id })
+        .update({ price: Number(data.price) });
+      return { success: true, action: 'updated' };
+    } else {
+      await db.orm.public.TransportPrice.create({
+        clientId: cId,
+        vehicleId: Number(data.vehicleId),
+        price: Number(data.price),
+      });
+      return { success: true, action: 'created' };
+    }
+  } catch (e: any) {
+    console.error('upsertTransportPrice error:', e);
+    return { success: false, error: e.message || 'Errore nell\'aggiornamento del listino trasporto.' };
+  }
+}
+
 // ----------------- PIANIFICAZIONE (SCHEDULES) -----------------
+
+export async function getWeeklySchedulesData(startDateStr: string, endDateStr: string) {
+  try {
+    const dates = [];
+    const start = new Date(startDateStr);
+    const end = new Date(endDateStr);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      dates.push(`${y}-${m}-${day}`);
+    }
+
+    const promises = dates.map(date => 
+      db.orm.public.Schedule.where({ date }).include('driver').include('vehicle').all()
+    );
+    
+    const results = await Promise.all(promises);
+    const schedules = results.flat();
+    
+    return { success: true, schedules };
+  } catch (e: any) {
+    console.error('getWeeklySchedulesData error:', e);
+    return { success: false, error: e.message || 'Errore nel recupero della pianificazione settimanale.' };
+  }
+}
 
 export async function getSchedulesData(date: string) {
   try {

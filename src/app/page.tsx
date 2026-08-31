@@ -19,6 +19,8 @@ import {
   deleteDisposalPrice,
   createTransportPrice,
   deleteTransportPrice,
+  upsertDisposalPrice,
+  upsertTransportPrice,
   createDriver,
   deleteDriver,
   createVehicle,
@@ -26,6 +28,7 @@ import {
   createWasteType,
   deleteWasteType,
   getSchedulesData,
+  getWeeklySchedulesData,
   createSchedule,
   deleteSchedule,
 } from './actions';
@@ -48,8 +51,9 @@ const formatWeight = (value: number) => {
 
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'registro' | 'pianificazione' | 'anagrafiche' | 'utenti'>('registro');
-  const [anagraficaSubTab, setAnagraficaSubTab] = useState<'clienti' | 'destinatari' | 'autisti' | 'mezzi' | 'cer' | 'listinoSmaltimento' | 'listinoTrasporti'>('clienti');
+  const [activeTab, setActiveTab] = useState<'registro' | 'pianificazione' | 'anagrafiche' | 'listini' | 'utenti'>('registro');
+  const [anagraficaSubTab, setAnagraficaSubTab] = useState<'clienti' | 'destinatari' | 'autisti' | 'mezzi' | 'cer'>('clienti');
+  const [listinoSubTab, setListinoSubTab] = useState<'smaltimento' | 'trasporti'>('smaltimento');
   
   // Dati dal database
   const [trips, setTrips] = useState<any[]>([]);
@@ -71,6 +75,18 @@ export default function Home() {
     const dd = String(today.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   });
+
+  const [currentWeekStart, setCurrentWeekStart] = useState<string>(() => {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(today.setDate(diff));
+    const yyyy = monday.getFullYear();
+    const mm = String(monday.getMonth() + 1).padStart(2, '0');
+    const dd = String(monday.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  });
+
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [newScheduleData, setNewScheduleData] = useState({
     driverId: '',
@@ -143,6 +159,21 @@ export default function Home() {
   const [cerSearchQuery, setCerSearchQuery] = useState('');
   const [cerCategoryFilter, setCerCategoryFilter] = useState('');
 
+  // Traccia la sorgente del prezzo per cerPrice, transportPrice, disposalPrice
+  // 'client-list' = da listino cliente, 'base-list' = da listino base, 'manual' = inserito a mano, '' = vuoto
+  const [priceSource, setPriceSource] = useState<{
+    cerPrice: 'client-list' | 'base-list' | 'manual' | '';
+    transportPrice: 'client-list' | 'base-list' | 'manual' | '';
+    disposalPrice: 'client-list' | 'base-list' | 'manual' | '';
+  }>({ cerPrice: '', transportPrice: '', disposalPrice: '' });
+
+  // Modale conferma "Salva in listino?"
+  const [isListinoConfirmOpen, setIsListinoConfirmOpen] = useState(false);
+  const [pendingListinoSave, setPendingListinoSave] = useState<{
+    cerPrice?: { wasteTypeId: number; clientId: number | null; pricePerQuintal: number; cerCode: string; clientName: string };
+    transportPrice?: { vehicleId: number; clientId: number | null; price: number; plateNumber: string; clientName: string };
+  } | null>(null);
+
   // Caricamento iniziale sessione e dati
   useEffect(() => {
     async function init() {
@@ -182,7 +213,7 @@ export default function Home() {
         setUsers(userList || []);
       }
 
-      await refreshSchedules(selectedDate);
+      await refreshSchedules(currentWeekStart);
     } catch (e) {
       console.error('Errore ricaricamento dati:', e);
     } finally {
@@ -190,13 +221,18 @@ export default function Home() {
     }
   }
 
-  async function refreshSchedules(date = selectedDate) {
+  async function refreshSchedules(weekStart = currentWeekStart) {
     try {
-      const res = await getSchedulesData(date);
+      const start = new Date(weekStart);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+      
+      const res = await getWeeklySchedulesData(weekStart, endStr);
       if (res.success) {
         setSchedules(res.schedules || []);
       } else {
-        console.error('Errore caricamento pianificazioni:', res.error);
+        console.error('Errore caricamento pianificazioni settimanali:', res.error);
       }
     } catch (e) {
       console.error('refreshSchedules error:', e);
@@ -205,9 +241,9 @@ export default function Home() {
 
   useEffect(() => {
     if (currentUser && activeTab === 'pianificazione') {
-      refreshSchedules(selectedDate);
+      refreshSchedules(currentWeekStart);
     }
-  }, [selectedDate, activeTab, currentUser]);
+  }, [currentWeekStart, activeTab, currentUser]);
 
   // Azione di Login
   const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -300,23 +336,90 @@ export default function Home() {
 
   // ----------------- AZIONI MUTATIVE (CRUD) -----------------
 
+  // Funzione helper per resettare il form viaggio
+  const resetTripForm = () => {
+    setNewTripData({
+      date: '', firNumber: '', wasteTypeId: '', weight: '', cerPrice: '',
+      transportPrice: '', disposalPrice: '', fuoriRomaPrice: '0', noleggioPrice: '0',
+      bigBagPrice: '0', analisiPrice: '0', servRagnoPrice: '0', sostaPrice: '0',
+      address: '', notes: '', destinationId: '', driverId: '', vehicleId: '',
+    });
+    setSelectedTripClientId('');
+    setPriceSource({ cerPrice: '', transportPrice: '', disposalPrice: '' });
+    setPendingListinoSave(null);
+  };
+
   const handleCreateTrip = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await createTrip(newTripData);
     if (res.success) {
-      setIsTripModalOpen(false);
-      setSelectedTripClientId('');
-      setNewTripData({
-        date: '', firNumber: '', wasteTypeId: '', weight: '', cerPrice: '',
-        transportPrice: '', disposalPrice: '', fuoriRomaPrice: '0', noleggioPrice: '0',
-        bigBagPrice: '0', analisiPrice: '0', servRagnoPrice: '0', sostaPrice: '0',
-        address: '', notes: '', destinationId: '', driverId: '', vehicleId: '',
-      });
-      await refreshData();
+      // Verifica se ci sono prezzi modificati manualmente da proporre per il listino
+      const destination = destinations.find(d => d.id === Number(newTripData.destinationId));
+      const clientId = destination ? destination.clientId : null;
+      const wasteType = wasteTypes.find(w => w.id === Number(newTripData.wasteTypeId));
+      const vehicle = vehicles.find(v => v.id === Number(newTripData.vehicleId));
+      const client = clients.find(c => c.id === clientId);
+
+      const pendingSave: typeof pendingListinoSave = {};
+      let hasPending = false;
+
+      // Proponi aggiornamento listino CER se modificato manualmente
+      if (priceSource.cerPrice === 'manual' && newTripData.wasteTypeId && newTripData.cerPrice) {
+        pendingSave.cerPrice = {
+          wasteTypeId: Number(newTripData.wasteTypeId),
+          clientId: clientId,
+          pricePerQuintal: Number(newTripData.cerPrice) / 10, // cerPrice è €/t, pricePerQuintal è €/q
+          cerCode: wasteType?.cerCode || '',
+          clientName: client?.name || 'Listino Base',
+        };
+        hasPending = true;
+      }
+
+      // Proponi aggiornamento listino Trasporto se modificato manualmente
+      if (priceSource.transportPrice === 'manual' && newTripData.vehicleId && newTripData.transportPrice) {
+        pendingSave.transportPrice = {
+          vehicleId: Number(newTripData.vehicleId),
+          clientId: clientId,
+          price: Number(newTripData.transportPrice),
+          plateNumber: vehicle?.plateNumber || '',
+          clientName: client?.name || 'Listino Base',
+        };
+        hasPending = true;
+      }
+
+      if (hasPending) {
+        // Chiudi il form viaggio e apri il dialogo di conferma listino
+        setIsTripModalOpen(false);
+        setPendingListinoSave(pendingSave);
+        setIsListinoConfirmOpen(true);
+        await refreshData();
+      } else {
+        setIsTripModalOpen(false);
+        resetTripForm();
+        await refreshData();
+      }
     } else {
       alert(res.error);
     }
   };
+
+  const handleSaveToListino = async (saveDisposal: boolean, saveTransport: boolean) => {
+    setIsListinoConfirmOpen(false);
+    if (saveDisposal && pendingListinoSave?.cerPrice) {
+      const d = pendingListinoSave.cerPrice;
+      const res = await upsertDisposalPrice({ clientId: d.clientId, wasteTypeId: d.wasteTypeId, pricePerQuintal: d.pricePerQuintal });
+      if (!res.success) alert('Errore aggiornamento listino smaltimento: ' + res.error);
+    }
+    if (saveTransport && pendingListinoSave?.transportPrice) {
+      const t = pendingListinoSave.transportPrice;
+      const res = await upsertTransportPrice({ clientId: t.clientId, vehicleId: t.vehicleId, price: t.price });
+      if (!res.success) alert('Errore aggiornamento listino trasporto: ' + res.error);
+    }
+    resetTripForm();
+    if (saveDisposal || saveTransport) await refreshData();
+  };
+
+
 
   const handleDeleteTrip = async (id: number) => {
     if (confirm('Confermi di voler rimuovere questa riga di viaggio?')) {
@@ -467,14 +570,26 @@ export default function Home() {
     let cerPrice = '';
     let transportPrice = '';
     let disposalPrice = '';
+    let cerSource: 'client-list' | 'base-list' | '' = '';
+    let transportSource: 'client-list' | 'base-list' | '' = '';
+    let disposalSource: 'client-list' | 'base-list' | '' = '';
 
     const destination = destinations.find(d => d.id === Number(destId));
     const clientId = destination ? destination.clientId : null;
 
     if (cerId) {
+      // Prima cerca il listino specifico per cliente
       let dispPrice = disposalPrices.find(dp => dp.clientId === clientId && dp.wasteTypeId === Number(cerId));
-      if (!dispPrice) {
+      if (dispPrice) {
+        cerSource = 'client-list';
+        disposalSource = 'client-list';
+      } else {
+        // Fallback al listino base
         dispPrice = disposalPrices.find(dp => dp.clientId === null && dp.wasteTypeId === Number(cerId));
+        if (dispPrice) {
+          cerSource = 'base-list';
+          disposalSource = 'base-list';
+        }
       }
       if (dispPrice) {
         const rate = dispPrice.pricePerQuintal;
@@ -486,16 +601,23 @@ export default function Home() {
     }
 
     if (vehId) {
+      // Prima cerca il listino specifico per cliente
       let transPrice = transportPrices.find(tp => tp.clientId === clientId && tp.vehicleId === Number(vehId));
-      if (!transPrice) {
+      if (transPrice) {
+        transportSource = 'client-list';
+      } else {
+        // Fallback al listino base
         transPrice = transportPrices.find(tp => tp.clientId === null && tp.vehicleId === Number(vehId));
+        if (transPrice) {
+          transportSource = 'base-list';
+        }
       }
       if (transPrice) {
         transportPrice = String(transPrice.price);
       }
     }
 
-    return { cerPrice, transportPrice, disposalPrice };
+    return { cerPrice, transportPrice, disposalPrice, cerSource, transportSource, disposalSource };
   };
 
   const handleTripDestinationChange = (destId: string) => {
@@ -507,6 +629,11 @@ export default function Home() {
       transportPrice: calculated.transportPrice !== '' ? calculated.transportPrice : prev.transportPrice,
       disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : prev.disposalPrice
     }));
+    setPriceSource(prev => ({
+      cerPrice: calculated.cerSource !== '' ? calculated.cerSource : prev.cerPrice,
+      transportPrice: calculated.transportSource !== '' ? calculated.transportSource : prev.transportPrice,
+      disposalPrice: calculated.disposalSource !== '' ? calculated.disposalSource : prev.disposalPrice,
+    }));
   };
 
   const handleTripWasteTypeChange = (wasteTypeId: string) => {
@@ -517,6 +644,11 @@ export default function Home() {
       cerPrice: calculated.cerPrice !== '' ? calculated.cerPrice : prev.cerPrice,
       disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : prev.disposalPrice
     }));
+    setPriceSource(prev => ({
+      ...prev,
+      cerPrice: calculated.cerSource !== '' ? calculated.cerSource : prev.cerPrice,
+      disposalPrice: calculated.disposalSource !== '' ? calculated.disposalSource : prev.disposalPrice,
+    }));
   };
 
   const handleTripVehicleChange = (vehicleId: string) => {
@@ -525,6 +657,10 @@ export default function Home() {
       ...prev,
       vehicleId: vehicleId,
       transportPrice: calculated.transportPrice !== '' ? calculated.transportPrice : prev.transportPrice
+    }));
+    setPriceSource(prev => ({
+      ...prev,
+      transportPrice: calculated.transportSource !== '' ? calculated.transportSource : prev.transportPrice,
     }));
   };
 
@@ -548,6 +684,13 @@ export default function Home() {
       cerPrice: cp,
       disposalPrice: prev.weight ? String(calculatedDispPrice) : ''
     }));
+    // Marca come manuale se l'utente sta scrivendo
+    setPriceSource(prev => ({ ...prev, cerPrice: 'manual', disposalPrice: 'manual' }));
+  };
+
+  const handleTripTransportPriceChange = (tp: string) => {
+    setNewTripData(prev => ({ ...prev, transportPrice: tp }));
+    setPriceSource(prev => ({ ...prev, transportPrice: 'manual' }));
   };
 
   const handleCreateDriver = async (e: React.FormEvent) => {
@@ -764,6 +907,13 @@ export default function Home() {
                 >
                   <span>📁</span>
                   <span>Anagrafiche (Master)</span>
+                </button>
+                <button
+                  onClick={() => { setActiveTab('listini'); setIsMenuOpen(false); }}
+                  className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'listini' ? 'bg-emerald-700 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
+                >
+                  <span>💰</span>
+                  <span>Listini Prezzi</span>
                 </button>
                 {currentUser.role === 'ADMIN' && (
                   <button
@@ -1005,156 +1155,227 @@ export default function Home() {
 
             {/* TAB: PIANIFICAZIONE */}
             {activeTab === 'pianificazione' && (() => {
-              // Rilevamento conflitti in tempo reale per autisti e veicoli
-              const driverCounts = schedules.reduce((acc: { [key: number]: number }, s) => {
-                if (s.driverId) acc[s.driverId] = (acc[s.driverId] || 0) + 1;
-                return acc;
-              }, {});
+              // Array di ore fisse (es: 06:00 - 22:00)
+              const START_HOUR = 5;
+              const END_HOUR = 23;
+              const hours = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => i + START_HOUR);
 
-              const vehicleCounts = schedules.reduce((acc: { [key: number]: number }, s) => {
-                if (s.vehicleId) acc[s.vehicleId] = (acc[s.vehicleId] || 0) + 1;
-                return acc;
-              }, {});
+              // Calcolo giorni della settimana
+              const start = new Date(currentWeekStart);
+              const weekDays = Array.from({ length: 7 }, (_, i) => {
+                const d = new Date(start);
+                d.setDate(start.getDate() + i);
+                return d;
+              });
 
-              // Helper per formattare data e ora locale in modo leggibile
-              const formatDateTime = (dateTimeStr: string) => {
-                if (!dateTimeStr) return '-';
-                try {
-                  const d = new Date(dateTimeStr);
-                  return d.toLocaleString('it-IT', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
-                } catch (e) {
-                  return dateTimeStr;
+              // Nomi giorni e mesi
+              const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+              const monthNames = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+              
+              const weekLabel = `${weekDays[0].getDate()} ${monthNames[weekDays[0].getMonth()]} - ${weekDays[6].getDate()} ${monthNames[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`;
+
+              // Helpers per navigazione
+              const goToPrevWeek = () => {
+                const d = new Date(currentWeekStart);
+                d.setDate(d.getDate() - 7);
+                setCurrentWeekStart(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+              };
+              const goToNextWeek = () => {
+                const d = new Date(currentWeekStart);
+                d.setDate(d.getDate() + 7);
+                setCurrentWeekStart(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+              };
+              const goToToday = () => {
+                const today = new Date();
+                const day = today.getDay();
+                const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+                const monday = new Date(today.setDate(diff));
+                setCurrentWeekStart(`${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`);
+              };
+
+              // Helper per calcolare lo stile del blocco evento
+              const getEventStyle = (startDateStr: string, endDateStr: string) => {
+                const s = new Date(startDateStr);
+                const e = new Date(endDateStr);
+                
+                // Convertiamo in ore decimali
+                const sDecimal = s.getHours() + s.getMinutes() / 60;
+                let eDecimal = e.getHours() + e.getMinutes() / 60;
+                
+                if (e.getDate() !== s.getDate() || eDecimal < sDecimal) {
+                  // Se l'evento finisce il giorno dopo, lo tagliamo a mezzanotte (oppure limitiamo all'END_HOUR)
+                  eDecimal = 24; 
                 }
+
+                // Calcoliamo la top in percentuale rispetto all'altezza totale della griglia oraria
+                // Ogni ora è 1 slot. L'inizio della griglia è START_HOUR.
+                const startOffset = Math.max(0, sDecimal - START_HOUR);
+                const duration = Math.max(0.5, eDecimal - Math.max(sDecimal, START_HOUR)); // min 30 min per visibilità
+
+                // Calcolo in base a un'altezza fissa della cella (es: 60px) oppure in % se usiamo grid absolute.
+                // In un calendario full css grid possiamo usare grid-row. Ma per flessibilità usiamo absolute pos.
+                // Se un'ora = 48px:
+                const HOUR_HEIGHT = 48;
+                return {
+                  top: `${startOffset * HOUR_HEIGHT}px`,
+                  height: `${duration * HOUR_HEIGHT}px`,
+                  position: 'absolute' as const,
+                  left: '4px',
+                  right: '4px',
+                  zIndex: 10
+                };
               };
 
               return (
-                <div>
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">Pianificazione Giornaliera Turni & Viaggi</h2>
-                      <p className="text-sm text-zinc-400">Assegna un autista e un camion per una singola giornata alla volta.</p>
+                <div className="flex flex-col h-[calc(100vh-100px)]">
+                  {/* HEADER DEL CALENDARIO */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <button onClick={goToToday} className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold rounded-lg transition-colors border border-zinc-700 cursor-pointer">
+                        Oggi
+                      </button>
+                      <div className="flex items-center rounded-lg border border-zinc-700 overflow-hidden">
+                        <button onClick={goToPrevWeek} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer text-zinc-400 hover:text-white">
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                        </button>
+                        <button onClick={goToNextWeek} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors border-l border-zinc-700 cursor-pointer text-zinc-400 hover:text-white">
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                      </div>
+                      <h2 className="text-lg font-bold text-white ml-2 capitalize">{weekLabel}</h2>
                     </div>
-                    <button
-                      onClick={() => {
-                        // Prefilla le date con il giorno attualmente selezionato nel filtro
-                        setNewScheduleData({
-                          driverId: '',
-                          vehicleId: '',
-                          startDate: `${selectedDate}T08:00`,
-                          endDate: `${selectedDate}T17:00`,
-                          notes: '',
-                        });
-                        setIsScheduleModalOpen(true);
-                      }}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors cursor-pointer self-start md:self-auto"
-                    >
-                      <span>+</span> Pianifica Nuovo Viaggio
-                    </button>
-                  </div>
 
-                  {/* Selettore Giorno */}
-                  <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl mb-6 flex flex-wrap gap-4 items-center justify-between">
-                    <div className="flex flex-col">
-                      <label className="text-xs text-zinc-400 font-semibold mb-1 uppercase tracking-wider">Seleziona Giorno da Pianificare</label>
-                      <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
-                      />
-                    </div>
-                    <div className="text-right text-sm text-zinc-400">
-                      Giorno Selezionato: <strong className="text-white">
-                        {(() => {
-                          try {
-                            const d = new Date(selectedDate);
-                            return d.toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                          } catch (e) {
-                            return selectedDate;
-                          }
-                        })()}
-                      </strong>
+                    <div className="flex items-center gap-3">
+                      <select className="bg-zinc-800 border border-zinc-700 text-sm font-semibold rounded-lg px-3 py-1.5 text-white outline-none cursor-pointer">
+                        <option value="week">Settimana</option>
+                      </select>
+                      <button
+                        onClick={() => {
+                          const today = new Date();
+                          const yyyy = today.getFullYear();
+                          const mm = String(today.getMonth() + 1).padStart(2, '0');
+                          const dd = String(today.getDate()).padStart(2, '0');
+                          setNewScheduleData({
+                            driverId: '',
+                            vehicleId: '',
+                            startDate: `${yyyy}-${mm}-${dd}T08:00`,
+                            endDate: `${yyyy}-${mm}-${dd}T17:00`,
+                            notes: '',
+                          });
+                          setIsScheduleModalOpen(true);
+                        }}
+                        className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors cursor-pointer"
+                      >
+                        <span className="text-lg leading-none mb-0.5">+</span> Pianifica
+                      </button>
                     </div>
                   </div>
 
-                  {/* Lista Pianificazioni */}
-                  <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden shadow-sm">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-zinc-800/50 text-xs font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800">
-                          <th className="p-3.5">Autista</th>
-                          <th className="p-3.5">Automezzo (Camion)</th>
-                          <th className="p-3.5">Inizio Viaggio</th>
-                          <th className="p-3.5">Fine Viaggio</th>
-                          <th className="p-3.5">Stato / Conflitti</th>
-                          <th className="p-3.5">Note</th>
-                          <th className="p-3.5 text-center">Azioni</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-800 text-sm">
-                        {schedules.length === 0 ? (
-                          <tr>
-                            <td colSpan={7} className="p-10 text-center text-zinc-500">
-                              Nessun viaggio pianificato per questa data. Clicca su "Pianifica Nuovo Viaggio" per iniziare.
-                            </td>
-                          </tr>
-                        ) : (
-                          schedules.map((s) => {
-                            const hasDriverConflict = driverCounts[s.driverId] > 1;
-                            const hasVehicleConflict = vehicleCounts[s.vehicleId] > 1;
-                            return (
-                              <tr key={s.id} className="hover:bg-zinc-800/40 transition-colors">
-                                <td className="p-3.5 font-semibold text-white">
-                                  {s.driver?.name || 'Sconosciuto'}
-                                </td>
-                                <td className="p-3.5">
-                                  <span className="font-mono font-bold text-xs bg-blue-900/30 text-blue-400 px-2 py-1 rounded border border-blue-800">
-                                    {s.vehicle?.plateNumber || 'Mezzo rimosso'}
-                                  </span>
-                                  <span className="text-xs text-zinc-400 ml-2">({s.vehicle?.model})</span>
-                                </td>
-                                <td className="p-3.5 text-zinc-300">
-                                  {formatDateTime(s.startDate)}
-                                </td>
-                                <td className="p-3.5 text-zinc-300">
-                                  {formatDateTime(s.endDate)}
-                                </td>
-                                <td className="p-3.5">
-                                  <div className="flex flex-col gap-1">
-                                    {hasDriverConflict && (
-                                      <span className="inline-flex items-center text-xs font-semibold text-amber-400 bg-amber-950/30 px-2 py-0.5 rounded border border-amber-900/40">
-                                        ⚠️ Doppio impegno Autista
-                                      </span>
-                                    )}
-                                    {hasVehicleConflict && (
-                                      <span className="inline-flex items-center text-xs font-semibold text-red-400 bg-red-950/30 px-2 py-0.5 rounded border border-red-900/40">
-                                        ⚠️ Camion occupato
-                                      </span>
-                                    )}
-                                    {!hasDriverConflict && !hasVehicleConflict && (
-                                      <span className="inline-flex items-center text-xs font-semibold text-emerald-400 bg-emerald-950/20 px-2 py-0.5 rounded border border-emerald-900/30">
-                                        ✓ Pianificazione OK
-                                      </span>
+                  {/* GRIGLIA CALENDARIO SETTIMANALE */}
+                  <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col shadow-lg">
+                    {/* Intestazioni Giorni */}
+                    <div className="flex border-b border-zinc-800 bg-zinc-800/50">
+                      <div className="w-16 flex-shrink-0 border-r border-zinc-800"></div>
+                      {weekDays.map((d, i) => {
+                        const isToday = new Date().toDateString() === d.toDateString();
+                        return (
+                          <div key={i} className={`flex-1 py-3 text-center border-r border-zinc-800/50 last:border-r-0 ${isToday ? 'bg-blue-900/20' : ''}`}>
+                            <div className="flex flex-col items-center justify-center">
+                              <span className={`text-2xl font-light ${isToday ? 'text-blue-400 font-bold' : 'text-zinc-300'}`}>
+                                {String(d.getDate()).padStart(2, '0')}
+                              </span>
+                              <span className={`text-xs uppercase font-semibold ${isToday ? 'text-blue-400' : 'text-zinc-500'}`}>
+                                {dayNames[d.getDay()]}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Corpo Griglia (Scrollabile) */}
+                    <div className="flex-1 overflow-y-auto relative bg-[#121212]">
+                      <div className="flex min-h-max">
+                        {/* Colonna Orari */}
+                        <div className="w-16 flex-shrink-0 border-r border-zinc-800 relative bg-zinc-900/50">
+                          {hours.map((h, i) => (
+                            <div key={i} className="h-12 border-b border-zinc-800/50 relative">
+                              <span className="absolute -top-3 right-2 text-xs font-semibold text-zinc-500">
+                                {String(h).padStart(2, '0')}:00
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Colonne Giorni e Eventi */}
+                        {weekDays.map((d, i) => {
+                          const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                          // Filtra i turni per questo giorno
+                          const daySchedules = schedules.filter(s => s.startDate.startsWith(dateStr) || s.date === dateStr);
+                          const isToday = new Date().toDateString() === d.toDateString();
+
+                          return (
+                            <div 
+                              key={i} 
+                              className={`flex-1 relative border-r border-zinc-800/50 last:border-r-0 ${isToday ? 'bg-blue-900/5' : ''}`}
+                              onClick={(e) => {
+                                // Se l'utente clicca sulla griglia vuota, apre il modale
+                                if (e.target === e.currentTarget || (e.target as HTMLElement).classList.contains('hour-slot')) {
+                                  const rect = e.currentTarget.getBoundingClientRect();
+                                  const y = e.clientY - rect.top;
+                                  const HOUR_HEIGHT = 48;
+                                  const clickedHour = Math.floor(y / HOUR_HEIGHT) + START_HOUR;
+                                  
+                                  const hStr = String(Math.min(23, clickedHour)).padStart(2, '0');
+                                  const endHStr = String(Math.min(23, clickedHour + 1)).padStart(2, '0');
+                                  
+                                  setNewScheduleData({
+                                    driverId: '',
+                                    vehicleId: '',
+                                    startDate: `${dateStr}T${hStr}:00`,
+                                    endDate: `${dateStr}T${endHStr}:00`,
+                                    notes: '',
+                                  });
+                                  setIsScheduleModalOpen(true);
+                                }
+                              }}
+                            >
+                              {/* Linee Orizzontali Griglia */}
+                              {hours.map((_, idx) => (
+                                <div key={idx} className="h-12 border-b border-zinc-800/50 pointer-events-none hour-slot"></div>
+                              ))}
+
+                              {/* Eventi */}
+                              {daySchedules.map(s => {
+                                const style = getEventStyle(s.startDate, s.endDate);
+                                return (
+                                  <div
+                                    key={s.id}
+                                    style={style}
+                                    className="bg-indigo-600/90 hover:bg-indigo-500 border border-indigo-400/50 rounded-md p-1.5 overflow-hidden text-xs text-white cursor-pointer transition-colors shadow-sm group flex flex-col gap-0.5"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // Al click potremmo aprire una modifica. Per ora permettiamo l'eliminazione veloce.
+                                      if (confirm('Vuoi eliminare questo turno?')) {
+                                        handleDeleteSchedule(s.id);
+                                      }
+                                    }}
+                                  >
+                                    <div className="font-bold truncate">{s.driver?.name || 'Sconosciuto'}</div>
+                                    <div className="font-mono text-[10px] text-indigo-100 truncate opacity-90">{s.vehicle?.plateNumber} - {s.vehicle?.model}</div>
+                                    {s.notes && (
+                                      <div className="text-[10px] italic text-indigo-200 mt-0.5 truncate group-hover:whitespace-normal group-hover:overflow-visible">
+                                        {s.notes}
+                                      </div>
                                     )}
                                   </div>
-                                </td>
-                                <td className="p-3.5 text-zinc-400 truncate max-w-[200px]" title={s.notes || ''}>
-                                  {s.notes || '-'}
-                                </td>
-                                <td className="p-3.5 text-center">
-                                  <button
-                                    onClick={() => handleDeleteSchedule(s.id)}
-                                    className="px-2.5 py-1 text-xs font-bold bg-red-950/20 text-red-450 hover:bg-red-900/30 rounded border border-red-900/50 cursor-pointer transition-colors"
-                                  >
-                                    Elimina
-                                  </button>
-                                </td>
-                              </tr>
-                            );
-                          })
-                        )}
-                      </tbody>
-                    </table>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
@@ -1199,18 +1420,6 @@ export default function Home() {
                     className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${anagraficaSubTab === 'cer' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
                   >
                     🏷️ Codici CER
-                  </button>
-                  <button
-                    onClick={() => setAnagraficaSubTab('listinoSmaltimento')}
-                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${anagraficaSubTab === 'listinoSmaltimento' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
-                  >
-                    💰 Listino Smaltimento
-                  </button>
-                  <button
-                    onClick={() => setAnagraficaSubTab('listinoTrasporti')}
-                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${anagraficaSubTab === 'listinoTrasporti' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
-                  >
-                    🚚 Listino Trasporti
                   </button>
                 </div>
 
@@ -1542,214 +1751,282 @@ export default function Home() {
               </div>
             )}
 
-            {/* SUB TAB: LISTINO SMALTIMENTO */}
-            {anagraficaSubTab === 'listinoSmaltimento' && (
+            {/* TAB: LISTINI PREZZI */}
+            {activeTab === 'listini' && (
               <div>
-                <div className="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                  <h3 className="text-md font-bold text-white mb-4">Aggiungi Voce Listino Smaltimento</h3>
-                  <form onSubmit={handleCreateDisposalPrice} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-400">Cliente (Opzionale: vuoto per prezzo base)</label>
-                      <select
-                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                        value={newDisposalPriceData.clientId}
-                        onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, clientId: e.target.value })}
-                      >
-                        <option value="">-- PREZZO BASE (Generale) --</option>
-                        {clients.map((c) => (
-                          <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-400">Codice CER</label>
-                      <select
-                        required
-                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                        value={newDisposalPriceData.wasteTypeId}
-                        onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, wasteTypeId: e.target.value })}
-                      >
-                        <option value="">Seleziona CER...</option>
-                        {wasteTypes.map((w) => (
-                          <option key={w.id} value={w.id}>{w.cerCode} - {w.description?.substring(0, 45)}...</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-400">Prezzo al Quintale (€/q.le)</label>
-                      <input
-                        type="number"
-                        step="0.001"
-                        required
-                        placeholder="Es: 1.70"
-                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
-                        value={newDisposalPriceData.pricePerQuintal}
-                        onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, pricePerQuintal: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <button
-                        type="submit"
-                        className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-colors cursor-pointer"
-                      >
-                        Salva nel Listino
-                      </button>
-                    </div>
-                  </form>
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-white">💰 Listini Prezzi</h2>
+                  <p className="text-sm text-zinc-400 mt-1">Gestisci i prezzi per smaltimento (CER) e trasporto per cliente o come tariffe base.</p>
                 </div>
 
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
-                        <th className="p-3">Cliente</th>
-                        <th className="p-3">Codice CER</th>
-                        <th className="p-3">Descrizione</th>
-                        <th className="p-3 text-right">Prezzo al Quintale</th>
-                        <th className="p-3 text-right">Prezzo al Tonnellata</th>
-                        <th className="p-3 text-center">Rimuovi</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-800 text-sm">
-                      {disposalPrices.map((dp) => (
-                        <tr key={dp.id} className="hover:bg-zinc-800/20">
-                          <td className="p-3 font-semibold text-zinc-200">
-                            {dp.client ? (
-                              <span className="text-blue-400">{dp.client.name} ({dp.client.clientCode})</span>
-                            ) : (
-                              <span className="text-zinc-500 font-bold italic">PREZZO BASE</span>
-                            )}
-                          </td>
-                          <td className="p-3 font-mono font-bold text-emerald-400">{dp.wasteType?.cerCode}</td>
-                          <td className="p-3 text-zinc-400 max-w-md truncate" title={dp.wasteType?.description || ''}>
-                            {dp.wasteType?.description || '-'}
-                          </td>
-                          <td className="p-3 text-right text-zinc-100 font-mono">{formatCurrency(dp.pricePerQuintal)} /q.le</td>
-                          <td className="p-3 text-right text-amber-400 font-mono">{formatCurrency(dp.pricePerQuintal * 10)} /t</td>
-                          <td className="p-3 text-center">
-                            <button
-                              onClick={() => handleDeleteDisposalPrice(dp.id)}
-                              className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-850 rounded cursor-pointer"
-                            >
-                              Elimina
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                      {disposalPrices.length === 0 && (
-                        <tr>
-                          <td colSpan={6} className="p-6 text-center text-zinc-500">Nessuna voce definita nel listino smaltimento.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                {/* Sub Tab Navigation */}
+                <div className="flex border-b border-zinc-800 mb-6 gap-2">
+                  <button
+                    onClick={() => setListinoSubTab('smaltimento')}
+                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${listinoSubTab === 'smaltimento' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
+                  >
+                    ♻️ Listino Smaltimento (CER)
+                  </button>
+                  <button
+                    onClick={() => setListinoSubTab('trasporti')}
+                    className={`px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-b-2 ${listinoSubTab === 'trasporti' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-400 hover:text-zinc-200'}`}
+                  >
+                    🚚 Listino Trasporti
+                  </button>
                 </div>
+
+                {/* LISTINO SMALTIMENTO */}
+                {listinoSubTab === 'smaltimento' && (
+                  <div>
+                    <div className="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                      <h3 className="text-md font-bold text-white mb-1">Aggiungi / Modifica Voce Listino Smaltimento</h3>
+                      <p className="text-xs text-zinc-500 mb-4">Il listino cliente ha priorità su quello base. Se la voce esiste già verrà aggiornata.</p>
+                      <form onSubmit={handleCreateDisposalPrice} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-400">Cliente <span className="text-zinc-600">(vuoto = Prezzo Base)</span></label>
+                          <select
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                            value={newDisposalPriceData.clientId}
+                            onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, clientId: e.target.value })}
+                          >
+                            <option value="">-- PREZZO BASE (Generale) --</option>
+                            {clients.map((c) => (
+                              <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-400">Codice CER</label>
+                          <select
+                            required
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                            value={newDisposalPriceData.wasteTypeId}
+                            onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, wasteTypeId: e.target.value })}
+                          >
+                            <option value="">Seleziona CER...</option>
+                            {wasteTypes.map((w) => (
+                              <option key={w.id} value={w.id}>{w.cerCode} - {w.description?.substring(0, 45)}...</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-400">Prezzo al Quintale (€/q.le)</label>
+                          <input
+                            type="number"
+                            step="0.001"
+                            required
+                            placeholder="Es: 1.70"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newDisposalPriceData.pricePerQuintal}
+                            onChange={(e) => setNewDisposalPriceData({ ...newDisposalPriceData, pricePerQuintal: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <button
+                            type="submit"
+                            className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-colors cursor-pointer"
+                          >
+                            Salva nel Listino
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
+                            <th className="p-3">Priorità</th>
+                            <th className="p-3">Cliente</th>
+                            <th className="p-3">Codice CER</th>
+                            <th className="p-3">Descrizione</th>
+                            <th className="p-3 text-right">Prezzo al Quintale</th>
+                            <th className="p-3 text-right">Prezzo al Tonnellata</th>
+                            <th className="p-3 text-center">Rimuovi</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-800 text-sm">
+                          {disposalPrices
+                            .slice()
+                            .sort((a: any, b: any) => {
+                              // Listino cliente prima, poi listino base
+                              if (a.client && !b.client) return -1;
+                              if (!a.client && b.client) return 1;
+                              return 0;
+                            })
+                            .map((dp: any) => (
+                            <tr key={dp.id} className="hover:bg-zinc-800/20">
+                              <td className="p-3">
+                                {dp.client ? (
+                                  <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-400 bg-blue-950/30 px-2 py-0.5 rounded border border-blue-900/40">
+                                    🔗 Cliente
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-xs font-bold text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">
+                                    📋 Base
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-3 font-semibold text-zinc-200">
+                                {dp.client ? (
+                                  <span className="text-blue-400">{dp.client.name} ({dp.client.clientCode})</span>
+                                ) : (
+                                  <span className="text-zinc-500 font-bold italic">PREZZO BASE</span>
+                                )}
+                              </td>
+                              <td className="p-3 font-mono font-bold text-emerald-400">{dp.wasteType?.cerCode}</td>
+                              <td className="p-3 text-zinc-400 max-w-md truncate" title={dp.wasteType?.description || ''}>
+                                {dp.wasteType?.description || '-'}
+                              </td>
+                              <td className="p-3 text-right text-zinc-100 font-mono">{formatCurrency(dp.pricePerQuintal)} /q.le</td>
+                              <td className="p-3 text-right text-amber-400 font-mono">{formatCurrency(dp.pricePerQuintal * 10)} /t</td>
+                              <td className="p-3 text-center">
+                                <button
+                                  onClick={() => handleDeleteDisposalPrice(dp.id)}
+                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-850 rounded cursor-pointer"
+                                >
+                                  Elimina
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                          {disposalPrices.length === 0 && (
+                            <tr>
+                              <td colSpan={7} className="p-6 text-center text-zinc-500">Nessuna voce definita nel listino smaltimento.</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* LISTINO TRASPORTI */}
+                {listinoSubTab === 'trasporti' && (
+                  <div>
+                    <div className="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                      <h3 className="text-md font-bold text-white mb-1">Aggiungi / Modifica Voce Listino Trasporto</h3>
+                      <p className="text-xs text-zinc-500 mb-4">Il listino cliente ha priorità su quello base. Se la voce esiste già verrà aggiornata.</p>
+                      <form onSubmit={handleCreateTransportPrice} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-400">Cliente <span className="text-zinc-600">(vuoto = Prezzo Base)</span></label>
+                          <select
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                            value={newTransportPriceData.clientId}
+                            onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, clientId: e.target.value })}
+                          >
+                            <option value="">-- PREZZO BASE (Generale) --</option>
+                            {clients.map((c) => (
+                              <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-400">Automezzo</label>
+                          <select
+                            required
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                            value={newTransportPriceData.vehicleId}
+                            onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, vehicleId: e.target.value })}
+                          >
+                            <option value="">Seleziona Veicolo...</option>
+                            {vehicles.map((v) => (
+                              <option key={v.id} value={v.id}>{v.plateNumber} ({v.model})</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-400">Prezzo Trasporto (€)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            required
+                            placeholder="Es: 220.00"
+                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            value={newTransportPriceData.price}
+                            onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, price: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <button
+                            type="submit"
+                            className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-colors cursor-pointer"
+                          >
+                            Salva nel Listino
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
+                            <th className="p-3">Priorità</th>
+                            <th className="p-3">Cliente</th>
+                            <th className="p-3">Automezzo</th>
+                            <th className="p-3 text-right">Prezzo Trasporto (€)</th>
+                            <th className="p-3 text-center">Rimuovi</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-800 text-sm">
+                          {transportPrices
+                            .slice()
+                            .sort((a: any, b: any) => {
+                              if (a.client && !b.client) return -1;
+                              if (!a.client && b.client) return 1;
+                              return 0;
+                            })
+                            .map((tp: any) => (
+                            <tr key={tp.id} className="hover:bg-zinc-800/20">
+                              <td className="p-3">
+                                {tp.client ? (
+                                  <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-400 bg-blue-950/30 px-2 py-0.5 rounded border border-blue-900/40">
+                                    🔗 Cliente
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-xs font-bold text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">
+                                    📋 Base
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-3 font-semibold text-zinc-200">
+                                {tp.client ? (
+                                  <span className="text-blue-400">{tp.client.name} ({tp.client.clientCode})</span>
+                                ) : (
+                                  <span className="text-zinc-500 font-bold italic">PREZZO BASE</span>
+                                )}
+                              </td>
+                              <td className="p-3">
+                                <span className="font-mono font-bold text-xs bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-750 mr-2">
+                                  {tp.vehicle?.plateNumber}
+                                </span>
+                                <span className="text-zinc-400 text-xs">{tp.vehicle?.model}</span>
+                              </td>
+                              <td className="p-3 text-right text-emerald-400 font-mono font-bold">{formatCurrency(tp.price)}</td>
+                              <td className="p-3 text-center">
+                                <button
+                                  onClick={() => handleDeleteTransportPrice(tp.id)}
+                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-850 rounded cursor-pointer"
+                                >
+                                  Elimina
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                          {transportPrices.length === 0 && (
+                            <tr>
+                              <td colSpan={5} className="p-6 text-center text-zinc-500">Nessuna voce definita nel listino trasporti.</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* SUB TAB: LISTINO TRASPORTI */}
-            {anagraficaSubTab === 'listinoTrasporti' && (
-              <div>
-                <div className="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                  <h3 className="text-md font-bold text-white mb-4">Aggiungi Voce Listino Trasporto</h3>
-                  <form onSubmit={handleCreateTransportPrice} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-400">Cliente (Opzionale: vuoto per prezzo base)</label>
-                      <select
-                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                        value={newTransportPriceData.clientId}
-                        onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, clientId: e.target.value })}
-                      >
-                        <option value="">-- PREZZO BASE (Generale) --</option>
-                        {clients.map((c) => (
-                          <option key={c.id} value={c.id}>{c.name} ({c.clientCode})</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-400">Automezzo</label>
-                      <select
-                        required
-                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
-                        value={newTransportPriceData.vehicleId}
-                        onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, vehicleId: e.target.value })}
-                      >
-                        <option value="">Seleziona Veicolo...</option>
-                        {vehicles.map((v) => (
-                          <option key={v.id} value={v.id}>{v.plateNumber} ({v.model})</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-400">Prezzo Trasporto (€)</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        required
-                        placeholder="Es: 220.00"
-                        className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
-                        value={newTransportPriceData.price}
-                        onChange={(e) => setNewTransportPriceData({ ...newTransportPriceData, price: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <button
-                        type="submit"
-                        className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-colors cursor-pointer"
-                      >
-                        Salva nel Listino
-                      </button>
-                    </div>
-                  </form>
-                </div>
-
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
-                        <th className="p-3">Cliente</th>
-                        <th className="p-3">Automezzo</th>
-                        <th className="p-3 text-right">Prezzo Trasporto (€)</th>
-                        <th className="p-3 text-center">Rimuovi</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-800 text-sm">
-                      {transportPrices.map((tp) => (
-                        <tr key={tp.id} className="hover:bg-zinc-800/20">
-                          <td className="p-3 font-semibold text-zinc-200">
-                            {tp.client ? (
-                              <span className="text-blue-400">{tp.client.name} ({tp.client.clientCode})</span>
-                            ) : (
-                              <span className="text-zinc-500 font-bold italic">PREZZO BASE</span>
-                            )}
-                          </td>
-                          <td className="p-3">
-                            <span className="font-mono font-bold text-xs bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-750 mr-2">
-                              {tp.vehicle?.plateNumber}
-                            </span>
-                            <span className="text-zinc-400 text-xs">{tp.vehicle?.model}</span>
-                          </td>
-                          <td className="p-3 text-right text-emerald-400 font-mono font-bold">{formatCurrency(tp.price)}</td>
-                          <td className="p-3 text-center">
-                            <button
-                              onClick={() => handleDeleteTransportPrice(tp.id)}
-                              className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-850 rounded cursor-pointer"
-                            >
-                              Elimina
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                      {transportPrices.length === 0 && (
-                        <tr>
-                          <td colSpan={4} className="p-6 text-center text-zinc-500">Nessuna voce definita nel listino trasporti.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
 
             {/* TAB: UTENTI (ADMIN ONLY) */}
             {activeTab === 'utenti' && currentUser.role === 'ADMIN' && (
@@ -1817,7 +2094,7 @@ export default function Home() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
               <h3 className="text-xl font-bold text-white">Nuova Riga di Viaggio</h3>
-              <button onClick={() => setIsTripModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
+              <button onClick={() => { setIsTripModalOpen(false); resetTripForm(); }} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
@@ -2072,13 +2349,24 @@ export default function Home() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-zinc-400 uppercase">Prezzo CER (€/t)</label>
+                        <div className="flex items-center gap-2 mb-1">
+                          <label className="block text-xs font-bold text-zinc-400 uppercase">Prezzo CER (€/t)</label>
+                          {priceSource.cerPrice === 'client-list' && (
+                            <span className="text-xs font-bold text-blue-400 bg-blue-950/30 px-2 py-0.5 rounded border border-blue-900/40">🔗 Da listino cliente</span>
+                          )}
+                          {priceSource.cerPrice === 'base-list' && (
+                            <span className="text-xs font-bold text-amber-400 bg-amber-950/30 px-2 py-0.5 rounded border border-amber-900/40">📋 Da listino base</span>
+                          )}
+                          {priceSource.cerPrice === 'manual' && (
+                            <span className="text-xs font-bold text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">✏️ Manuale</span>
+                          )}
+                        </div>
                         <input
                           type="number"
                           step="0.01"
                           required
                           placeholder="Es: 17"
-                          className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                          className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
                           value={newTripData.cerPrice}
                           onChange={(e) => handleTripCerPriceChange(e.target.value)}
                         />
@@ -2089,13 +2377,24 @@ export default function Home() {
                       <span className="text-sm font-semibold text-white block mb-3">Prezzi Contabili (€)</span>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-zinc-400">Trasporto</label>
+                          <div className="flex items-center gap-2 mb-1">
+                            <label className="block text-xs font-medium text-zinc-400">Trasporto</label>
+                            {priceSource.transportPrice === 'client-list' && (
+                              <span className="text-xs font-bold text-blue-400 bg-blue-950/30 px-1.5 py-0.5 rounded border border-blue-900/40">🔗 Cliente</span>
+                            )}
+                            {priceSource.transportPrice === 'base-list' && (
+                              <span className="text-xs font-bold text-amber-400 bg-amber-950/30 px-1.5 py-0.5 rounded border border-amber-900/40">📋 Base</span>
+                            )}
+                            {priceSource.transportPrice === 'manual' && (
+                              <span className="text-xs font-bold text-zinc-400 bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700">✏️</span>
+                            )}
+                          </div>
                           <input
                             type="number"
                             step="0.01"
-                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
                             value={newTripData.transportPrice}
-                            onChange={(e) => setNewTripData({ ...newTripData, transportPrice: e.target.value })}
+                            onChange={(e) => handleTripTransportPriceChange(e.target.value)}
                           />
                         </div>
                         <div>
@@ -2220,7 +2519,7 @@ export default function Home() {
               <div className="flex gap-4 justify-end pt-4 border-t border-zinc-800">
                 <button
                   type="button"
-                  onClick={() => setIsTripModalOpen(false)}
+                  onClick={() => { setIsTripModalOpen(false); resetTripForm(); }}
                   className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm font-semibold cursor-pointer"
                 >
                   Annulla
@@ -2233,6 +2532,81 @@ export default function Home() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODALE CONFERMA SALVATAGGIO LISTINO */}
+      {isListinoConfirmOpen && pendingListinoSave && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-lg p-6 shadow-2xl">
+            <div className="flex items-start gap-4 mb-5">
+              <div className="text-3xl">💰</div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Vuoi aggiornare il listino prezzi?</h3>
+                <p className="text-sm text-zinc-400 mt-1">
+                  Hai inserito prezzi diversi dal listino attuale. Vuoi aggiornare il listino con i nuovi valori?
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              {pendingListinoSave.cerPrice && (
+                <div className="bg-zinc-800 rounded-lg p-3 border border-zinc-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-bold text-zinc-400 uppercase">Smaltimento CER</span>
+                      <p className="text-sm font-semibold text-white mt-0.5">
+                        CER <span className="font-mono text-emerald-400">{pendingListinoSave.cerPrice.cerCode}</span>
+                        {' · '}
+                        <span className="text-blue-400">{pendingListinoSave.cerPrice.clientName}</span>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs text-zinc-500">Nuovo prezzo</span>
+                      <p className="text-lg font-bold text-amber-400">
+                        {formatCurrency(pendingListinoSave.cerPrice.pricePerQuintal * 10)}/t
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {pendingListinoSave.transportPrice && (
+                <div className="bg-zinc-800 rounded-lg p-3 border border-zinc-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-bold text-zinc-400 uppercase">Trasporto</span>
+                      <p className="text-sm font-semibold text-white mt-0.5">
+                        Mezzo <span className="font-mono text-blue-400">{pendingListinoSave.transportPrice.plateNumber}</span>
+                        {' · '}
+                        <span className="text-blue-400">{pendingListinoSave.transportPrice.clientName}</span>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs text-zinc-500">Nuovo prezzo</span>
+                      <p className="text-lg font-bold text-emerald-400">
+                        {formatCurrency(pendingListinoSave.transportPrice.price)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => handleSaveToListino(!!pendingListinoSave?.cerPrice, !!pendingListinoSave?.transportPrice)}
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-colors cursor-pointer"
+              >
+                ✅ Sì, aggiorna il listino con i nuovi prezzi
+              </button>
+              <button
+                onClick={() => handleSaveToListino(false, false)}
+                className="w-full py-2.5 bg-zinc-700 hover:bg-zinc-600 text-white font-semibold rounded-lg text-sm transition-colors cursor-pointer"
+              >
+                Solo questo viaggio — non aggiornare il listino
+              </button>
+            </div>
           </div>
         </div>
       )}
