@@ -33,7 +33,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'0afb6b39d87df17dbc84a223238104be464009fd6df9e5f65944cff945107ae6'>;
+  StorageHashBase<'a01b52986e6a6f016fc29696354027060145751d0613a32fd82a85097de9d668'>;
 export type ExecutionHash =
   ExecutionHashBase<'ba1d35e37e2fd1d5b34c2ddba1ca02e497c17dff3be4fa622902416d35c3fc41'>;
 export type ProfileHash =
@@ -292,6 +292,8 @@ export type FieldOutputTypes = {
       readonly driverId: CodecTypes['pg/int4@1']['output'];
       readonly vehicleId: CodecTypes['pg/int4@1']['output'];
       readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly loadedQuantity: CodecTypes['pg/float8@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
@@ -409,6 +411,8 @@ export type FieldInputTypes = {
       readonly driverId: CodecTypes['pg/int4@1']['input'];
       readonly vehicleId: CodecTypes['pg/int4@1']['input'];
       readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly loadedQuantity: CodecTypes['pg/float8@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -524,8 +528,10 @@ export type StorageColumnTypes = {
       readonly driverId: CodecTypes['pg/int4@1']['output'];
       readonly endDate: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly loadedQuantity: CodecTypes['pg/float8@1']['output'] | null;
       readonly notes: CodecTypes['pg/text@1']['output'] | null;
       readonly startDate: CodecTypes['pg/text@1']['output'];
+      readonly status: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly vehicleId: CodecTypes['pg/int4@1']['output'];
     };
@@ -641,8 +647,10 @@ export type StorageColumnInputTypes = {
       readonly driverId: CodecTypes['pg/int4@1']['input'];
       readonly endDate: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly loadedQuantity: CodecTypes['pg/float8@1']['input'] | null;
       readonly notes: CodecTypes['pg/text@1']['input'] | null;
       readonly startDate: CodecTypes['pg/text@1']['input'];
+      readonly status: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly vehicleId: CodecTypes['pg/int4@1']['input'];
     };
@@ -1083,6 +1091,20 @@ type ContractBase = Omit<
                 readonly notes: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PIANIFICATO'>;
+                  };
+                };
+                readonly loadedQuantity: {
+                  readonly nativeType: 'float8';
+                  readonly codecId: 'pg/float8@1';
                   readonly nullable: true;
                 };
                 readonly createdAt: {
@@ -2045,6 +2067,14 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly loadedQuantity: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -2095,6 +2125,8 @@ type ContractBase = Omit<
                 readonly driverId: { readonly column: 'driverId' };
                 readonly vehicleId: { readonly column: 'vehicleId' };
                 readonly notes: { readonly column: 'notes' };
+                readonly status: { readonly column: 'status' };
+                readonly loadedQuantity: { readonly column: 'loadedQuantity' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };

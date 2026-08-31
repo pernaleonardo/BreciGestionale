@@ -164,6 +164,8 @@ model Schedule {
   vehicleId Int
   vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
   notes     String?
+  status         String   @default("PIANIFICATO") // PIANIFICATO, ESEGUITO, ANNULLATO
+  loadedQuantity Float?   // Quantità caricata dichiarata dall'autista
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
   @@rls

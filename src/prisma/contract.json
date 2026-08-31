@@ -630,6 +630,13 @@
                   "kind": "scalar"
                 }
               },
+              "loadedQuantity": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
               "notes": {
                 "nullable": true,
                 "type": {
@@ -638,6 +645,13 @@
                 }
               },
               "startDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
@@ -708,11 +722,17 @@
                 "id": {
                   "column": "id"
                 },
+                "loadedQuantity": {
+                  "column": "loadedQuantity"
+                },
                 "notes": {
                   "column": "notes"
                 },
                 "startDate": {
                   "column": "startDate"
+                },
+                "status": {
+                  "column": "status"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -1953,6 +1973,11 @@
                   "nativeType": "int4",
                   "nullable": false
                 },
+                "loadedQuantity": {
+                  "codecId": "pg/float8@1",
+                  "nativeType": "float8",
+                  "nullable": true
+                },
                 "notes": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -1960,6 +1985,15 @@
                 },
                 "startDate": {
                   "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PIANIFICATO"
+                  },
                   "nativeType": "text",
                   "nullable": false
                 },
@@ -2620,7 +2654,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "0afb6b39d87df17dbc84a223238104be464009fd6df9e5f65944cff945107ae6"
+    "storageHash": "a01b52986e6a6f016fc29696354027060145751d0613a32fd82a85097de9d668"
   },
   "execution": {
     "executionHash": "ba1d35e37e2fd1d5b34c2ddba1ca02e497c17dff3be4fa622902416d35c3fc41",

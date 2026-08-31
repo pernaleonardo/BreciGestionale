@@ -1486,21 +1486,35 @@ export default function Home() {
                                       setIsScheduleModalOpen(true);
                                     }}
                                   >
-                                    <div className="font-bold truncate">{s.driver?.name || 'Sconosciuto'}</div>
+                                    <div className="font-bold truncate flex items-center justify-between">
+                                      <span>{s.driver?.name || 'Sconosciuto'}</span>
+                                      {s.status === 'ESEGUITO' && <span title="Eseguito" className="text-emerald-400">✓</span>}
+                                      {s.status === 'ANNULLATO' && <span title="Annullato" className="text-red-400">✗</span>}
+                                    </div>
                                     <div className="font-mono text-[10px] text-white/80 truncate">{s.vehicle?.plateNumber} - {s.vehicle?.model}</div>
                                     {s.notes && (
                                       <div className="text-[10px] italic text-white/70 mt-0.5 truncate">
                                         {s.notes}
                                       </div>
                                     )}
+                                    {s.status === 'ESEGUITO' && s.loadedQuantity && (
+                                      <div className="text-[10px] font-bold text-emerald-400 mt-0.5 truncate">
+                                        Caricato: {s.loadedQuantity}
+                                      </div>
+                                    )}
 
                                     {/* Tooltip Hover */}
                                     <div className="hidden group-hover:flex flex-col gap-1 absolute top-0 left-[calc(100%+4px)] min-w-[200px] p-3 bg-zinc-900 border border-zinc-700 shadow-2xl rounded-lg z-[9999] pointer-events-none text-left font-sans">
-                                      <div className="font-bold text-white border-b border-zinc-700 pb-1 mb-1">Dettagli Turno</div>
+                                      <div className="font-bold text-white border-b border-zinc-700 pb-1 mb-1 flex justify-between">
+                                        <span>Dettagli Turno</span>
+                                        {s.status === 'ESEGUITO' && <span className="text-emerald-400">ESEGUITO</span>}
+                                        {s.status === 'ANNULLATO' && <span className="text-red-400">ANNULLATO</span>}
+                                      </div>
                                       <div><span className="text-zinc-400 font-semibold">Autista:</span> {s.driver?.name}</div>
                                       <div><span className="text-zinc-400 font-semibold">Mezzo:</span> {s.vehicle?.plateNumber}</div>
                                       <div><span className="text-zinc-400 font-semibold">Inizio:</span> {new Date(s.startDate).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
                                       <div><span className="text-zinc-400 font-semibold">Fine:</span> {new Date(s.endDate).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
+                                      {s.status === 'ESEGUITO' && s.loadedQuantity && <div><span className="text-emerald-400 font-semibold">Q.tà Caricata:</span> {s.loadedQuantity}</div>}
                                       {s.notes && <div className="mt-1 pt-1 border-t border-zinc-700/50"><span className="text-zinc-400 font-semibold">Note:</span> {s.notes}</div>}
                                     </div>
                                   </div>
