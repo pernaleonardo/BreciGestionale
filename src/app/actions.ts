@@ -553,6 +553,26 @@ export async function createSchedule(data: {
   }
 }
 
+export async function updateSchedule(id: number, data: {
+  date?: string;
+  startDate?: string;
+  endDate?: string;
+  driverId?: number;
+  vehicleId?: number;
+  notes?: string;
+}) {
+  try {
+    if (data.startDate && data.endDate && new Date(data.startDate) >= new Date(data.endDate)) {
+      return { success: false, error: 'La data/ora di inizio deve essere precedente alla data/ora di fine.' };
+    }
+    const s = await db.orm.public.Schedule.where({ id }).update(data);
+    return { success: true, schedule: s };
+  } catch (e: any) {
+    console.error('updateSchedule error:', e);
+    return { success: false, error: e.message || 'Errore nella modifica della pianificazione.' };
+  }
+}
+
 export async function deleteSchedule(id: number) {
   try {
     await db.orm.public.Schedule.where({ id }).delete();

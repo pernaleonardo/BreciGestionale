@@ -89,7 +89,14 @@ export default function Home() {
   });
 
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-  const [newScheduleData, setNewScheduleData] = useState({
+  const [newScheduleData, setNewScheduleData] = useState<{
+    id?: number;
+    driverId: string;
+    vehicleId: string;
+    startDate: string;
+    endDate: string;
+    notes: string;
+  }>({
     driverId: '',
     vehicleId: '',
     startDate: '',
@@ -436,14 +443,27 @@ export default function Home() {
       alert('Tutti i campi sono obbligatori.');
       return;
     }
-    const res = await createSchedule({
-      date: selectedDate,
-      startDate: newScheduleData.startDate,
-      endDate: newScheduleData.endDate,
-      driverId: Number(newScheduleData.driverId),
-      vehicleId: Number(newScheduleData.vehicleId),
-      notes: newScheduleData.notes,
-    });
+    let res;
+    if (newScheduleData.id) {
+      res = await updateSchedule(newScheduleData.id, {
+        date: newScheduleData.startDate.split('T')[0],
+        startDate: newScheduleData.startDate,
+        endDate: newScheduleData.endDate,
+        driverId: Number(newScheduleData.driverId),
+        vehicleId: Number(newScheduleData.vehicleId),
+        notes: newScheduleData.notes,
+      });
+    } else {
+      res = await createSchedule({
+        date: newScheduleData.startDate.split('T')[0],
+        startDate: newScheduleData.startDate,
+        endDate: newScheduleData.endDate,
+        driverId: Number(newScheduleData.driverId),
+        vehicleId: Number(newScheduleData.vehicleId),
+        notes: newScheduleData.notes,
+      });
+    }
+
     if (res.success) {
       setIsScheduleModalOpen(false);
       setNewScheduleData({
@@ -453,7 +473,7 @@ export default function Home() {
         endDate: '',
         notes: '',
       });
-      await refreshSchedules(selectedDate);
+      await refreshSchedules(newScheduleData.startDate.split('T')[0]);
     } else {
       alert(res.error);
     }
@@ -3092,7 +3112,9 @@ export default function Home() {
         <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
-              <h3 className="text-lg font-bold text-white font-sans">Pianifica Nuovo Viaggio</h3>
+              <h3 className="text-lg font-bold text-white font-sans">
+                {newScheduleData.id ? 'Modifica Pianificazione' : 'Pianifica Nuovo Viaggio'}
+              </h3>
               <button onClick={() => setIsScheduleModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -3164,20 +3186,36 @@ export default function Home() {
                 />
               </div>
 
-              <div className="flex gap-4 justify-end pt-4 border-t border-zinc-800">
-                <button
-                  type="button"
-                  onClick={() => setIsScheduleModalOpen(false)}
-                  className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-xs font-semibold cursor-pointer"
-                >
-                  Annulla
-                </button>
-                <button
-                  type="submit"
-                  className="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer"
-                >
-                  Salva Pianificazione
-                </button>
+              <div className="flex justify-between items-center pt-4 border-t border-zinc-800">
+                <div>
+                  {newScheduleData.id && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleDeleteSchedule(newScheduleData.id!);
+                        setIsScheduleModalOpen(false);
+                      }}
+                      className="px-3 py-2 bg-red-950/30 border border-red-900/50 hover:bg-red-900/40 text-red-400 rounded-lg text-xs font-bold cursor-pointer transition-colors"
+                    >
+                      Elimina
+                    </button>
+                  )}
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsScheduleModalOpen(false)}
+                    className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-xs font-semibold cursor-pointer"
+                  >
+                    Annulla
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer"
+                  >
+                    {newScheduleData.id ? 'Salva Modifiche' : 'Salva Pianificazione'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
