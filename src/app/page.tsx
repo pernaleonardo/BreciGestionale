@@ -784,8 +784,10 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-zinc-100 font-sans">
         <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-xl">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold tracking-tight text-white">Breci Trasporti s.r.l.</h1>
+          <div className="text-center mb-8 flex flex-col items-center">
+            <div className="bg-white p-2 rounded-lg inline-block shadow mb-3">
+              <img src="/logo.png" alt="Breci Trasporti Logo" className="h-16 object-contain" />
+            </div>
             <p className="text-zinc-400 mt-2">Logistica Rifiuti & Formulari (FIR)</p>
           </div>
 
@@ -850,9 +852,14 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>
-          <div>
-            <h1 className="text-xl font-bold text-white">Breci Trasporti</h1>
-            <p className="text-xs text-zinc-400 hidden sm:block">Gestione Logistica Rifiuti</p>
+          <div className="flex items-center gap-3">
+            <div className="bg-white p-1 rounded inline-block shadow">
+              <img src="/logo.png" alt="Breci Logo" className="h-6 object-contain" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">Breci Trasporti</h1>
+              <p className="text-[10px] text-zinc-400 hidden sm:block">Gestione Logistica Rifiuti</p>
+            </div>
           </div>
         </div>
 
