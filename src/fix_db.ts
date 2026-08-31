@@ -20,9 +20,12 @@ async function run() {
     await client.connect();
     console.log('Connected to Supabase database.');
 
-    // Add loadedQuantity column to the schedule table if not exists
+    // Add status and loadedQuantity columns to the schedule table if they don't exist
+    await client.query("ALTER TABLE public.\"schedule\" ADD COLUMN IF NOT EXISTS \"status\" text NOT NULL DEFAULT 'PIANIFICATO';");
+    console.log('Column "status" created/checked successfully.');
+
     await client.query('ALTER TABLE public."schedule" ADD COLUMN IF NOT EXISTS "loadedQuantity" double precision;');
-    console.log('Column "loadedQuantity" created/checked successfully in table "schedule".');
+    console.log('Column "loadedQuantity" created/checked successfully.');
 
   } catch (e) {
     console.error('Error executing database migration query:', e);
