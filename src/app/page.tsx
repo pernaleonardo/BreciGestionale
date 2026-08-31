@@ -76,7 +76,8 @@ export default function Home() {
     return `${yyyy}-${mm}-${dd}`;
   });
 
-  const [currentWeekStart, setCurrentWeekStart] = useState<string>(() => {
+  const [calendarView, setCalendarView] = useState<'week' | 'day'>('week');
+  const [currentCalendarDate, setCurrentCalendarDate] = useState<string>(() => {
     const today = new Date();
     const day = today.getDay();
     const diff = today.getDate() - day + (day === 0 ? -6 : 1);
@@ -213,7 +214,7 @@ export default function Home() {
         setUsers(userList || []);
       }
 
-      await refreshSchedules(currentWeekStart);
+      await refreshSchedules(currentCalendarDate);
     } catch (e) {
       console.error('Errore ricaricamento dati:', e);
     } finally {
@@ -221,7 +222,7 @@ export default function Home() {
     }
   }
 
-  async function refreshSchedules(weekStart = currentWeekStart) {
+  async function refreshSchedules(weekStart = currentCalendarDate) {
     try {
       const start = new Date(weekStart);
       const end = new Date(start);
@@ -241,9 +242,9 @@ export default function Home() {
 
   useEffect(() => {
     if (currentUser && activeTab === 'pianificazione') {
-      refreshSchedules(currentWeekStart);
+      refreshSchedules(currentCalendarDate);
     }
-  }, [currentWeekStart, activeTab, currentUser]);
+  }, [currentCalendarDate, activeTab, currentUser]);
 
   // Azione di Login
   const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -1160,9 +1161,13 @@ export default function Home() {
               const END_HOUR = 23;
               const hours = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => i + START_HOUR);
 
-              // Calcolo giorni della settimana
-              const start = new Date(currentWeekStart);
-              const weekDays = Array.from({ length: 7 }, (_, i) => {
+              // View settings
+              const isWeekView = calendarView === 'week';
+              
+              // Calcolo giorni da mostrare
+              const start = new Date(currentCalendarDate);
+              const viewDaysCount = isWeekView ? 7 : 1;
+              const weekDays = Array.from({ length: viewDaysCount }, (_, i) => {
                 const d = new Date(start);
                 d.setDate(start.getDate() + i);
                 return d;
@@ -1172,25 +1177,49 @@ export default function Home() {
               const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
               const monthNames = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
               
-              const weekLabel = `${weekDays[0].getDate()} ${monthNames[weekDays[0].getMonth()]} - ${weekDays[6].getDate()} ${monthNames[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`;
+              const weekLabel = isWeekView
+                ? `${weekDays[0].getDate()} ${monthNames[weekDays[0].getMonth()]} - ${weekDays[6].getDate()} ${monthNames[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`
+                : `${weekDays[0].getDate()} ${monthNames[weekDays[0].getMonth()]} ${weekDays[0].getFullYear()} (${dayNames[weekDays[0].getDay()]})`;
 
               // Helpers per navigazione
-              const goToPrevWeek = () => {
-                const d = new Date(currentWeekStart);
-                d.setDate(d.getDate() - 7);
-                setCurrentWeekStart(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+              const goToPrev = () => {
+                const d = new Date(currentCalendarDate);
+                d.setDate(d.getDate() - (isWeekView ? 7 : 1));
+                setCurrentCalendarDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
               };
-              const goToNextWeek = () => {
-                const d = new Date(currentWeekStart);
-                d.setDate(d.getDate() + 7);
-                setCurrentWeekStart(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+              const goToNext = () => {
+                const d = new Date(currentCalendarDate);
+                d.setDate(d.getDate() + (isWeekView ? 7 : 1));
+                setCurrentCalendarDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
               };
               const goToToday = () => {
                 const today = new Date();
-                const day = today.getDay();
-                const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-                const monday = new Date(today.setDate(diff));
-                setCurrentWeekStart(`${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`);
+                if (isWeekView) {
+                  const day = today.getDay();
+                  const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+                  const monday = new Date(today.setDate(diff));
+                  setCurrentCalendarDate(`${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`);
+                } else {
+                  setCurrentCalendarDate(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`);
+                }
+              };
+
+              // Palette colori autisti
+              const driverColors = [
+                'bg-indigo-600 border-indigo-400',
+                'bg-emerald-600 border-emerald-400',
+                'bg-rose-600 border-rose-400',
+                'bg-amber-600 border-amber-400',
+                'bg-cyan-600 border-cyan-400',
+                'bg-purple-600 border-purple-400',
+                'bg-pink-600 border-pink-400',
+                'bg-blue-600 border-blue-400',
+                'bg-teal-600 border-teal-400',
+                'bg-fuchsia-600 border-fuchsia-400'
+              ];
+              const getDriverColorClass = (driverId: number | undefined) => {
+                if (!driverId) return 'bg-zinc-600 border-zinc-400';
+                return driverColors[driverId % driverColors.length];
               };
 
               // Helper per calcolare lo stile del blocco evento
@@ -1198,23 +1227,16 @@ export default function Home() {
                 const s = new Date(startDateStr);
                 const e = new Date(endDateStr);
                 
-                // Convertiamo in ore decimali
                 const sDecimal = s.getHours() + s.getMinutes() / 60;
                 let eDecimal = e.getHours() + e.getMinutes() / 60;
                 
                 if (e.getDate() !== s.getDate() || eDecimal < sDecimal) {
-                  // Se l'evento finisce il giorno dopo, lo tagliamo a mezzanotte (oppure limitiamo all'END_HOUR)
                   eDecimal = 24; 
                 }
 
-                // Calcoliamo la top in percentuale rispetto all'altezza totale della griglia oraria
-                // Ogni ora è 1 slot. L'inizio della griglia è START_HOUR.
                 const startOffset = Math.max(0, sDecimal - START_HOUR);
-                const duration = Math.max(0.5, eDecimal - Math.max(sDecimal, START_HOUR)); // min 30 min per visibilità
+                const duration = Math.max(0.5, eDecimal - Math.max(sDecimal, START_HOUR)); 
 
-                // Calcolo in base a un'altezza fissa della cella (es: 60px) oppure in % se usiamo grid absolute.
-                // In un calendario full css grid possiamo usare grid-row. Ma per flessibilità usiamo absolute pos.
-                // Se un'ora = 48px:
                 const HOUR_HEIGHT = 48;
                 return {
                   top: `${startOffset * HOUR_HEIGHT}px`,
@@ -1235,10 +1257,10 @@ export default function Home() {
                         Oggi
                       </button>
                       <div className="flex items-center rounded-lg border border-zinc-700 overflow-hidden">
-                        <button onClick={goToPrevWeek} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer text-zinc-400 hover:text-white">
+                        <button onClick={goToPrev} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer text-zinc-400 hover:text-white">
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                         </button>
-                        <button onClick={goToNextWeek} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors border-l border-zinc-700 cursor-pointer text-zinc-400 hover:text-white">
+                        <button onClick={goToNext} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors border-l border-zinc-700 cursor-pointer text-zinc-400 hover:text-white">
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                         </button>
                       </div>
@@ -1246,15 +1268,31 @@ export default function Home() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <select className="bg-zinc-800 border border-zinc-700 text-sm font-semibold rounded-lg px-3 py-1.5 text-white outline-none cursor-pointer">
+                      <select 
+                        value={calendarView}
+                        onChange={(e) => {
+                          const newView = e.target.value as 'week' | 'day';
+                          setCalendarView(newView);
+                          if (newView === 'week') {
+                            const d = new Date(currentCalendarDate);
+                            const day = d.getDay();
+                            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                            const monday = new Date(d.setDate(diff));
+                            setCurrentCalendarDate(`${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`);
+                          }
+                        }}
+                        className="bg-zinc-800 border border-zinc-700 text-sm font-semibold rounded-lg px-3 py-1.5 text-white outline-none cursor-pointer"
+                      >
                         <option value="week">Settimana</option>
+                        <option value="day">Giorno</option>
                       </select>
                       <button
                         onClick={() => {
-                          const today = new Date();
-                          const yyyy = today.getFullYear();
-                          const mm = String(today.getMonth() + 1).padStart(2, '0');
-                          const dd = String(today.getDate()).padStart(2, '0');
+                          const target = new Date(currentCalendarDate);
+                          if (isWeekView) target.setDate(target.getDate() + 1); // just a fallback
+                          const yyyy = target.getFullYear();
+                          const mm = String(target.getMonth() + 1).padStart(2, '0');
+                          const dd = String(target.getDate()).padStart(2, '0');
                           setNewScheduleData({
                             driverId: '',
                             vehicleId: '',
@@ -1271,7 +1309,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* GRIGLIA CALENDARIO SETTIMANALE */}
+                  {/* GRIGLIA CALENDARIO */}
                   <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col shadow-lg">
                     {/* Intestazioni Giorni */}
                     <div className="flex border-b border-zinc-800 bg-zinc-800/50">
@@ -1348,23 +1386,24 @@ export default function Home() {
                               {/* Eventi */}
                               {daySchedules.map(s => {
                                 const style = getEventStyle(s.startDate, s.endDate);
+                                const colorClass = getDriverColorClass(s.driverId);
+                                
                                 return (
                                   <div
                                     key={s.id}
                                     style={style}
-                                    className="bg-indigo-600/90 hover:bg-indigo-500 border border-indigo-400/50 rounded-md p-1.5 overflow-hidden text-xs text-white cursor-pointer transition-colors shadow-sm group flex flex-col gap-0.5"
+                                    className={`${colorClass} opacity-95 hover:opacity-100 border rounded-md p-1.5 overflow-hidden text-xs text-white cursor-pointer transition-opacity shadow-sm group flex flex-col gap-0.5`}
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      // Al click potremmo aprire una modifica. Per ora permettiamo l'eliminazione veloce.
                                       if (confirm('Vuoi eliminare questo turno?')) {
                                         handleDeleteSchedule(s.id);
                                       }
                                     }}
                                   >
                                     <div className="font-bold truncate">{s.driver?.name || 'Sconosciuto'}</div>
-                                    <div className="font-mono text-[10px] text-indigo-100 truncate opacity-90">{s.vehicle?.plateNumber} - {s.vehicle?.model}</div>
+                                    <div className="font-mono text-[10px] text-white/80 truncate">{s.vehicle?.plateNumber} - {s.vehicle?.model}</div>
                                     {s.notes && (
-                                      <div className="text-[10px] italic text-indigo-200 mt-0.5 truncate group-hover:whitespace-normal group-hover:overflow-visible">
+                                      <div className="text-[10px] italic text-white/70 mt-0.5 truncate group-hover:whitespace-normal group-hover:overflow-visible group-hover:bg-black/50 group-hover:p-1 group-hover:rounded group-hover:z-50 relative">
                                         {s.notes}
                                       </div>
                                     )}
@@ -3140,3 +3179,5 @@ export default function Home() {
     </div>
   );
 }
+
+
