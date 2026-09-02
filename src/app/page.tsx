@@ -34,6 +34,7 @@ import {
   updateSchedule,
   deleteSchedule,
   importExecutedSchedulesToTrips,
+  getInvoices, generateInvoice, deleteInvoice
 } from './actions';
 
 // Helper per formattare i numeri come valuta (€)
@@ -54,7 +55,7 @@ const formatWeight = (value: number) => {
 
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'registro' | 'pianificazione' | 'anagrafiche' | 'listini' | 'utenti'>('registro');
+  const [activeTab, setActiveTab] = useState<'registro' | 'pianificazione' | 'anagrafiche' | 'listini' | 'utenti' | 'fatturazione'>('registro');
   const [anagraficaSubTab, setAnagraficaSubTab] = useState<'clienti' | 'destinatari' | 'autisti' | 'mezzi' | 'cer'>('clienti');
   const [listinoSubTab, setListinoSubTab] = useState<'smaltimento' | 'trasporti'>('smaltimento');
   
@@ -68,6 +69,13 @@ export default function Home() {
   const [disposalPrices, setDisposalPrices] = useState<any[]>([]);
   const [transportPrices, setTransportPrices] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [selectedInvoiceMonth, setSelectedInvoiceMonth] = useState<string>(() => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    return `${yyyy}-${mm}`;
+  });
 
   // Stati per la pianificazione
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -254,6 +262,9 @@ export default function Home() {
         const userList = await getUsers();
         setUsers(userList || []);
       }
+
+      const invRes = await getInvoices();
+      if (invRes.success) setInvoices(invRes.invoices || []);
 
       await refreshSchedules(currentCalendarDate);
     } catch (e) {
@@ -1071,6 +1082,13 @@ const handleDeleteTrip = async (id: number) => {
                 >
                   <span>💰</span>
                   <span>Listini Prezzi</span>
+                </button>
+                <button
+                  onClick={() => { setActiveTab('fatturazione'); setIsMenuOpen(false); }}
+                  className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'fatturazione' ? 'bg-orange-600 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
+                >
+                  <span>📄</span>
+                  <span>Fatturazione</span>
                 </button>
                 {currentUser.role === 'ADMIN' && (
                   <button
@@ -2400,6 +2418,133 @@ const handleDeleteTrip = async (id: number) => {
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+            {/* TAB: FATTURAZIONE */}
+            {activeTab === 'fatturazione' && (
+              <div>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                  <h2 className="text-2xl font-bold text-orange-500">Fatturazione Mensile</h2>
+                  <div className="flex gap-2">
+                    <input
+                      type="month"
+                      value={selectedInvoiceMonth}
+                      onChange={(e) => setSelectedInvoiceMonth(e.target.value)}
+                      className="p-2 rounded bg-zinc-800 text-white border border-zinc-700"
+                    />
+                  </div>
+                </div>
+                
+                <div className="bg-zinc-900 rounded-lg shadow-xl overflow-hidden mb-8 border border-zinc-800">
+                  <div className="p-4 border-b border-zinc-800">
+                    <h3 className="text-lg font-bold text-white">Chiusura Mese e Generazione Fatture ({selectedInvoiceMonth})</h3>
+                    <p className="text-sm text-zinc-400">Clicca su "Chiudi Mese" per generare la fattura per un cliente raggruppando tutti i viaggi non ancora fatturati nel mese selezionato.</p>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-zinc-800 text-zinc-300">
+                          <th className="p-3">Cliente</th>
+                          <th className="p-3">Codice Fiscale / P.IVA</th>
+                          <th className="p-3 text-center">Azioni</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {clients.map(client => {
+                          // Check if invoice already exists
+                          const hasInvoice = invoices.some(i => i.clientId === client.id && i.month === selectedInvoiceMonth);
+                          return (
+                            <tr key={client.id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
+                              <td className="p-3 text-white">{client.name}</td>
+                              <td className="p-3 text-zinc-400">{client.vatNumber || '-'}</td>
+                              <td className="p-3 text-center">
+                                {hasInvoice ? (
+                                  <span className="px-3 py-1 bg-emerald-900/50 text-emerald-400 rounded text-sm font-bold border border-emerald-800">
+                                    Fattura Emessa
+                                  </span>
+                                ) : (
+                                  <button
+                                    onClick={async () => {
+                                      if (confirm(`Vuoi chiudere il mese ${selectedInvoiceMonth} per ${client.name}?`)) {
+                                        const res = await generateInvoice(client.id, selectedInvoiceMonth);
+                                        if (res.success) {
+                                          alert('Fattura generata con successo!');
+                                          refreshData(); // reload invoices and trips
+                                        } else {
+                                          alert(res.error);
+                                        }
+                                      }
+                                    }}
+                                    className="px-3 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded text-sm font-bold transition-colors cursor-pointer shadow-md"
+                                  >
+                                    Chiudi Mese
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900 rounded-lg shadow-xl overflow-hidden border border-zinc-800">
+                  <div className="p-4 border-b border-zinc-800">
+                    <h3 className="text-lg font-bold text-white">Registro Fatture Emesse</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-zinc-800 text-zinc-300">
+                          <th className="p-3">Mese</th>
+                          <th className="p-3">Cliente</th>
+                          <th className="p-3 text-right">Imponibile</th>
+                          <th className="p-3 text-right">IVA (22%)</th>
+                          <th className="p-3 text-right">Totale Fattura</th>
+                          <th className="p-3 text-center">Azioni</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {invoices.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="p-6 text-center text-zinc-500">Nessuna fattura emessa</td>
+                          </tr>
+                        ) : (
+                          invoices.map((inv: any) => (
+                            <tr key={inv.id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
+                              <td className="p-3 text-white font-bold">{inv.month}</td>
+                              <td className="p-3 text-zinc-300">{inv.client?.name}</td>
+                              <td className="p-3 text-right text-orange-300">{formatCurrency(inv.totalTaxable)}</td>
+                              <td className="p-3 text-right text-indigo-400">{formatCurrency(inv.totalIva)}</td>
+                              <td className="p-3 text-right text-emerald-400 font-bold">{formatCurrency(inv.totalAmount)}</td>
+                              <td className="p-3 text-center">
+                                <button
+                                  onClick={async () => {
+                                    if (confirm('Sei sicuro di voler eliminare questa fattura? I viaggi associati torneranno ad essere non fatturati.')) {
+                                      const res = await deleteInvoice(inv.id);
+                                      if (res.success) {
+                                        refreshData();
+                                      } else {
+                                        alert(res.error);
+                                      }
+                                    }
+                                  }}
+                                  className="p-1 hover:bg-zinc-800 hover:text-red-400 text-zinc-500 rounded transition-colors cursor-pointer"
+                                  title="Cancella fattura"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 inline">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                  </svg>
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -3756,5 +3901,6 @@ const handleDeleteTrip = async (id: number) => {
     </div>
   );
 }
+
 
 

@@ -24,6 +24,10 @@
       "model": "GPSLog",
       "namespace": "public"
     },
+    "invoice": {
+      "model": "Invoice",
+      "namespace": "public"
+    },
     "schedule": {
       "model": "Schedule",
       "namespace": "public"
@@ -133,6 +137,21 @@
                 },
                 "to": {
                   "model": "DisposalPrice",
+                  "namespace": "public"
+                }
+              },
+              "invoices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "clientId"
+                  ]
+                },
+                "to": {
+                  "model": "Invoice",
                   "namespace": "public"
                 }
               },
@@ -608,6 +627,128 @@
               "table": "gPSLog"
             }
           },
+          "Invoice": {
+            "fields": {
+              "clientId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "month": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "totalAmount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "totalIva": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "totalTaxable": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "client": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "clientId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Client",
+                  "namespace": "public"
+                }
+              },
+              "trips": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "invoiceId"
+                  ]
+                },
+                "to": {
+                  "model": "Trip",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "clientId": {
+                  "column": "clientId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "month": {
+                  "column": "month"
+                },
+                "totalAmount": {
+                  "column": "totalAmount"
+                },
+                "totalIva": {
+                  "column": "totalIva"
+                },
+                "totalTaxable": {
+                  "column": "totalTaxable"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "invoice"
+            }
+          },
           "Schedule": {
             "fields": {
               "analisiPrice": {
@@ -1046,7 +1187,7 @@
                 }
               },
               "cerCode": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -1074,7 +1215,7 @@
                 }
               },
               "destinationId": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
@@ -1095,7 +1236,7 @@
                 }
               },
               "firNumber": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -1110,6 +1251,13 @@
               },
               "id": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "invoiceId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
@@ -1232,6 +1380,21 @@
                   "namespace": "public"
                 }
               },
+              "invoice": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "invoiceId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Invoice",
+                  "namespace": "public"
+                }
+              },
               "vehicle": {
                 "cardinality": "N:1",
                 "on": {
@@ -1303,6 +1466,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "invoiceId": {
+                  "column": "invoiceId"
                 },
                 "noleggioPrice": {
                   "column": "noleggioPrice"
@@ -1697,6 +1863,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "gPSLog"
+            },
+            "invoice": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "invoice"
             },
             "schedule": {
               "kind": "rls",
@@ -2128,6 +2299,104 @@
               },
               "uniques": []
             },
+            "invoice": {
+              "columns": {
+                "clientId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "month": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "totalAmount": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": false
+                },
+                "totalIva": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": false
+                },
+                "totalTaxable": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "clientId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "invoice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "client"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "clientId"
+                  ],
+                  "name": "invoice_clientId_idx_153a9a49",
+                  "prefix": "invoice_clientId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "schedule": {
               "columns": {
                 "analisiPrice": {
@@ -2542,7 +2811,7 @@
                 "cerCode": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false
+                  "nullable": true
                 },
                 "cerPrice": {
                   "codecId": "pg/float8@1",
@@ -2570,7 +2839,7 @@
                 "destinationId": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
-                  "nullable": false
+                  "nullable": true
                 },
                 "disposalPrice": {
                   "codecId": "pg/float8@1",
@@ -2589,7 +2858,7 @@
                 "firNumber": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false
+                  "nullable": true
                 },
                 "fuoriRomaPrice": {
                   "codecId": "pg/float8@1",
@@ -2608,6 +2877,11 @@
                   },
                   "nativeType": "int4",
                   "nullable": false
+                },
+                "invoiceId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
                 },
                 "noleggioPrice": {
                   "codecId": "pg/float8@1",
@@ -2748,6 +3022,22 @@
                     "namespaceId": "public",
                     "tableName": "wasteType"
                   }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "invoiceId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "trip"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "invoice"
+                  }
                 }
               ],
               "indexes": [
@@ -2765,6 +3055,14 @@
                   ],
                   "name": "trip_driverId_idx_8eed3317",
                   "prefix": "trip_driverId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "invoiceId"
+                  ],
+                  "name": "trip_invoiceId_idx_d5c4f70e",
+                  "prefix": "trip_invoiceId_idx",
                   "unique": false
                 },
                 {
@@ -2997,10 +3295,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "67cb877df0894e9e05390cc26c40a3a7e7916594086b98c310dd4bb00ee1669d"
+    "storageHash": "bd73ab5e4b651de3fdaef59302f23c3422a3bc1f6d9febdf6a2b801e1658e078"
   },
   "execution": {
-    "executionHash": "ba1d35e37e2fd1d5b34c2ddba1ca02e497c17dff3be4fa622902416d35c3fc41",
+    "executionHash": "ea58b24168d31833c46c90a36c80d561e36bb1d4968eb743e799b7cc7caf5704",
     "mutations": {
       "defaults": [
         {
@@ -3061,6 +3359,21 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "driver"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "invoice"
           }
         },
         {

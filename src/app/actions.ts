@@ -822,3 +822,97 @@ export async function importExecutedSchedulesToTrips() {
     return { success: false, error: e.message || 'Errore durante l\'importazione dei viaggi.' };
   }
 }
+
+
+// ----------------- FATTURAZIONE -----------------
+
+export async function getInvoices() {
+  try {
+    const invoices = await db.orm.public.Invoice
+      .include('client')
+      .all();
+    
+    // In-memory sort by descending ID as a proxy for createdAt
+    invoices.sort((a: any, b: any) => b.id - a.id);
+
+    return { success: true, invoices };
+  } catch (e: any) {
+    console.error('getInvoices error:', e);
+    return { success: false, error: e.message || 'Errore nel recupero delle fatture.' };
+  }
+}
+
+export async function generateInvoice(clientId: number, month: string) {
+  try {
+    const [year, monthNum] = month.split('-');
+    
+    const existing = await db.orm.public.Invoice.where({ clientId, month }).first();
+    if (existing) {
+      return { success: false, error: 'Esiste già una fattura per questo cliente in questo mese.' };
+    }
+
+    const allTrips = await db.orm.public.Trip.where({ invoiceId: null }).include('destination').all() as any[];
+    
+    const tripsToInvoice = allTrips.filter((t: any) => {
+      // match client
+      if (!t.destination || t.destination.clientId !== clientId) return false;
+      // match month
+      // t.date is DD/MM/YYYY
+      const parts = t.date.split('/');
+      if (parts.length === 3) {
+        const tMonth = parts[1];
+        const tYear = parts[2];
+        if (tYear === year && tMonth === monthNum) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (tripsToInvoice.length === 0) {
+      return { success: false, error: 'Nessun viaggio da fatturare per questo mese e cliente.' };
+    }
+
+    let totalTaxable = 0;
+    
+    for (const trip of tripsToInvoice) {
+      const rowTaxable = trip.transportPrice + trip.disposalPrice + trip.fuoriRomaPrice + trip.noleggioPrice + trip.bigBagPrice + trip.analisiPrice + trip.servRagnoPrice + trip.sostaPrice;
+      totalTaxable += rowTaxable;
+    }
+
+    const totalIva = totalTaxable * 0.22;
+    const totalAmount = totalTaxable + totalIva;
+
+    const invoice = await db.orm.public.Invoice.create({
+      month,
+      clientId,
+      totalTaxable,
+      totalIva,
+      totalAmount,
+    });
+
+    // Update trips with invoiceId
+    for (const trip of tripsToInvoice) {
+      await db.orm.public.Trip.where({ id: trip.id }).update({ invoiceId: invoice.id });
+    }
+
+    return { success: true, invoice };
+  } catch (e: any) {
+    console.error('generateInvoice error:', e);
+    return { success: false, error: e.message || 'Errore nella generazione della fattura.' };
+  }
+}
+
+export async function deleteInvoice(id: number) {
+  try {
+    // Unlink trips
+    await db.orm.public.Trip.where({ invoiceId: id }).update({ invoiceId: null });
+    // Delete invoice
+    await db.orm.public.Invoice.where({ id }).delete();
+    return { success: true };
+  } catch (e: any) {
+    console.error('deleteInvoice error:', e);
+    return { success: false, error: e.message || 'Errore nella cancellazione della fattura.' };
+  }
+}
+

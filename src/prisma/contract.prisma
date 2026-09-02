@@ -20,6 +20,7 @@ model Client {
   destinations    Destination[]
   disposalPrices  DisposalPrice[]
   transportPrices TransportPrice[]
+  invoices        Invoice[]
   createdAt       TimestamptzString @default(now())
   updatedAt       temporal.updatedAtString()
   @@rls
@@ -83,10 +84,10 @@ model WasteType {
 model Trip {
   id                 Int      @id @default(autoincrement())
   date               String   // Data del viaggio (es. 05/08/2026)
-  firNumber          String   @unique // Numero Formulario Rifiuti (es. NVBNH 006819 TG)
+  firNumber          String?  @unique // Numero Formulario Rifiuti (es. NVBNH 006819 TG)
   
   // Dettagli del Rifiuto e del Peso
-  cerCode            String   // Codice EER/CER inserito nel viaggio (es. 170802)
+  cerCode            String?   // Codice EER/CER inserito nel viaggio (es. 170802)
   cerPrice           Float    @default(0.0) // Prezzo CER al tonnellata
   weight             Float    @default(0.0) // Peso in tonnellate o kg
   
@@ -106,8 +107,8 @@ model Trip {
   status             String   @default("PENDING") // PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED
 
   // Relazioni
-  destinationId      Int
-  destination        Destination @relation(fields: [destinationId], references: [id])
+  destinationId      Int?
+  destination        Destination? @relation(fields: [destinationId], references: [id])
   
   driverId           Int?     // Autista assegnato
   driver             Driver?  @relation(fields: [driverId], references: [id])
@@ -115,6 +116,9 @@ model Trip {
   vehicle            Vehicle? @relation(fields: [vehicleId], references: [id])
   wasteTypeId        Int?     // Collegamento al catalogo EER/CER (opzionale)
   wasteType          WasteType? @relation(fields: [wasteTypeId], references: [id])
+
+  invoiceId          Int?
+  invoice            Invoice? @relation(fields: [invoiceId], references: [id])
 
   gpsLogs            GPSLog[]
   createdAt          TimestamptzString @default(now())
@@ -192,5 +196,16 @@ model Schedule {
   sostaPrice     Float?       @default(0.0)
 }
 
-
-
+model Invoice {
+  id            Int      @id @default(autoincrement())
+  month         String   // e.g. "2026-09"
+  clientId      Int
+  client        Client   @relation(fields: [clientId], references: [id])
+  trips         Trip[]
+  totalTaxable  Float    @default(0.0)
+  totalIva      Float    @default(0.0)
+  totalAmount   Float    @default(0.0)
+  createdAt     TimestamptzString @default(now())
+  updatedAt     temporal.updatedAtString()
+  @@rls
+}
