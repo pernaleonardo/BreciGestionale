@@ -76,6 +76,8 @@ export default function Home() {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     return `${yyyy}-${mm}`;
   });
+  const [fatturazioneSubTab, setFatturazioneSubTab] = useState<'da_fatturare' | 'archivio'>('da_fatturare');
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
   // Stati per la pianificazione
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -2420,56 +2422,85 @@ const handleDeleteTrip = async (id: number) => {
                 )}
               </div>
             )}
-            {/* TAB: FATTURAZIONE */}
+                        {/* TAB: FATTURAZIONE */}
             {activeTab === 'fatturazione' && (
               <div>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                  <h2 className="text-2xl font-bold text-orange-500">Fatturazione Mensile</h2>
-                  <div className="flex gap-2">
-                    <input
-                      type="month"
-                      value={selectedInvoiceMonth}
-                      onChange={(e) => setSelectedInvoiceMonth(e.target.value)}
-                      className="p-2 rounded bg-zinc-800 text-white border border-zinc-700"
-                    />
+                  <div>
+                    <h2 className="text-2xl font-bold text-orange-500">Fatturazione Mensile</h2>
+                    <p className="text-sm text-zinc-400">Gestisci i viaggi da fatturare e l'archivio fatture.</p>
+                  </div>
+                  <div className="flex bg-zinc-800 p-1 rounded-lg">
+                    <button
+                      onClick={() => setFatturazioneSubTab('da_fatturare')}
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors cursor-pointer ${fatturazioneSubTab === 'da_fatturare' ? 'bg-orange-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-700'}`}
+                    >
+                      Da Fatturare
+                    </button>
+                    <button
+                      onClick={() => setFatturazioneSubTab('archivio')}
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors cursor-pointer ${fatturazioneSubTab === 'archivio' ? 'bg-orange-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-700'}`}
+                    >
+                      Archivio Fatture
+                    </button>
                   </div>
                 </div>
-                
-                <div className="bg-zinc-900 rounded-lg shadow-xl overflow-hidden mb-8 border border-zinc-800">
-                  <div className="p-4 border-b border-zinc-800">
-                    <h3 className="text-lg font-bold text-white">Chiusura Mese e Generazione Fatture ({selectedInvoiceMonth})</h3>
-                    <p className="text-sm text-zinc-400">Clicca su "Chiudi Mese" per generare la fattura per un cliente raggruppando tutti i viaggi non ancora fatturati nel mese selezionato.</p>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-zinc-800 text-zinc-300">
-                          <th className="p-3">Cliente</th>
-                          <th className="p-3">Codice Fiscale / P.IVA</th>
-                          <th className="p-3 text-center">Azioni</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {clients.map(client => {
-                          // Check if invoice already exists
-                          const hasInvoice = invoices.some(i => i.clientId === client.id && i.month === selectedInvoiceMonth);
-                          return (
-                            <tr key={client.id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
-                              <td className="p-3 text-white">{client.name}</td>
-                              <td className="p-3 text-zinc-400">{client.vatNumber || '-'}</td>
-                              <td className="p-3 text-center">
-                                {hasInvoice ? (
-                                  <span className="px-3 py-1 bg-emerald-900/50 text-emerald-400 rounded text-sm font-bold border border-emerald-800">
-                                    Fattura Emessa
-                                  </span>
-                                ) : (
+
+                {fatturazioneSubTab === 'da_fatturare' && (
+                  <div className="bg-zinc-900 rounded-lg shadow-xl overflow-hidden mb-8 border border-zinc-800">
+                    <div className="p-4 border-b border-zinc-800 flex justify-between items-center">
+                      <div>
+                        <h3 className="text-lg font-bold text-white">Viaggi da Fatturare</h3>
+                        <p className="text-sm text-zinc-400">Mostra solo i clienti che hanno viaggi non ancora fatturati nel mese selezionato.</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="month"
+                          value={selectedInvoiceMonth}
+                          onChange={(e) => setSelectedInvoiceMonth(e.target.value)}
+                          className="p-2 rounded bg-zinc-800 text-white border border-zinc-700"
+                        />
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-zinc-800 text-zinc-300">
+                            <th className="p-3">Cliente</th>
+                            <th className="p-3">Codice Fiscale / P.IVA</th>
+                            <th className="p-3 text-center">N° Viaggi</th>
+                            <th className="p-3 text-center">Azioni</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {clients
+                            .map(client => {
+                              const [year, monthNum] = selectedInvoiceMonth.split('-');
+                              const tripsToInvoice = trips.filter((t: any) => {
+                                if (t.invoiceId !== null) return false;
+                                if (!t.destination || t.destination.clientId !== client.id) return false;
+                                const parts = t.date.split('/');
+                                if (parts.length === 3) {
+                                  if (parts[2] === year && parts[1] === monthNum) return true;
+                                }
+                                return false;
+                              });
+                              return { client, tripsToInvoice };
+                            })
+                            .filter(({ tripsToInvoice }) => tripsToInvoice.length > 0)
+                            .map(({ client, tripsToInvoice }) => (
+                              <tr key={client.id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
+                                <td className="p-3 text-white">{client.name}</td>
+                                <td className="p-3 text-zinc-400">{client.vatNumber || '-'}</td>
+                                <td className="p-3 text-center text-orange-400 font-bold">{tripsToInvoice.length}</td>
+                                <td className="p-3 text-center">
                                   <button
                                     onClick={async () => {
-                                      if (confirm(`Vuoi chiudere il mese ${selectedInvoiceMonth} per ${client.name}?`)) {
+                                      if (confirm(`Vuoi generare la fattura per ${client.name} per il mese ${selectedInvoiceMonth}? Verranno inclusi ${tripsToInvoice.length} viaggi.`)) {
                                         const res = await generateInvoice(client.id, selectedInvoiceMonth);
                                         if (res.success) {
                                           alert('Fattura generata con successo!');
-                                          refreshData(); // reload invoices and trips
+                                          refreshData(); 
                                         } else {
                                           alert(res.error);
                                         }
@@ -2479,77 +2510,185 @@ const handleDeleteTrip = async (id: number) => {
                                   >
                                     Chiudi Mese
                                   </button>
-                                )}
-                              </td>
+                                </td>
+                              </tr>
+                            ))}
+                          {clients.filter(client => {
+                            const [year, monthNum] = selectedInvoiceMonth.split('-');
+                            return trips.some((t: any) => t.invoiceId === null && t.destination?.clientId === client.id && t.date.split('/')[2] === year && t.date.split('/')[1] === monthNum);
+                          }).length === 0 && (
+                            <tr>
+                              <td colSpan={4} className="p-6 text-center text-zinc-500">Nessun viaggio da fatturare per il mese di {selectedInvoiceMonth}</td>
                             </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-
-                <div className="bg-zinc-900 rounded-lg shadow-xl overflow-hidden border border-zinc-800">
-                  <div className="p-4 border-b border-zinc-800">
-                    <h3 className="text-lg font-bold text-white">Registro Fatture Emesse</h3>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-zinc-800 text-zinc-300">
-                          <th className="p-3">Mese</th>
-                          <th className="p-3">Cliente</th>
-                          <th className="p-3 text-right">Imponibile</th>
-                          <th className="p-3 text-right">IVA (22%)</th>
-                          <th className="p-3 text-right">Totale Fattura</th>
-                          <th className="p-3 text-center">Azioni</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {invoices.length === 0 ? (
-                          <tr>
-                            <td colSpan={6} className="p-6 text-center text-zinc-500">Nessuna fattura emessa</td>
+                )}
+                
+                {fatturazioneSubTab === 'archivio' && !selectedInvoice && (
+                  <div className="bg-zinc-900 rounded-lg shadow-xl overflow-hidden border border-zinc-800">
+                    <div className="p-4 border-b border-zinc-800">
+                      <h3 className="text-lg font-bold text-white">Registro Fatture Emesse</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-zinc-800 text-zinc-300">
+                            <th className="p-3">Mese</th>
+                            <th className="p-3">Cliente</th>
+                            <th className="p-3 text-right">Imponibile</th>
+                            <th className="p-3 text-right">IVA (22%)</th>
+                            <th className="p-3 text-right">Totale Fattura</th>
+                            <th className="p-3 text-center">Azioni</th>
                           </tr>
-                        ) : (
-                          invoices.map((inv: any) => (
-                            <tr key={inv.id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
-                              <td className="p-3 text-white font-bold">{inv.month}</td>
-                              <td className="p-3 text-zinc-300">{inv.client?.name}</td>
-                              <td className="p-3 text-right text-orange-300">{formatCurrency(inv.totalTaxable)}</td>
-                              <td className="p-3 text-right text-indigo-400">{formatCurrency(inv.totalIva)}</td>
-                              <td className="p-3 text-right text-emerald-400 font-bold">{formatCurrency(inv.totalAmount)}</td>
-                              <td className="p-3 text-center">
-                                <button
-                                  onClick={async () => {
-                                    if (confirm('Sei sicuro di voler eliminare questa fattura? I viaggi associati torneranno ad essere non fatturati.')) {
-                                      const res = await deleteInvoice(inv.id);
-                                      if (res.success) {
-                                        refreshData();
-                                      } else {
-                                        alert(res.error);
-                                      }
-                                    }
-                                  }}
-                                  className="p-1 hover:bg-zinc-800 hover:text-red-400 text-zinc-500 rounded transition-colors cursor-pointer"
-                                  title="Cancella fattura"
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 inline">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                  </svg>
-                                </button>
-                              </td>
+                        </thead>
+                        <tbody>
+                          {invoices.length === 0 ? (
+                            <tr>
+                              <td colSpan={6} className="p-6 text-center text-zinc-500">Nessuna fattura emessa</td>
                             </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
+                          ) : (
+                            invoices.map((inv: any) => (
+                              <tr key={inv.id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
+                                <td className="p-3 text-white font-bold">{inv.month}</td>
+                                <td className="p-3 text-zinc-300">{inv.client?.name}</td>
+                                <td className="p-3 text-right text-orange-300">{formatCurrency(inv.totalTaxable)}</td>
+                                <td className="p-3 text-right text-indigo-400">{formatCurrency(inv.totalIva)}</td>
+                                <td className="p-3 text-right text-emerald-400 font-bold">{formatCurrency(inv.totalAmount)}</td>
+                                <td className="p-3 text-center flex justify-center gap-2">
+                                  <button
+                                    onClick={() => setSelectedInvoice(inv)}
+                                    className="p-1 hover:bg-zinc-800 hover:text-blue-400 text-zinc-500 rounded transition-colors cursor-pointer"
+                                    title="Dettaglio fattura"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                  </button>
+                                  <button
+                                    onClick={async () => {
+                                      if (confirm('Sei sicuro di voler eliminare questa fattura? I viaggi associati torneranno ad essere non fatturati.')) {
+                                        const res = await deleteInvoice(inv.id);
+                                        if (res.success) {
+                                          refreshData();
+                                        } else {
+                                          alert(res.error);
+                                        }
+                                      }
+                                    }}
+                                    className="p-1 hover:bg-zinc-800 hover:text-red-400 text-zinc-500 rounded transition-colors cursor-pointer"
+                                    title="Cancella fattura"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 inline">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {fatturazioneSubTab === 'archivio' && selectedInvoice && (
+                  <div className="bg-zinc-900 rounded-lg shadow-xl overflow-hidden border border-zinc-800">
+                    <div className="p-4 border-b border-zinc-800 flex justify-between items-center print:hidden">
+                      <button
+                        onClick={() => setSelectedInvoice(null)}
+                        className="text-zinc-400 hover:text-white flex items-center gap-1 cursor-pointer"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                        </svg>
+                        Indietro
+                      </button>
+                      <button
+                        onClick={() => window.print()}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm font-bold text-white cursor-pointer flex items-center gap-2"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.724.092m6.524-4.656c.04.027.08.056.12.083.565.398 1.107.822 1.623 1.282.02.018.04.035.061.053A10.51 10.51 0 0 0 18 12V9a2.25 2.25 0 0 0-2.25-2.25H8.25A2.25 2.25 0 0 0 6 9v3c.319.462.668.9 1.042 1.312m10.958 1.517a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-2.25a2.25 2.25 0 0 1 2.25-2.25h9a2.25 2.25 0 0 1 2.25 2.25v2.25Z" />
+                        </svg>
+                        Stampa
+                      </button>
+                    </div>
+                    <div className="p-8 print:p-0 print:bg-white print:text-black" id="printable-invoice">
+                      <div className="flex justify-between items-start mb-8">
+                        <div>
+                          <h1 className="text-3xl font-bold print:text-black">FATTURA</h1>
+                          <p className="text-zinc-400 print:text-zinc-600">Rif: {selectedInvoice.id}</p>
+                          <p className="text-zinc-400 print:text-zinc-600">Competenza: {selectedInvoice.month}</p>
+                        </div>
+                        <div className="text-right">
+                          <h2 className="text-xl font-bold print:text-black">{selectedInvoice.client?.name}</h2>
+                          <p className="text-zinc-400 print:text-zinc-600">{selectedInvoice.client?.billingAddress}</p>
+                          <p className="text-zinc-400 print:text-zinc-600">P.IVA / CF: {selectedInvoice.client?.vatNumber}</p>
+                        </div>
+                      </div>
+
+                      <div className="mb-8">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="bg-zinc-800 text-zinc-300 print:bg-gray-200 print:text-black">
+                              <th className="p-2 border-b print:border-black">Data</th>
+                              <th className="p-2 border-b print:border-black">FIR</th>
+                              <th className="p-2 border-b print:border-black">Destinazione</th>
+                              <th className="p-2 border-b print:border-black text-right">Trasporto</th>
+                              <th className="p-2 border-b print:border-black text-right">Smaltimento</th>
+                              <th className="p-2 border-b print:border-black text-right">Extra</th>
+                              <th className="p-2 border-b print:border-black text-right">Totale Riga</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {trips.filter((t: any) => t.invoiceId === selectedInvoice.id).map((t: any) => {
+                              const extra = t.fuoriRomaPrice + t.noleggioPrice + t.bigBagPrice + t.analisiPrice + t.servRagnoPrice + t.sostaPrice;
+                              const rowTotal = t.transportPrice + t.disposalPrice + extra;
+                              return (
+                                <tr key={t.id} className="border-b border-zinc-800 print:border-gray-300">
+                                  <td className="p-2 print:text-black">{t.date}</td>
+                                  <td className="p-2 print:text-black">{t.firNumber || '-'}</td>
+                                  <td className="p-2 print:text-black text-sm">{t.destination?.name || t.address}</td>
+                                  <td className="p-2 print:text-black text-right">{formatCurrency(t.transportPrice)}</td>
+                                  <td className="p-2 print:text-black text-right">{formatCurrency(t.disposalPrice)}</td>
+                                  <td className="p-2 print:text-black text-right">{formatCurrency(extra)}</td>
+                                  <td className="p-2 print:text-black text-right font-semibold">{formatCurrency(rowTotal)}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="flex justify-end mt-8">
+                        <div className="w-64">
+                          <div className="flex justify-between p-2 border-b border-zinc-800 print:border-gray-300 print:text-black">
+                            <span>Imponibile:</span>
+                            <span>{formatCurrency(selectedInvoice.totalTaxable)}</span>
+                          </div>
+                          <div className="flex justify-between p-2 border-b border-zinc-800 print:border-gray-300 print:text-black">
+                            <span>IVA (22%):</span>
+                            <span>{formatCurrency(selectedInvoice.totalIva)}</span>
+                          </div>
+                          <div className="flex justify-between p-2 text-lg font-bold print:text-black">
+                            <span>Totale:</span>
+                            <span>{formatCurrency(selectedInvoice.totalAmount)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
 
-            {/* TAB: UTENTI (ADMIN ONLY) */}
+              {/* TAB: UTENTI (ADMIN ONLY) */}
             {activeTab === 'utenti' && currentUser.role === 'ADMIN' && (
               <div>
                 <div className="flex justify-between items-center mb-6">
@@ -3901,6 +4040,7 @@ const handleDeleteTrip = async (id: number) => {
     </div>
   );
 }
+
 
 
 
