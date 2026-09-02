@@ -902,6 +902,22 @@ const handleDeleteTrip = async (id: number) => {
     }
   };
 
+  // ----------------- VISTA STATO INIZIALE / CARICAMENTO -----------------
+
+  if (loading && !currentUser) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-zinc-100 font-sans">
+        <div className="flex flex-col items-center gap-4">
+          <div className="bg-white p-2 rounded-lg inline-block shadow">
+            <img src="/logo.png" alt="Breci Trasporti Logo" className="h-16 object-contain" />
+          </div>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          <p className="text-zinc-400 text-sm">Caricamento in corso...</p>
+        </div>
+      </div>
+    );
+  }
+
   // ----------------- VISTA LOGIN -----------------
 
   if (!currentUser) {
@@ -915,28 +931,30 @@ const handleDeleteTrip = async (id: number) => {
             <p className="text-zinc-400 mt-2">Logistica Rifiuti & Formulari (FIR)</p>
           </div>
 
-          <form onSubmit={handleLoginSubmit} className="space-y-6">
+          <form onSubmit={handleLoginSubmit} className="space-y-6" suppressHydrationWarning>
             {loginError && (
               <div className="p-3 bg-red-950/30 border border-red-900 rounded-lg text-red-400 text-sm">
                 {loginError}
               </div>
             )}
-            <div>
+            <div suppressHydrationWarning>
               <label className="block text-sm font-semibold text-zinc-300">Email o Utente</label>
               <input
                 type="email"
                 name="email"
                 required
+                suppressHydrationWarning
                 className="w-full mt-2 p-3 bg-zinc-850 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="nome@brecitrasporti.it"
               />
             </div>
-            <div>
+            <div suppressHydrationWarning>
               <label className="block text-sm font-semibold text-zinc-300">Password</label>
               <input
                 type="password"
                 name="password"
                 required
+                suppressHydrationWarning
                 className="w-full mt-2 p-3 bg-zinc-850 border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="••••••••"
               />
