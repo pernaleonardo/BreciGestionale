@@ -10,6 +10,7 @@ import {
   deleteUser,
   getTripsData,
   createTrip,
+  updateTrip,
   deleteTrip,
   createClient,
   deleteClient,
@@ -168,6 +169,7 @@ export default function Home() {
   const [loginError, setLoginError] = useState('');
   const [selectedTripClientId, setSelectedTripClientId] = useState('');
   const [newTripData, setNewTripData] = useState({
+    id: undefined as number | undefined,
     date: '',
     firNumber: '',
     wasteTypeId: '',
@@ -379,7 +381,7 @@ export default function Home() {
   // Funzione helper per resettare il form viaggio
   const resetTripForm = () => {
     setNewTripData({
-      date: '', firNumber: '', wasteTypeId: '', weight: '', cerPrice: '',
+      id: undefined, date: '', firNumber: '', wasteTypeId: '', weight: '', cerPrice: '',
       transportPrice: '', disposalPrice: '', fuoriRomaPrice: '0', noleggioPrice: '0',
       bigBagPrice: '0', analisiPrice: '0', servRagnoPrice: '0', sostaPrice: '0',
       address: '', notes: '', destinationId: '', driverId: '', vehicleId: '',
@@ -391,7 +393,12 @@ export default function Home() {
 
   const handleCreateTrip = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await createTrip(newTripData);
+    let res;
+    if (newTripData.id) {
+      res = await updateTrip(newTripData.id, newTripData);
+    } else {
+      res = await createTrip(newTripData);
+    }
     if (res.success) {
       // Verifica se ci sono prezzi modificati manualmente da proporre per il listino
       const destination = destinations.find(d => d.id === Number(newTripData.destinationId));
@@ -1278,7 +1285,44 @@ const handleDeleteTrip = async (id: number) => {
                                 <td className="p-3 text-right font-bold text-emerald-400">
                                   {formatCurrency(rowTotal)}
                                 </td>
-                                <td className="p-3 text-center">
+                                <td className="p-3 text-center flex justify-center gap-2">
+                                  <button
+                                    onClick={() => {
+                                      let d = trip.date;
+                                      if (d && d.includes('/')) {
+                                        const p = d.split('/');
+                                        if (p.length === 3) d = `${p[2]}-${p[1]}-${p[0]}`;
+                                      }
+                                      setNewTripData({
+                                        id: trip.id,
+                                        date: d,
+                                        firNumber: trip.firNumber || '',
+                                        wasteTypeId: trip.wasteTypeId ? trip.wasteTypeId.toString() : '',
+                                        weight: trip.weight ? trip.weight.toString() : '',
+                                        cerPrice: trip.cerPrice !== undefined && trip.cerPrice !== null ? trip.cerPrice.toString() : '',
+                                        transportPrice: trip.transportPrice !== undefined && trip.transportPrice !== null ? trip.transportPrice.toString() : '',
+                                        disposalPrice: trip.disposalPrice !== undefined && trip.disposalPrice !== null ? trip.disposalPrice.toString() : '',
+                                        fuoriRomaPrice: trip.fuoriRomaPrice !== undefined && trip.fuoriRomaPrice !== null ? trip.fuoriRomaPrice.toString() : '0',
+                                        noleggioPrice: trip.noleggioPrice !== undefined && trip.noleggioPrice !== null ? trip.noleggioPrice.toString() : '0',
+                                        bigBagPrice: trip.bigBagPrice !== undefined && trip.bigBagPrice !== null ? trip.bigBagPrice.toString() : '0',
+                                        analisiPrice: trip.analisiPrice !== undefined && trip.analisiPrice !== null ? trip.analisiPrice.toString() : '0',
+                                        servRagnoPrice: trip.servRagnoPrice !== undefined && trip.servRagnoPrice !== null ? trip.servRagnoPrice.toString() : '0',
+                                        sostaPrice: trip.sostaPrice !== undefined && trip.sostaPrice !== null ? trip.sostaPrice.toString() : '0',
+                                        address: trip.address || '',
+                                        notes: trip.notes || '',
+                                        destinationId: trip.destinationId ? trip.destinationId.toString() : '',
+                                        driverId: trip.driverId ? trip.driverId.toString() : '',
+                                        vehicleId: trip.vehicleId ? trip.vehicleId.toString() : '',
+                                      });
+                                      setIsTripModalOpen(true);
+                                    }}
+                                    className="p-1 hover:bg-zinc-800 hover:text-blue-400 text-zinc-500 rounded transition-colors cursor-pointer"
+                                    title="Modifica riga"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>
+                                  </button>
                                   <button
                                     onClick={() => handleDeleteTrip(trip.id)}
                                     className="p-1 hover:bg-zinc-800 hover:text-red-400 text-zinc-500 rounded transition-colors cursor-pointer"
@@ -1663,10 +1707,13 @@ const handleDeleteTrip = async (id: number) => {
                                       setIsScheduleModalOpen(true);
                                     }}
                                   >
-                                    <div className="font-bold truncate flex items-center justify-between">
-                                      <span>{s.driver?.name || 'Sconosciuto'}</span>
-                                      {s.status === 'ESEGUITO' && <span title="Eseguito" className="text-emerald-400">✓</span>}
-                                      {s.status === 'ANNULLATO' && <span title="Annullato" className="text-red-400">✗</span>}
+                                    <div className="font-bold truncate flex items-center justify-between gap-1">
+                                      <span className="truncate">{s.driver?.name || 'Sconosciuto'}</span>
+                                      <div className="flex items-center gap-1 shrink-0">
+                                        {s.tripCreated && <span title="Importato nel registro" className="bg-blue-500/80 text-white text-[9px] px-1 rounded shadow-sm">IMPORTATO</span>}
+                                        {s.status === 'ESEGUITO' && !s.tripCreated && <span title="Completato" className="bg-emerald-500/80 text-white text-[9px] px-1 rounded shadow-sm">COMPLETATO</span>}
+                                        {s.status === 'ANNULLATO' && <span title="Annullato" className="text-red-400">❌</span>}
+                                      </div>
                                     </div>
                                     <div className="font-mono text-[10px] text-white/80 truncate">{s.vehicle?.plateNumber} - {s.vehicle?.model}</div>
                                     {s.notes && (
@@ -1682,10 +1729,13 @@ const handleDeleteTrip = async (id: number) => {
 
                                     {/* Tooltip Hover */}
                                     <div className="hidden group-hover:flex flex-col gap-1 absolute top-0 left-[calc(100%+4px)] min-w-[200px] p-3 bg-zinc-900 border border-zinc-700 shadow-2xl rounded-lg z-[9999] pointer-events-none text-left font-sans">
-                                      <div className="font-bold text-white border-b border-zinc-700 pb-1 mb-1 flex justify-between">
+                                      <div className="font-bold text-white border-b border-zinc-700 pb-1 mb-1 flex justify-between gap-2">
                                         <span>Dettagli Turno</span>
-                                        {s.status === 'ESEGUITO' && <span className="text-emerald-400">ESEGUITO</span>}
-                                        {s.status === 'ANNULLATO' && <span className="text-red-400">ANNULLATO</span>}
+                                        <div className="flex flex-col items-end gap-1">
+                                          {s.tripCreated && <span className="bg-blue-500/20 text-blue-400 text-[10px] px-1.5 rounded border border-blue-500/30">IMPORTATO</span>}
+                                          {s.status === 'ESEGUITO' && <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 rounded border border-emerald-500/30">COMPLETATO</span>}
+                                          {s.status === 'ANNULLATO' && <span className="text-red-400 text-[10px]">ANNULLATO</span>}
+                                        </div>
                                       </div>
                                       <div><span className="text-zinc-400 font-semibold">Autista:</span> {s.driver?.name}</div>
                                       <div><span className="text-zinc-400 font-semibold">Mezzo:</span> {s.vehicle?.plateNumber}</div>

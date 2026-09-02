@@ -197,6 +197,65 @@ export async function createTrip(data: any) {
   }
 }
 
+export async function updateTrip(id: number, data: any) {
+  try {
+    const trip = await db.orm.public.Trip.where({ id }).first();
+    if (!trip) throw new Error("Viaggio non trovato.");
+
+    let tripDate = data.date;
+    if (tripDate && tripDate.includes('-')) {
+      const parts = tripDate.split('-');
+      if (parts.length === 3) {
+        tripDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+    }
+
+    let destination = null;
+    if (data.destinationId) {
+      destination = await db.orm.public.Destination.where({ id: Number(data.destinationId) }).first();
+    }
+    
+    let wasteType = null;
+    let cerCode = trip.cerCode;
+    let wasteTypeId = trip.wasteTypeId;
+    if (data.wasteTypeId) {
+      wasteType = await db.orm.public.WasteType.where({ id: Number(data.wasteTypeId) }).first();
+      if (wasteType) {
+        cerCode = wasteType.cerCode;
+        wasteTypeId = wasteType.id;
+      }
+    }
+
+    const updateData: any = {
+      date: tripDate || trip.date,
+      firNumber: data.firNumber || trip.firNumber,
+      cerCode: cerCode,
+      cerPrice: data.cerPrice !== undefined ? Number(data.cerPrice) : trip.cerPrice,
+      weight: data.weight !== undefined ? Number(data.weight) : trip.weight,
+      transportPrice: data.transportPrice !== undefined ? Number(data.transportPrice) : trip.transportPrice,
+      disposalPrice: data.disposalPrice !== undefined ? Number(data.disposalPrice) : trip.disposalPrice,
+      fuoriRomaPrice: data.fuoriRomaPrice !== undefined ? Number(data.fuoriRomaPrice) : trip.fuoriRomaPrice,
+      noleggioPrice: data.noleggioPrice !== undefined ? Number(data.noleggioPrice) : trip.noleggioPrice,
+      bigBagPrice: data.bigBagPrice !== undefined ? Number(data.bigBagPrice) : trip.bigBagPrice,
+      analisiPrice: data.analisiPrice !== undefined ? Number(data.analisiPrice) : trip.analisiPrice,
+      servRagnoPrice: data.servRagnoPrice !== undefined ? Number(data.servRagnoPrice) : trip.servRagnoPrice,
+      sostaPrice: data.sostaPrice !== undefined ? Number(data.sostaPrice) : trip.sostaPrice,
+      address: destination ? destination.address : trip.address,
+      notes: data.notes !== undefined ? data.notes : trip.notes,
+      destinationId: destination ? destination.id : trip.destinationId,
+      driverId: data.driverId ? Number(data.driverId) : trip.driverId,
+      vehicleId: data.vehicleId ? Number(data.vehicleId) : trip.vehicleId,
+      wasteTypeId: wasteTypeId,
+    };
+
+    const updated = await db.orm.public.Trip.where({ id }).update(updateData);
+    return { success: true, trip: updated };
+  } catch (e: any) {
+    console.error('updateTrip error:', e);
+    return { success: false, error: e.message || 'Errore nella modifica del viaggio.' };
+  }
+}
+
 export async function deleteTrip(id: number) {
   try {
     await db.orm.public.GPSLog.where({ tripId: id }).deleteAll();
@@ -666,13 +725,51 @@ export async function importExecutedSchedulesToTrips() {
     const warnings: string[] = [];
 
     for (const s of pendingSchedules) {
-      if (!s.destinationId || !s.wasteTypeId || !s.firNumber) {
-        skippedCount++;
-        warnings.push(`Turno ID ${s.id}: mancano destinazione, codice CER o numero formulario FIR.`);
-        continue;
-      }
+        let destId = s.destinationId;
+        let destAddress = s.destination?.address || 'Indirizzo Sconosciuto';
+        if (!destId) {
+            let defaultClient = await db.orm.public.Client.where({ name: 'SCONOSCIUTO' }).first();
+            if (!defaultClient) {
+                defaultClient = await db.orm.public.Client.create({
+                    name: 'SCONOSCIUTO',
+                    clientCode: 'SCON',
+                });
+            }
+            let defaultDest = await db.orm.public.Destination.where({ name: 'Sconosciuta' }).first();
+            if (!defaultDest) {
+                defaultDest = await db.orm.public.Destination.create({
+                    name: 'Sconosciuta',
+                    address: 'Indirizzo Sconosciuto',
+                    shippingCode: 'SCON-DEST',
+                    clientId: defaultClient.id,
+                });
+            }
+            destId = defaultDest.id;
+            destAddress = defaultDest.address;
+        }
 
-      let tripDate = s.date;
+        let wasteId = s.wasteTypeId;
+        let wasteCode = s.wasteType?.cerCode || '000000';
+        if (!wasteId) {
+            let defaultWaste = await db.orm.public.WasteType.where({ cerCode: '000000' }).first();
+            if (!defaultWaste) {
+                defaultWaste = await db.orm.public.WasteType.create({
+                    cerCode: '000000',
+                    description: 'Rifiuto Non Specificato',
+                    category: 'Altro'
+                });
+            }
+            wasteId = defaultWaste.id;
+            wasteCode = '000000';
+        }
+
+        let fir = s.firNumber;
+        if (!fir) {
+            fir = `MANCANTE-${s.id}-${Date.now()}`;
+            warnings.push(`Turno ID ${s.id}: dati incompleti (FIR autogenerato: ${fir}).`);
+        }
+
+        let tripDate = s.date;
       if (tripDate && tripDate.includes('-')) {
         const parts = tripDate.split('-');
         if (parts.length === 3) {
@@ -684,12 +781,12 @@ export async function importExecutedSchedulesToTrips() {
       const cerPrice = s.cerPrice || 0;
       const disposalPrice = weight * cerPrice;
 
-      const existingTrip = await db.orm.public.Trip.where({ firNumber: s.firNumber }).first();
+      const existingTrip = await db.orm.public.Trip.where({ firNumber: fir }).first();
       if (!existingTrip) {
         await db.orm.public.Trip.create({
           date: tripDate,
-          firNumber: s.firNumber,
-          cerCode: s.wasteType.cerCode,
+          firNumber: fir,
+          cerCode: wasteCode,
           cerPrice: cerPrice,
           weight: weight,
           transportPrice: s.transportPrice || 0,
@@ -700,13 +797,13 @@ export async function importExecutedSchedulesToTrips() {
           analisiPrice: s.analisiPrice || 0,
           servRagnoPrice: s.servRagnoPrice || 0,
           sostaPrice: s.sostaPrice || 0,
-          address: s.destination.address,
+          address: destAddress,
           notes: s.notes || '',
           status: 'DELIVERED',
-          destinationId: s.destinationId,
+          destinationId: destId,
           driverId: s.driverId,
           vehicleId: s.vehicleId,
-          wasteTypeId: s.wasteTypeId,
+          wasteTypeId: wasteId,
         });
       }
 
