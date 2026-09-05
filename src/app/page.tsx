@@ -13,6 +13,7 @@ import {
   updateTrip,
   deleteTrip,
   createClient,
+  updateClient,
   deleteClient,
   createDestination,
   deleteDestination,
@@ -153,6 +154,15 @@ export default function Home() {
   // Modali inserimento
   const [isTripModalOpen, setIsTripModalOpen] = useState(false);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [isEditClientModalOpen, setIsEditClientModalOpen] = useState(false);
+  const [editClientData, setEditClientData] = useState<{ id: number; name: string; billingAddress: string; vatNumber: string; clientCode: string }>({
+    id: 0,
+    name: '',
+    billingAddress: '',
+    vatNumber: '',
+    clientCode: '',
+  });
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState<number | null>(null);
   const [isDestinationModalOpen, setIsDestinationModalOpen] = useState(false);
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
@@ -631,6 +641,33 @@ const handleDeleteTrip = async (id: number) => {
       const res = await deleteClient(id);
       if (res.success) await refreshData();
       else alert(res.error);
+    }
+  };
+
+  const handleOpenEditClient = (client: any) => {
+    setEditClientData({
+      id: client.id,
+      name: client.name || '',
+      billingAddress: client.billingAddress && client.billingAddress !== 'null' ? client.billingAddress : '',
+      vatNumber: client.vatNumber && client.vatNumber !== 'null' ? client.vatNumber : '',
+      clientCode: client.clientCode || '',
+    });
+    setIsEditClientModalOpen(true);
+  };
+
+  const handleUpdateClient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await updateClient(editClientData.id, {
+      name: editClientData.name,
+      billingAddress: editClientData.billingAddress,
+      vatNumber: editClientData.vatNumber,
+      clientCode: editClientData.clientCode,
+    });
+    if (res.success) {
+      setIsEditClientModalOpen(false);
+      await refreshData();
+    } else {
+      alert(res.error);
     }
   };
 
@@ -1834,32 +1871,61 @@ const handleDeleteTrip = async (id: number) => {
 
                     <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
                       <table className="w-full text-left border-collapse">
-                        <thead>
+                             <thead>
                           <tr className="bg-zinc-800/40 text-xs font-semibold uppercase text-zinc-400 border-b border-zinc-800">
                             <th className="p-3">Codice Cliente</th>
                             <th className="p-3">Ragione Sociale</th>
                             <th className="p-3">Indirizzo Fatturazione</th>
                             <th className="p-3">Cod. Fiscale / P.IVA</th>
-                            <th className="p-3 text-center">Rimuovi</th>
+                            <th className="p-3 text-center">Azioni</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-800 text-sm">
-                          {clients.map((c) => (
-                            <tr key={c.id} className="hover:bg-zinc-800/20">
-                              <td className="p-3 font-mono font-bold text-blue-400">{c.clientCode}</td>
-                              <td className="p-3 font-semibold text-white">{c.name}</td>
-                              <td className="p-3 text-zinc-300">{c.billingAddress || '-'}</td>
-                              <td className="p-3 font-mono text-zinc-400">{c.vatNumber || '-'}</td>
-                              <td className="p-3 text-center">
-                                <button
-                                  onClick={() => handleDeleteClient(c.id)}
-                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-800 rounded cursor-pointer"
-                                >
-                                  Elimina
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
+                          {clients.map((c) => {
+                            const hasValidAddress = c.billingAddress && c.billingAddress.trim() !== '' && c.billingAddress.toLowerCase() !== 'null';
+                            const hasValidVat = c.vatNumber && c.vatNumber.trim() !== '' && c.vatNumber.toLowerCase() !== 'null';
+                            return (
+                              <tr key={c.id} className="hover:bg-zinc-800/20">
+                                <td className="p-3 font-mono font-bold text-blue-400">{c.clientCode}</td>
+                                <td className="p-3 font-semibold text-white">{c.name}</td>
+                                <td className="p-3 text-zinc-300">
+                                  {hasValidAddress ? (
+                                    c.billingAddress
+                                  ) : (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-950/50 text-amber-400 border border-amber-800/40">
+                                      Mancante
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="p-3 font-mono text-zinc-400">
+                                  {hasValidVat ? (
+                                    c.vatNumber
+                                  ) : (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-950/50 text-amber-400 border border-amber-800/40">
+                                      Mancante
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="p-3 text-center">
+                                  <div className="flex items-center justify-center gap-2">
+                                    <button
+                                      onClick={() => handleOpenEditClient(c)}
+                                      className="text-blue-400 hover:text-blue-300 px-2 py-1 hover:bg-zinc-800 rounded font-medium text-xs cursor-pointer transition-colors"
+                                      title="Modifica anagrafica e dati di fatturazione"
+                                    >
+                                      Modifica
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteClient(c.id)}
+                                      className="text-red-500 hover:text-red-400 px-2 py-1 hover:bg-zinc-800 rounded text-xs cursor-pointer transition-colors"
+                                    >
+                                      Elimina
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
@@ -2479,43 +2545,135 @@ const handleDeleteTrip = async (id: number) => {
                               const tripsToInvoice = trips.filter((t: any) => {
                                 if (t.invoiceId !== null) return false;
                                 if (!t.destination || t.destination.clientId !== client.id) return false;
-                                const parts = t.date.split('/');
-                                if (parts.length === 3) {
-                                  if (parts[2] === year && parts[1] === monthNum) return true;
+                                if (!t.date) return false;
+                                if (t.date.includes('/')) {
+                                  const parts = t.date.split('/');
+                                  if (parts.length === 3) {
+                                    return parts[2] === year && parts[1].padStart(2, '0') === monthNum.padStart(2, '0');
+                                  }
+                                } else if (t.date.includes('-')) {
+                                  const parts = t.date.split('-');
+                                  if (parts.length === 3) {
+                                    if (parts[0].length === 4) {
+                                      return parts[0] === year && parts[1].padStart(2, '0') === monthNum.padStart(2, '0');
+                                    } else if (parts[2].length === 4) {
+                                      return parts[2] === year && parts[1].padStart(2, '0') === monthNum.padStart(2, '0');
+                                    }
+                                  }
                                 }
                                 return false;
                               });
-                              return { client, tripsToInvoice };
+
+                              const existingInvoice = invoices.find((inv: any) => inv.clientId === client.id && inv.month === selectedInvoiceMonth);
+
+                              const missingBilling: string[] = [];
+                              if (!client.name?.trim() || client.name.toUpperCase() === 'SCONOSCIUTO') missingBilling.push('Ragione Sociale');
+                              if (!client.clientCode?.trim() || client.clientCode.toUpperCase() === 'SCON') missingBilling.push('Codice Cliente');
+                              if (!client.vatNumber?.trim() || client.vatNumber.toLowerCase() === 'null') missingBilling.push('P.IVA / CF');
+                              if (!client.billingAddress?.trim() || client.billingAddress.toLowerCase() === 'null') missingBilling.push('Indirizzo Fatturazione');
+                              const isBillingComplete = missingBilling.length === 0;
+
+                              return { client, tripsToInvoice, existingInvoice, isBillingComplete, missingBilling };
                             })
                             .filter(({ tripsToInvoice }) => tripsToInvoice.length > 0)
-                            .map(({ client, tripsToInvoice }) => (
+                            .map(({ client, tripsToInvoice, existingInvoice, isBillingComplete, missingBilling }) => (
                               <tr key={client.id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
-                                <td className="p-3 text-white">{client.name}</td>
-                                <td className="p-3 text-zinc-400">{client.vatNumber || '-'}</td>
-                                <td className="p-3 text-center text-orange-400 font-bold">{tripsToInvoice.length}</td>
+                                <td className="p-3 text-white">
+                                  <div className="font-semibold">{client.name}</div>
+                                  <div className="text-xs text-zinc-400 font-mono">Cod: {client.clientCode}</div>
+                                  {existingInvoice && (
+                                    <div className="text-xs text-emerald-400 font-bold mt-1 inline-flex items-center gap-1 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800/30">
+                                      ✓ Mese già fatturato (Fattura #{existingInvoice.id})
+                                    </div>
+                                  )}
+                                  {!isBillingComplete && (
+                                    <div className="text-xs text-amber-400 font-medium mt-1 inline-flex items-center gap-1 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-800/30">
+                                      ⚠ Dati mancanti: {missingBilling.join(', ')}
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="p-3 text-zinc-400 font-mono text-sm">
+                                  {client.vatNumber && client.vatNumber !== 'null' ? (
+                                    client.vatNumber
+                                  ) : (
+                                    <span className="text-amber-400 text-xs italic font-bold">Mancante</span>
+                                  )}
+                                </td>
+                                <td className="p-3 text-center text-orange-400 font-bold text-base">{tripsToInvoice.length}</td>
                                 <td className="p-3 text-center">
-                                  <button
-                                    onClick={async () => {
-                                      if (confirm(`Vuoi generare la fattura per ${client.name} per il mese ${selectedInvoiceMonth}? Verranno inclusi ${tripsToInvoice.length} viaggi.`)) {
-                                        const res = await generateInvoice(client.id, selectedInvoiceMonth);
-                                        if (res.success) {
-                                          alert('Fattura generata con successo!');
-                                          refreshData(); 
-                                        } else {
-                                          alert(res.error);
+                                  {existingInvoice ? (
+                                    <div className="flex flex-col items-center gap-1">
+                                      <span className="px-2.5 py-1 bg-emerald-900/50 text-emerald-400 border border-emerald-700/50 rounded text-xs font-bold">
+                                        Fattura #{existingInvoice.id} emessa
+                                      </span>
+                                      <span className="text-[10px] text-zinc-400 max-w-[200px] leading-tight">
+                                        {tripsToInvoice.length} viaggi non inclusi. Cancella la fattura da Archivio per rigenerarla.
+                                      </span>
+                                    </div>
+                                  ) : !isBillingComplete ? (
+                                    <div className="flex flex-col items-center gap-1">
+                                      <button
+                                        onClick={() => handleOpenEditClient(client)}
+                                        className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-bold transition-colors cursor-pointer shadow-md flex items-center gap-1 mx-auto"
+                                        title="Inserisci i dati di fatturazione mancanti"
+                                      >
+                                        Completa Dati
+                                      </button>
+                                      <span className="text-[10px] text-amber-400/80">Fatturazione bloccata</span>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      disabled={isGeneratingInvoice === client.id}
+                                      onClick={async () => {
+                                        if (confirm(`Vuoi generare la fattura per ${client.name} per il mese ${selectedInvoiceMonth}? Verranno inclusi ${tripsToInvoice.length} viaggi.`)) {
+                                          setIsGeneratingInvoice(client.id);
+                                          try {
+                                            const res = await generateInvoice(client.id, selectedInvoiceMonth);
+                                            if (res.success) {
+                                              alert('Fattura generata con successo!');
+                                              await refreshData(); 
+                                            } else {
+                                              alert(res.error);
+                                            }
+                                          } finally {
+                                            setIsGeneratingInvoice(null);
+                                          }
                                         }
-                                      }
-                                    }}
-                                    className="px-3 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded text-sm font-bold transition-colors cursor-pointer shadow-md"
-                                  >
-                                    Chiudi Mese
-                                  </button>
+                                      }}
+                                      className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white rounded text-sm font-bold transition-colors cursor-pointer shadow-md inline-flex items-center gap-2"
+                                    >
+                                      {isGeneratingInvoice === client.id ? (
+                                        <>
+                                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                          <span>Generazione...</span>
+                                        </>
+                                      ) : (
+                                        <span>Chiudi Mese</span>
+                                      )}
+                                    </button>
+                                  )}
                                 </td>
                               </tr>
                             ))}
                           {clients.filter(client => {
                             const [year, monthNum] = selectedInvoiceMonth.split('-');
-                            return trips.some((t: any) => t.invoiceId === null && t.destination?.clientId === client.id && t.date.split('/')[2] === year && t.date.split('/')[1] === monthNum);
+                            return trips.some((t: any) => {
+                              if (t.invoiceId !== null) return false;
+                              if (!t.destination || t.destination.clientId !== client.id) return false;
+                              if (!t.date) return false;
+                              if (t.date.includes('/')) {
+                                const parts = t.date.split('/');
+                                return parts.length === 3 && parts[2] === year && parts[1].padStart(2, '0') === monthNum.padStart(2, '0');
+                              }
+                              if (t.date.includes('-')) {
+                                const parts = t.date.split('-');
+                                if (parts.length === 3) {
+                                  if (parts[0].length === 4) return parts[0] === year && parts[1].padStart(2, '0') === monthNum.padStart(2, '0');
+                                  if (parts[2].length === 4) return parts[2] === year && parts[1].padStart(2, '0') === monthNum.padStart(2, '0');
+                                }
+                              }
+                              return false;
+                            });
                           }).length === 0 && (
                             <tr>
                               <td colSpan={4} className="p-6 text-center text-zinc-500">Nessun viaggio da fatturare per il mese di {selectedInvoiceMonth}</td>
@@ -3338,6 +3496,92 @@ const handleDeleteTrip = async (id: number) => {
                   className="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer"
                 >
                   Salva Cliente
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT CLIENT MODAL */}
+      {isEditClientModalOpen && (
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
+              <div>
+                <h3 className="text-lg font-bold text-white font-sans">Modifica Anagrafica Cliente</h3>
+                <p className="text-xs text-zinc-400">Aggiorna i dati anagrafici e di fatturazione del cliente.</p>
+              </div>
+              <button onClick={() => setIsEditClientModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateClient} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">Codice Cliente *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Es: CL001"
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white font-mono uppercase"
+                  value={editClientData.clientCode}
+                  onChange={(e) => setEditClientData({ ...editClientData, clientCode: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">Ragione Sociale *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Es: ACME SRL"
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white"
+                  value={editClientData.name}
+                  onChange={(e) => setEditClientData({ ...editClientData, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">
+                  Indirizzo Sede (Fatturazione) <span className="text-amber-400">* obbligatorio per fattura</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Via, Civico, Città, CAP, Provincia"
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white"
+                  value={editClientData.billingAddress}
+                  onChange={(e) => setEditClientData({ ...editClientData, billingAddress: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400">
+                  Partita IVA / Cod. Fiscale <span className="text-amber-400">* obbligatorio per fattura</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Es: 12345678901 o Codice Fiscale"
+                  className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white font-mono uppercase"
+                  value={editClientData.vatNumber}
+                  onChange={(e) => setEditClientData({ ...editClientData, vatNumber: e.target.value })}
+                />
+              </div>
+
+              <div className="flex gap-4 justify-end pt-4 border-t border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setIsEditClientModalOpen(false)}
+                  className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-xs font-semibold cursor-pointer"
+                >
+                  Annulla
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer text-white"
+                >
+                  Salva Modifiche
                 </button>
               </div>
             </form>

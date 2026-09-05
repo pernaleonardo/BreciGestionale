@@ -2395,7 +2395,14 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "clientId",
+                    "month"
+                  ]
+                }
+              ]
             },
             "schedule": {
               "columns": {
@@ -3024,6 +3031,7 @@
                   }
                 },
                 {
+                  "onDelete": "setNull",
                   "source": {
                     "columns": [
                       "invoiceId"
@@ -3295,7 +3303,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "bd73ab5e4b651de3fdaef59302f23c3422a3bc1f6d9febdf6a2b801e1658e078"
+    "storageHash": "4fac433696dbf4b2d59194d46c1eb2e886740263265c4b019a04fed942a33fcd"
   },
   "execution": {
     "executionHash": "ea58b24168d31833c46c90a36c80d561e36bb1d4968eb743e799b7cc7caf5704",

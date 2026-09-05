@@ -118,7 +118,7 @@ model Trip {
   wasteType          WasteType? @relation(fields: [wasteTypeId], references: [id])
 
   invoiceId          Int?
-  invoice            Invoice? @relation(fields: [invoiceId], references: [id])
+  invoice            Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
 
   gpsLogs            GPSLog[]
   createdAt          TimestamptzString @default(now())
@@ -207,5 +207,6 @@ model Invoice {
   totalAmount   Float    @default(0.0)
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
+  @@unique([clientId, month])
   @@rls
 }

@@ -285,6 +285,22 @@ export async function createClient(data: { name: string; billingAddress?: string
   }
 }
 
+export async function updateClient(id: number, data: { name?: string; billingAddress?: string; vatNumber?: string; clientCode?: string }) {
+  try {
+    const updateData: any = {};
+    if (data.name !== undefined) updateData.name = data.name.trim();
+    if (data.billingAddress !== undefined) updateData.billingAddress = data.billingAddress.trim();
+    if (data.vatNumber !== undefined) updateData.vatNumber = data.vatNumber.trim();
+    if (data.clientCode !== undefined) updateData.clientCode = data.clientCode.trim();
+
+    const updated = await db.orm.public.Client.where({ id: Number(id) }).update(updateData);
+    return { success: true, client: updated };
+  } catch (e: any) {
+    console.error('updateClient error:', e);
+    return { success: false, error: e.message || 'Errore nella modifica del cliente.' };
+  }
+}
+
 export async function deleteClient(id: number) {
   try {
     const destinations = await db.orm.public.Destination.where({ clientId: id }).all();
@@ -844,26 +860,83 @@ export async function getInvoices() {
 
 export async function generateInvoice(clientId: number, month: string) {
   try {
-    const [year, monthNum] = month.split('-');
-    
-    const existing = await db.orm.public.Invoice.where({ clientId, month }).first();
-    if (existing) {
-      return { success: false, error: 'Esiste già una fattura per questo cliente in questo mese.' };
+    const parsedClientId = Number(clientId);
+    if (!parsedClientId) {
+      return { success: false, error: 'ID cliente non valido.' };
     }
 
+    if (!month || !month.includes('-')) {
+      return { success: false, error: 'Mese non valido. Seleziona un mese nel formato AAAA-MM (es. 2026-09).' };
+    }
+
+    // 1. Verifica dati cliente di fatturazione obbligatori
+    const client = await db.orm.public.Client.where({ id: parsedClientId }).first();
+    if (!client) {
+      return { success: false, error: 'Cliente non trovato.' };
+    }
+
+    const missingFields: string[] = [];
+    const clientName = client.name?.trim() || '';
+    if (!clientName || clientName.toUpperCase() === 'SCONOSCIUTO') {
+      missingFields.push('Ragione Sociale valida');
+    }
+    const clientCode = client.clientCode?.trim() || '';
+    if (!clientCode || clientCode.toUpperCase() === 'SCON') {
+      missingFields.push('Codice Cliente');
+    }
+    const vatNumber = client.vatNumber?.trim() || '';
+    if (!vatNumber || vatNumber.toLowerCase() === 'null') {
+      missingFields.push('Partita IVA / Codice Fiscale');
+    }
+    const billingAddress = client.billingAddress?.trim() || '';
+    if (!billingAddress || billingAddress.toLowerCase() === 'null') {
+      missingFields.push('Indirizzo di Fatturazione');
+    }
+
+    if (missingFields.length > 0) {
+      return {
+        success: false,
+        error: `Generazione fattura bloccata: dati cliente incompleti per "${client.name}". Dati mancanti: ${missingFields.join(', ')}. Aggiorna l'anagrafica del cliente prima di procedere.`
+      };
+    }
+
+    // 2. Controllo univocità fattura per cliente e mese (1 sola fattura per cliente/mese)
+    const existing = await db.orm.public.Invoice.where({ clientId: parsedClientId, month }).first();
+    if (existing) {
+      return { 
+        success: false, 
+        error: `Esiste già una fattura emessa per "${client.name}" per il mese ${month} (Fattura #${existing.id}). È consentita una sola fattura per cliente per ogni mese. Se devi aggiungere nuovi viaggi, elimina la fattura precedente dall'Archivio e rigenerala.` 
+      };
+    }
+
+    // 3. Estrazione viaggi non fatturati del cliente per il mese specificato
+    const [year, monthNum] = month.split('-');
     const allTrips = await db.orm.public.Trip.where({ invoiceId: null }).include('destination').all() as any[];
     
     const tripsToInvoice = allTrips.filter((t: any) => {
       // match client
-      if (!t.destination || t.destination.clientId !== clientId) return false;
-      // match month
-      // t.date is DD/MM/YYYY
-      const parts = t.date.split('/');
-      if (parts.length === 3) {
-        const tMonth = parts[1];
-        const tYear = parts[2];
-        if (tYear === year && tMonth === monthNum) {
-          return true;
+      if (!t.destination || t.destination.clientId !== parsedClientId) return false;
+      // robust date match (handles DD/MM/YYYY and YYYY-MM-DD)
+      if (!t.date) return false;
+      if (t.date.includes('/')) {
+        const parts = t.date.split('/');
+        if (parts.length === 3) {
+          const tMonth = parts[1].padStart(2, '0');
+          const tYear = parts[2];
+          return tYear === year && tMonth === monthNum.padStart(2, '0');
+        }
+      } else if (t.date.includes('-')) {
+        const parts = t.date.split('-');
+        if (parts.length === 3) {
+          if (parts[0].length === 4) {
+            const tYear = parts[0];
+            const tMonth = parts[1].padStart(2, '0');
+            return tYear === year && tMonth === monthNum.padStart(2, '0');
+          } else if (parts[2].length === 4) {
+            const tMonth = parts[1].padStart(2, '0');
+            const tYear = parts[2];
+            return tYear === year && tMonth === monthNum.padStart(2, '0');
+          }
         }
       }
       return false;
@@ -874,9 +947,15 @@ export async function generateInvoice(clientId: number, month: string) {
     }
 
     let totalTaxable = 0;
-    
     for (const trip of tripsToInvoice) {
-      const rowTaxable = trip.transportPrice + trip.disposalPrice + trip.fuoriRomaPrice + trip.noleggioPrice + trip.bigBagPrice + trip.analisiPrice + trip.servRagnoPrice + trip.sostaPrice;
+      const rowTaxable = (trip.transportPrice || 0) + 
+                         (trip.disposalPrice || 0) + 
+                         (trip.fuoriRomaPrice || 0) + 
+                         (trip.noleggioPrice || 0) + 
+                         (trip.bigBagPrice || 0) + 
+                         (trip.analisiPrice || 0) + 
+                         (trip.servRagnoPrice || 0) + 
+                         (trip.sostaPrice || 0);
       totalTaxable += rowTaxable;
     }
 
@@ -885,13 +964,13 @@ export async function generateInvoice(clientId: number, month: string) {
 
     const invoice = await db.orm.public.Invoice.create({
       month,
-      clientId,
+      clientId: parsedClientId,
       totalTaxable,
       totalIva,
       totalAmount,
     });
 
-    // Update trips with invoiceId
+    // Aggiorna ciascun viaggio individualmente per id
     for (const trip of tripsToInvoice) {
       await db.orm.public.Trip.where({ id: trip.id }).update({ invoiceId: invoice.id });
     }
@@ -905,10 +984,19 @@ export async function generateInvoice(clientId: number, month: string) {
 
 export async function deleteInvoice(id: number) {
   try {
-    // Unlink trips
-    await db.orm.public.Trip.where({ invoiceId: id }).update({ invoiceId: null });
-    // Delete invoice
-    await db.orm.public.Invoice.where({ id }).delete();
+    const invoiceId = Number(id);
+    if (!invoiceId) {
+      return { success: false, error: 'ID fattura non valido.' };
+    }
+
+    // Scollega tutti i viaggi associati a questa fattura prima di eliminarla
+    const trips = await db.orm.public.Trip.where({ invoiceId }).all();
+    for (const trip of trips) {
+      await db.orm.public.Trip.where({ id: trip.id }).update({ invoiceId: null });
+    }
+
+    // Cancella la fattura
+    await db.orm.public.Invoice.where({ id: invoiceId }).delete();
     return { success: true };
   } catch (e: any) {
     console.error('deleteInvoice error:', e);
