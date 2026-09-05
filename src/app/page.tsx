@@ -1096,20 +1096,6 @@ const handleDeleteTrip = async (id: number) => {
 
               <nav className="space-y-2">
                 <button
-                  onClick={() => { setActiveTab('registro'); setIsMenuOpen(false); }}
-                  className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'registro' ? 'bg-blue-600 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
-                >
-                  <span>🚚</span>
-                  <span>Registro Giornaliero</span>
-                </button>
-                <button
-                  onClick={() => { setActiveTab('pianificazione'); setIsMenuOpen(false); }}
-                  className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'pianificazione' ? 'bg-blue-600 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
-                >
-                  <span>📅</span>
-                  <span>Pianificazione Turni</span>
-                </button>
-                <button
                   onClick={() => { setActiveTab('anagrafiche'); setIsMenuOpen(false); }}
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'anagrafiche' ? 'bg-blue-600 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
                 >
@@ -1122,6 +1108,20 @@ const handleDeleteTrip = async (id: number) => {
                 >
                   <span>💰</span>
                   <span>Listini Prezzi</span>
+                </button>
+                <button
+                  onClick={() => { setActiveTab('pianificazione'); setIsMenuOpen(false); }}
+                  className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'pianificazione' ? 'bg-blue-600 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
+                >
+                  <span>📅</span>
+                  <span>Pianificazione Turni</span>
+                </button>
+                <button
+                  onClick={() => { setActiveTab('registro'); setIsMenuOpen(false); }}
+                  className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors cursor-pointer ${activeTab === 'registro' ? 'bg-blue-600 text-white font-bold' : 'hover:bg-zinc-800 text-zinc-300'}`}
+                >
+                  <span>🚚</span>
+                  <span>Registro Giornaliero</span>
                 </button>
                 <button
                   onClick={() => { setActiveTab('fatturazione'); setIsMenuOpen(false); }}
