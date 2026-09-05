@@ -57,6 +57,7 @@ const getDb = (): ReturnType<typeof postgres<Contract>> => {
     globalForDb.db = postgres<Contract>({
       contractJson,
       url,
+      verifyMarker: false,
     });
   }
   return globalForDb.db;
