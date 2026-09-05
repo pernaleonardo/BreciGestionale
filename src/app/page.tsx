@@ -80,27 +80,28 @@ export default function Home() {
   const [fatturazioneSubTab, setFatturazioneSubTab] = useState<'da_fatturare' | 'archivio'>('da_fatturare');
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
-  // Stati per la pianificazione
-  const [schedules, setSchedules] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
+  const getTomorrowString = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const yyyy = tomorrow.getFullYear();
+    const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const dd = String(tomorrow.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const getTodayString = () => {
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
-  });
+  };
 
-  const [calendarView, setCalendarView] = useState<'week' | 'day'>('week');
-  const [currentCalendarDate, setCurrentCalendarDate] = useState<string>(() => {
-    const today = new Date();
-    const day = today.getDay();
-    const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-    const monday = new Date(today.setDate(diff));
-    const yyyy = monday.getFullYear();
-    const mm = String(monday.getMonth() + 1).padStart(2, '0');
-    const dd = String(monday.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  });
+  // Stati per la pianificazione
+  const [schedules, setSchedules] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>(getTomorrowString);
+  const [calendarView, setCalendarView] = useState<'week' | 'day'>('day');
+  const [currentCalendarDate, setCurrentCalendarDate] = useState<string>(getTomorrowString);
 
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [newScheduleData, setNewScheduleData] = useState<{
@@ -1458,10 +1459,22 @@ const handleDeleteTrip = async (id: number) => {
                 if (isWeekView) {
                   const day = today.getDay();
                   const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-                  const monday = new Date(today.setDate(diff));
+                  const monday = new Date(new Date(today).setDate(diff));
                   setCurrentCalendarDate(`${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`);
                 } else {
                   setCurrentCalendarDate(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`);
+                }
+              };
+              const goToTomorrow = () => {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                if (isWeekView) {
+                  const day = tomorrow.getDay();
+                  const diff = tomorrow.getDate() - day + (day === 0 ? -6 : 1);
+                  const monday = new Date(new Date(tomorrow).setDate(diff));
+                  setCurrentCalendarDate(`${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`);
+                } else {
+                  setCurrentCalendarDate(`${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`);
                 }
               };
 
@@ -1516,15 +1529,32 @@ const handleDeleteTrip = async (id: number) => {
                 <div className="flex flex-col h-[calc(100vh-100px)]">
                   {/* HEADER DEL CALENDARIO */}
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <button onClick={goToToday} className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold rounded-lg transition-colors border border-zinc-700 cursor-pointer">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={goToTomorrow}
+                        className={`px-3 py-1.5 text-sm font-bold rounded-lg transition-colors border cursor-pointer ${
+                          currentCalendarDate === getTomorrowString()
+                            ? 'bg-blue-600 border-blue-500 text-white shadow-sm'
+                            : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700'
+                        }`}
+                      >
+                        Domani
+                      </button>
+                      <button
+                        onClick={goToToday}
+                        className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-colors border cursor-pointer ${
+                          currentCalendarDate === getTodayString()
+                            ? 'bg-zinc-700 border-zinc-600 text-white'
+                            : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white border-zinc-700'
+                        }`}
+                      >
                         Oggi
                       </button>
-                      <div className="flex items-center rounded-lg border border-zinc-700 overflow-hidden">
-                        <button onClick={goToPrev} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer text-zinc-400 hover:text-white">
+                      <div className="flex items-center rounded-lg border border-zinc-700 overflow-hidden ml-1">
+                        <button onClick={goToPrev} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer text-zinc-400 hover:text-white" title="Precedente">
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                         </button>
-                        <button onClick={goToNext} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors border-l border-zinc-700 cursor-pointer text-zinc-400 hover:text-white">
+                        <button onClick={goToNext} className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 transition-colors border-l border-zinc-700 cursor-pointer text-zinc-400 hover:text-white" title="Successivo">
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                         </button>
                       </div>
@@ -1541,14 +1571,18 @@ const handleDeleteTrip = async (id: number) => {
                             const d = new Date(currentCalendarDate);
                             const day = d.getDay();
                             const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-                            const monday = new Date(d.setDate(diff));
+                            const monday = new Date(new Date(d).setDate(diff));
                             setCurrentCalendarDate(`${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`);
+                          } else {
+                            const tomorrow = new Date();
+                            tomorrow.setDate(tomorrow.getDate() + 1);
+                            setCurrentCalendarDate(`${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`);
                           }
                         }}
                         className="bg-zinc-800 border border-zinc-700 text-sm font-semibold rounded-lg px-3 py-1.5 text-white outline-none cursor-pointer"
                       >
-                        <option value="week">Settimana</option>
                         <option value="day">Giorno</option>
+                        <option value="week">Settimana</option>
                       </select>
                       <button
                         onClick={handleImportExecutedSchedules}
@@ -1561,8 +1595,11 @@ const handleDeleteTrip = async (id: number) => {
                       </button>
                       <button
                         onClick={() => {
-                          const target = new Date(currentCalendarDate);
-                          if (isWeekView) target.setDate(target.getDate() + 1); // just a fallback
+                          const target = isWeekView ? (() => {
+                            const t = new Date();
+                            t.setDate(t.getDate() + 1);
+                            return t;
+                          })() : new Date(currentCalendarDate);
                           const yyyy = target.getFullYear();
                           const mm = String(target.getMonth() + 1).padStart(2, '0');
                           const dd = String(target.getDate()).padStart(2, '0');
@@ -1601,13 +1638,28 @@ const handleDeleteTrip = async (id: number) => {
                       <div className="w-16 flex-shrink-0 border-r border-zinc-800"></div>
                       {weekDays.map((d, i) => {
                         const isToday = new Date().toDateString() === d.toDateString();
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        const isTomorrow = tomorrow.toDateString() === d.toDateString();
                         return (
-                          <div key={i} className={`flex-1 py-3 text-center border-r border-zinc-800/50 last:border-r-0 ${isToday ? 'bg-blue-900/20' : ''}`}>
+                          <div key={i} className={`flex-1 py-3 text-center border-r border-zinc-800/50 last:border-r-0 ${isTomorrow ? 'bg-blue-900/25' : isToday ? 'bg-zinc-800/40' : ''}`}>
                             <div className="flex flex-col items-center justify-center">
-                              <span className={`text-2xl font-light ${isToday ? 'text-blue-400 font-bold' : 'text-zinc-300'}`}>
-                                {String(d.getDate()).padStart(2, '0')}
-                              </span>
-                              <span className={`text-xs uppercase font-semibold ${isToday ? 'text-blue-400' : 'text-zinc-500'}`}>
+                              <div className="flex items-center gap-1.5 justify-center">
+                                <span className={`text-2xl ${isTomorrow ? 'text-blue-400 font-extrabold' : isToday ? 'text-amber-400 font-bold' : 'text-zinc-300 font-light'}`}>
+                                  {String(d.getDate()).padStart(2, '0')}
+                                </span>
+                                {isTomorrow && (
+                                  <span className="text-[10px] font-bold bg-blue-600 text-white px-1.5 py-0.5 rounded uppercase tracking-wide">
+                                    Domani
+                                  </span>
+                                )}
+                                {isToday && !isTomorrow && (
+                                  <span className="text-[10px] font-bold bg-zinc-700 text-zinc-300 px-1 py-0.5 rounded uppercase">
+                                    Oggi
+                                  </span>
+                                )}
+                              </div>
+                              <span className={`text-xs uppercase font-semibold ${isTomorrow ? 'text-blue-400' : isToday ? 'text-amber-400' : 'text-zinc-500'}`}>
                                 {dayNames[d.getDay()]}
                               </span>
                             </div>
