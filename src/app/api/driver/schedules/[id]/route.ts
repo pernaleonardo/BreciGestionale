@@ -19,6 +19,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ success: true, schedule });
   } catch (error: any) {
     console.error('Update Schedule Error:', error);
-    return NextResponse.json({ success: false, error: 'Errore del server' }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      error: error?.message || 'Errore durante l\'aggiornamento del turno' 
+    }, { status: 500 });
   }
 }

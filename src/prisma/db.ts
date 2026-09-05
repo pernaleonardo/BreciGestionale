@@ -46,11 +46,17 @@ const globalForDb = globalThis as unknown as {
 };
 
 const getDb = (): ReturnType<typeof postgres<Contract>> => {
-  const url = process.env['DATABASE_URL'];
+  let url = process.env['DATABASE_URL'];
   if (!url) {
     throw new Error(
       "DATABASE_URL environment variable is not defined. Please verify that your .env file is present and configured correctly."
     );
+  }
+
+  // Supabase Pooler: la porta 5432 (Session Mode) ha un limite rigido di 15 connessioni simultanee (EMAXCONNSESSION).
+  // Su ambienti serverless (es. Vercel), convertiamo automaticamente alla porta 6543 (Transaction Mode) per supportare carichi concorrenti.
+  if (url.includes('pooler.supabase.com:5432')) {
+    url = url.replace(':5432', ':6543');
   }
 
   if (!globalForDb.db) {
