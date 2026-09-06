@@ -230,6 +230,11 @@ export default function Home() {
     disposalPrice: 'client-list' | 'base-list' | 'manual' | '';
   }>({ cerPrice: '', transportPrice: '', disposalPrice: '' });
 
+  const [schedPriceSource, setSchedPriceSource] = useState<{
+    cerPrice: 'client-list' | 'base-list' | 'manual' | '';
+    transportPrice: 'client-list' | 'base-list' | 'manual' | '';
+  }>({ cerPrice: '', transportPrice: '' });
+
   // Modale conferma "Salva in listino?"
   const [isListinoConfirmOpen, setIsListinoConfirmOpen] = useState(false);
   const [pendingListinoSave, setPendingListinoSave] = useState<{
@@ -510,7 +515,7 @@ const handleDeleteTrip = async (id: number) => {
       destinationId: '',
       wasteTypeId: '',
       firNumber: '',
-      cerPrice: '0',
+      cerPrice: '',
       transportPrice: '0',
       disposalPrice: '0',
       fuoriRomaPrice: '0',
@@ -520,6 +525,7 @@ const handleDeleteTrip = async (id: number) => {
       servRagnoPrice: '0',
       sostaPrice: '0',
     });
+    setSchedPriceSource({ cerPrice: '', transportPrice: '' });
     setSchedCerSearchInput('');
     setSchedDestSearchInput('');
   };
@@ -533,6 +539,11 @@ const handleDeleteTrip = async (id: number) => {
       transportPrice: calculated.transportPrice !== '' ? calculated.transportPrice : prev.transportPrice,
       disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : prev.disposalPrice
     }));
+    setSchedPriceSource(prev => ({
+      ...prev,
+      cerPrice: calculated.cerSource !== '' ? calculated.cerSource : prev.cerPrice,
+      transportPrice: calculated.transportSource !== '' ? calculated.transportSource : prev.transportPrice
+    }));
   };
 
   const handleScheduleWasteTypeChange = (wasteTypeId: string) => {
@@ -540,8 +551,12 @@ const handleDeleteTrip = async (id: number) => {
     setNewScheduleData(prev => ({
       ...prev,
       wasteTypeId: wasteTypeId,
-      cerPrice: calculated.cerPrice !== '' ? calculated.cerPrice : prev.cerPrice,
-      disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : prev.disposalPrice
+      cerPrice: calculated.cerPrice !== '' ? calculated.cerPrice : '',
+      disposalPrice: calculated.disposalPrice !== '' ? calculated.disposalPrice : '0'
+    }));
+    setSchedPriceSource(prev => ({
+      ...prev,
+      cerPrice: calculated.cerSource !== '' ? calculated.cerSource : ''
     }));
   };
 
@@ -551,6 +566,10 @@ const handleDeleteTrip = async (id: number) => {
       ...prev,
       vehicleId: vehicleId,
       transportPrice: calculated.transportPrice !== '' ? calculated.transportPrice : prev.transportPrice
+    }));
+    setSchedPriceSource(prev => ({
+      ...prev,
+      transportPrice: calculated.transportSource !== '' ? calculated.transportSource : prev.transportPrice
     }));
   };
 
@@ -1612,7 +1631,7 @@ const handleDeleteTrip = async (id: number) => {
                             destinationId: '',
                             wasteTypeId: '',
                             firNumber: '',
-                            cerPrice: '0',
+                            cerPrice: '',
                             transportPrice: '0',
                             disposalPrice: '0',
                             fuoriRomaPrice: '0',
@@ -1622,6 +1641,7 @@ const handleDeleteTrip = async (id: number) => {
                             servRagnoPrice: '0',
                             sostaPrice: '0',
                           });
+                          setSchedPriceSource({ cerPrice: '', transportPrice: '' });
                           setIsScheduleModalOpen(true);
                         }}
                         className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors cursor-pointer"
@@ -1761,7 +1781,7 @@ const handleDeleteTrip = async (id: number) => {
                                     destinationId: '',
                                     wasteTypeId: '',
                                     firNumber: '',
-                                    cerPrice: '0',
+                                    cerPrice: '',
                                     transportPrice: '0',
                                     disposalPrice: '0',
                                     fuoriRomaPrice: '0',
@@ -1771,6 +1791,7 @@ const handleDeleteTrip = async (id: number) => {
                                     servRagnoPrice: '0',
                                     sostaPrice: '0',
                                   });
+                                  setSchedPriceSource({ cerPrice: '', transportPrice: '' });
                                   setIsScheduleModalOpen(true);
                                 }
                               }}
@@ -1793,6 +1814,16 @@ const handleDeleteTrip = async (id: number) => {
                                     className={`${colorClass} opacity-95 hover:opacity-100 border rounded-md p-1.5 overflow-visible text-xs text-white cursor-pointer transition-opacity shadow-sm group flex flex-col gap-0.5`}
                                     onClick={(e) => {
                                       e.stopPropagation();
+                                      const calc = calculatePrefilledPrices(
+                                        s.destinationId ? s.destinationId.toString() : '',
+                                        s.wasteTypeId ? s.wasteTypeId.toString() : '',
+                                        s.vehicleId ? s.vehicleId.toString() : '',
+                                        '0'
+                                      );
+                                      setSchedPriceSource({
+                                        cerPrice: (s.cerPrice && calc.cerPrice === s.cerPrice.toString()) ? calc.cerSource : (s.cerPrice ? 'manual' : ''),
+                                        transportPrice: (s.transportPrice && calc.transportPrice === s.transportPrice.toString()) ? calc.transportSource : (s.transportPrice ? 'manual' : '')
+                                      });
                                       setNewScheduleData({
                                         id: s.id,
                                         driverId: s.driverId.toString(),
@@ -1803,7 +1834,7 @@ const handleDeleteTrip = async (id: number) => {
                                         destinationId: s.destinationId ? s.destinationId.toString() : '',
                                         wasteTypeId: s.wasteTypeId ? s.wasteTypeId.toString() : '',
                                         firNumber: s.firNumber || '',
-                                        cerPrice: s.cerPrice !== null && s.cerPrice !== undefined ? s.cerPrice.toString() : '0',
+                                        cerPrice: s.cerPrice !== null && s.cerPrice !== undefined && s.cerPrice > 0 ? s.cerPrice.toString() : (calc.cerPrice || ''),
                                         transportPrice: s.transportPrice !== null && s.transportPrice !== undefined ? s.transportPrice.toString() : '0',
                                         disposalPrice: s.disposalPrice !== null && s.disposalPrice !== undefined ? s.disposalPrice.toString() : '0',
                                         fuoriRomaPrice: s.fuoriRomaPrice !== null && s.fuoriRomaPrice !== undefined ? s.fuoriRomaPrice.toString() : '0',
@@ -4089,6 +4120,21 @@ const handleDeleteTrip = async (id: number) => {
                               setSchedDestSearchInput('');
                             }}
                             onChange={(e) => setSchedDestSearchInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const query = schedDestSearchInput.toLowerCase();
+                                const filtered = destinations.filter(d => 
+                                  d.name.toLowerCase().includes(query) || 
+                                  (d.client?.name || '').toLowerCase().includes(query) ||
+                                  d.shippingCode.toLowerCase().includes(query)
+                                );
+                                if (filtered.length > 0) {
+                                  handleScheduleDestinationChange(String(filtered[0].id));
+                                  setIsSchedDestDropdownOpen(false);
+                                }
+                              }
+                            }}
                           />
                           {isSchedDestDropdownOpen && (
                             <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 divide-y divide-zinc-800">
@@ -4157,6 +4203,20 @@ const handleDeleteTrip = async (id: number) => {
                               setSchedCerSearchInput('');
                             }}
                             onChange={(e) => setSchedCerSearchInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const query = schedCerSearchInput.toLowerCase();
+                                const filtered = wasteTypes.filter(w => 
+                                  w.cerCode.toLowerCase().includes(query) || 
+                                  (w.description || '').toLowerCase().includes(query)
+                                );
+                                if (filtered.length > 0) {
+                                  handleScheduleWasteTypeChange(String(filtered[0].id));
+                                  setIsSchedCerDropdownOpen(false);
+                                }
+                              }
+                            }}
                           />
                           {isSchedCerDropdownOpen && (
                             <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 divide-y divide-zinc-800">
@@ -4196,14 +4256,28 @@ const handleDeleteTrip = async (id: number) => {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-zinc-400 uppercase">Prezzo CER (€/t)</label>
+                        <div className="flex items-center gap-2 mb-1">
+                          <label className="block text-xs font-bold text-zinc-400 uppercase">Prezzo CER (€/t)</label>
+                          {schedPriceSource.cerPrice === 'client-list' && (
+                            <span className="text-xs font-bold text-blue-400 bg-blue-950/30 px-2 py-0.5 rounded border border-blue-900/40">🔗 Da listino cliente</span>
+                          )}
+                          {schedPriceSource.cerPrice === 'base-list' && (
+                            <span className="text-xs font-bold text-amber-400 bg-amber-950/30 px-2 py-0.5 rounded border border-amber-900/40">📋 Da listino base</span>
+                          )}
+                          {schedPriceSource.cerPrice === 'manual' && (
+                            <span className="text-xs font-bold text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">✏️ Manuale</span>
+                          )}
+                        </div>
                         <input
                           type="number"
                           step="0.01"
                           placeholder="Prefill da listino"
-                          className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                          className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
                           value={newScheduleData.cerPrice}
-                          onChange={(e) => setNewScheduleData({ ...newScheduleData, cerPrice: e.target.value })}
+                          onChange={(e) => {
+                            setNewScheduleData({ ...newScheduleData, cerPrice: e.target.value });
+                            setSchedPriceSource(prev => ({ ...prev, cerPrice: 'manual' }));
+                          }}
                         />
                       </div>
                     </div>
@@ -4212,13 +4286,27 @@ const handleDeleteTrip = async (id: number) => {
                       <span className="text-sm font-semibold text-white block mb-3">Prezzi Pianificati (€)</span>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-zinc-400">Trasporto</label>
+                          <div className="flex items-center gap-2 mb-1">
+                            <label className="block text-xs font-medium text-zinc-400">Trasporto</label>
+                            {schedPriceSource.transportPrice === 'client-list' && (
+                              <span className="text-xs font-bold text-blue-400 bg-blue-950/30 px-1.5 py-0.5 rounded border border-blue-900/40">🔗 Cliente</span>
+                            )}
+                            {schedPriceSource.transportPrice === 'base-list' && (
+                              <span className="text-xs font-bold text-amber-400 bg-amber-950/30 px-1.5 py-0.5 rounded border border-amber-900/40">📋 Base</span>
+                            )}
+                            {schedPriceSource.transportPrice === 'manual' && (
+                              <span className="text-xs font-bold text-zinc-400 bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700">✏️</span>
+                            )}
+                          </div>
                           <input
                             type="number"
                             step="0.01"
-                            className="w-full mt-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
+                            className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:border-zinc-500"
                             value={newScheduleData.transportPrice}
-                            onChange={(e) => setNewScheduleData({ ...newScheduleData, transportPrice: e.target.value })}
+                            onChange={(e) => {
+                              setNewScheduleData({ ...newScheduleData, transportPrice: e.target.value });
+                              setSchedPriceSource(prev => ({ ...prev, transportPrice: 'manual' }));
+                            }}
                           />
                         </div>
                         <div>
