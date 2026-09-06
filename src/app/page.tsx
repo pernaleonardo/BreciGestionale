@@ -1002,7 +1002,7 @@ const handleDeleteTrip = async (id: number) => {
                 name="email"
                 required
                 suppressHydrationWarning
-                className="w-full mt-2 p-3 bg-zinc-850 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full mt-2 p-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="nome@brecitrasporti.it"
               />
             </div>
@@ -1013,7 +1013,7 @@ const handleDeleteTrip = async (id: number) => {
                 name="password"
                 required
                 suppressHydrationWarning
-                className="w-full mt-2 p-3 bg-zinc-850 border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full mt-2 p-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="••••••••"
               />
             </div>
@@ -1310,7 +1310,7 @@ const handleDeleteTrip = async (id: number) => {
                                   </span>
                                 </td>
                                 <td className="p-3 whitespace-nowrap">
-                                  <span className="inline-flex items-center rounded-md bg-zinc-850 px-2.5 py-0.5 text-xs font-semibold text-zinc-300 border border-zinc-700">
+                                  <span className="inline-flex items-center rounded-md bg-zinc-800 px-2.5 py-0.5 text-xs font-semibold text-zinc-300 border border-zinc-700">
                                     {trip.cerCode}
                                   </span>
                                 </td>
@@ -2232,7 +2232,7 @@ const handleDeleteTrip = async (id: number) => {
                               {sortedKeys.map((catKey) => (
                                 <React.Fragment key={catKey}>
                                   {/* Category Header Row */}
-                                  <tr className="bg-zinc-850/80 font-bold border-y border-zinc-800 text-xs text-emerald-400 select-none">
+                                  <tr className="bg-zinc-800/80 font-bold border-y border-zinc-800 text-xs text-emerald-400 select-none">
                                     <td colSpan={3} className="p-2.5 px-4 bg-zinc-800/20">
                                       📁 Categoria: {catKey}
                                     </td>
@@ -2397,7 +2397,7 @@ const handleDeleteTrip = async (id: number) => {
                               <td className="p-3 text-center">
                                 <button
                                   onClick={() => handleDeleteDisposalPrice(dp.id)}
-                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-850 rounded cursor-pointer"
+                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-800 rounded cursor-pointer"
                                 >
                                   Elimina
                                 </button>
@@ -2512,7 +2512,7 @@ const handleDeleteTrip = async (id: number) => {
                                 )}
                               </td>
                               <td className="p-3">
-                                <span className="font-mono font-bold text-xs bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-750 mr-2">
+                                <span className="font-mono font-bold text-xs bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 mr-2">
                                   {tp.vehicle?.plateNumber}
                                 </span>
                                 <span className="text-zinc-400 text-xs">{tp.vehicle?.model}</span>
@@ -2521,7 +2521,7 @@ const handleDeleteTrip = async (id: number) => {
                               <td className="p-3 text-center">
                                 <button
                                   onClick={() => handleDeleteTransportPrice(tp.id)}
-                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-850 rounded cursor-pointer"
+                                  className="text-red-500 hover:text-red-400 p-1 hover:bg-zinc-800 rounded cursor-pointer"
                                 >
                                   Elimina
                                 </button>
@@ -3016,7 +3016,7 @@ const handleDeleteTrip = async (id: number) => {
                             onChange={(e) => setCerSearchInput(e.target.value)}
                           />
                           {isCerDropdownOpen && (
-                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 divide-y divide-zinc-800">
                               {wasteTypes
                                 .filter(w => {
                                   const query = cerSearchInput.toLowerCase();
@@ -3033,7 +3033,7 @@ const handleDeleteTrip = async (id: number) => {
                                       setIsCerDropdownOpen(false);
                                     }}
                                   >
-                                    <span className="font-mono font-bold bg-zinc-900 text-emerald-400 px-1.5 py-0.5 rounded mr-2">{w.cerCode}</span>
+                                    <span className="font-mono font-bold bg-zinc-800 text-emerald-400 px-1.5 py-0.5 rounded mr-2">{w.cerCode}</span>
                                     <span>{w.description?.substring(0, 60)}...</span>
                                   </div>
                                 ))}
@@ -3069,7 +3069,7 @@ const handleDeleteTrip = async (id: number) => {
                           onChange={(e) => setDestSearchInput(e.target.value)}
                         />
                         {isDestDropdownOpen && (
-                          <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                          <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 divide-y divide-zinc-800">
                             {destinations
                               .filter(d => {
                                 const query = destSearchInput.toLowerCase();
@@ -3125,7 +3125,7 @@ const handleDeleteTrip = async (id: number) => {
                             onChange={(e) => setDriverSearchInput(e.target.value)}
                           />
                           {isDriverDropdownOpen && (
-                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 divide-y divide-zinc-800">
                               <div
                                 className="p-2 text-sm text-zinc-400 hover:bg-zinc-800 cursor-pointer"
                                 onClick={() => {
@@ -3173,7 +3173,7 @@ const handleDeleteTrip = async (id: number) => {
                             onChange={(e) => setVehicleSearchInput(e.target.value)}
                           />
                           {isVehicleDropdownOpen && (
-                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 divide-y divide-zinc-800">
                               <div
                                 className="p-2 text-sm text-zinc-400 hover:bg-zinc-800 cursor-pointer"
                                 onClick={() => {
@@ -3194,8 +3194,8 @@ const handleDeleteTrip = async (id: number) => {
                                       setIsVehicleDropdownOpen(false);
                                     }}
                                   >
-                                    <span className="font-mono font-bold text-xs bg-zinc-900 text-blue-400 px-1.5 py-0.5 rounded mr-2">{v.plateNumber}</span>
-                                    <span className="text-zinc-450 text-xs">{v.model}</span>
+                                    <span className="font-mono font-bold text-xs bg-zinc-800 text-blue-400 px-1.5 py-0.5 rounded mr-2">{v.plateNumber}</span>
+                                    <span className="text-zinc-400 text-xs">{v.model}</span>
                                   </div>
                                 ))}
                             </div>
@@ -3340,7 +3340,7 @@ const handleDeleteTrip = async (id: number) => {
                       </div>
                     </div>
 
-                    <div className="border-t border-zinc-800 pt-4 bg-zinc-850/50 p-4 rounded-xl border">
+                    <div className="border-t border-zinc-800 pt-4 bg-zinc-800/50 p-4 rounded-xl border">
                       <span className="text-sm font-semibold text-white block mb-2">Anteprima Totale Contabile (Calcolato)</span>
                       {(() => {
                         const tPrice = Number(newTripData.transportPrice || 0) + Number(newTripData.fuoriRomaPrice || 0);
@@ -4091,7 +4091,7 @@ const handleDeleteTrip = async (id: number) => {
                             onChange={(e) => setSchedDestSearchInput(e.target.value)}
                           />
                           {isSchedDestDropdownOpen && (
-                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 divide-y divide-zinc-800">
                               {destinations
                                 .filter(d => {
                                   const query = schedDestSearchInput.toLowerCase();
@@ -4159,7 +4159,7 @@ const handleDeleteTrip = async (id: number) => {
                             onChange={(e) => setSchedCerSearchInput(e.target.value)}
                           />
                           {isSchedCerDropdownOpen && (
-                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-850 border border-zinc-750 rounded-lg shadow-xl z-50 divide-y divide-zinc-800">
+                            <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 divide-y divide-zinc-800">
                               {wasteTypes
                                 .filter(w => {
                                   const query = schedCerSearchInput.toLowerCase();
@@ -4176,7 +4176,7 @@ const handleDeleteTrip = async (id: number) => {
                                       setIsSchedCerDropdownOpen(false);
                                     }}
                                   >
-                                    <span className="font-mono font-bold bg-zinc-900 text-emerald-400 px-1.5 py-0.5 rounded mr-2">{w.cerCode}</span>
+                                    <span className="font-mono font-bold bg-zinc-800 text-emerald-400 px-1.5 py-0.5 rounded mr-2">{w.cerCode}</span>
                                     <span>{w.description?.substring(0, 60)}...</span>
                                   </div>
                                 ))}
