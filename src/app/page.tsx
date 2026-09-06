@@ -1103,12 +1103,6 @@ const handleDeleteTrip = async (id: number) => {
               Accedi
             </button>
           </form>
-
-          <div className="mt-8 border-t border-zinc-800 pt-6 text-center text-xs text-zinc-500">
-            <p className="font-semibold text-zinc-400 mb-2">Credenziali Demo di Prova:</p>
-            <p>Admin: <code className="text-zinc-300">admin@brecitrasporti.it</code> / <code className="text-zinc-300">admin</code></p>
-            <p className="mt-1">Operator: <code className="text-zinc-300">operator@brecitrasporti.it</code> / <code className="text-zinc-300">operator</code></p>
-          </div>
         </div>
       </div>
     );
