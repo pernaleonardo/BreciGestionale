@@ -626,10 +626,44 @@ export async function createSchedule(data: {
   analisiPrice?: number | string;
   servRagnoPrice?: number | string;
   sostaPrice?: number | string;
+  forceConflict?: boolean;
 }) {
   try {
     if (new Date(data.startDate) >= new Date(data.endDate)) {
       return { success: false, error: 'La data/ora di inizio deve essere precedente alla data/ora di fine.' };
+    }
+
+    // Controllo conflitto: stesso automezzo pianificato nello stesso orario con autista diverso
+    if (!data.forceConflict && data.vehicleId && data.driverId && data.startDate && data.endDate) {
+      const targetDate = data.date || data.startDate.split('T')[0];
+      const existing = await db.orm.public.Schedule.where({ date: targetDate, vehicleId: Number(data.vehicleId) })
+        .include('driver')
+        .include('vehicle')
+        .all();
+
+      const newStart = new Date(data.startDate).getTime();
+      const newEnd = new Date(data.endDate).getTime();
+
+      const conflicts = existing.filter((s: any) => {
+        if (s.status === 'ANNULLATO') return false;
+        if (Number(s.driverId) === Number(data.driverId)) return false;
+        const sStart = new Date(s.startDate).getTime();
+        const sEnd = new Date(s.endDate).getTime();
+        return newStart < sEnd && newEnd > sStart;
+      });
+
+      if (conflicts.length > 0) {
+        const c = conflicts[0];
+        const vPlate = c.vehicle?.plateNumber || 'selezionato';
+        const dName = c.driver?.name || 'un altro autista';
+        const cStart = new Date(c.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const cEnd = new Date(c.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return {
+          success: false,
+          conflict: true,
+          error: `Attenzione: il camion ${vPlate} è già pianificato con l'autista ${dName} dalle ${cStart} alle ${cEnd}.`
+        };
+      }
     }
 
     const newSchedule = await db.orm.public.Schedule.create({
@@ -678,13 +712,49 @@ export async function updateSchedule(id: number, data: {
   analisiPrice?: number | string;
   servRagnoPrice?: number | string;
   sostaPrice?: number | string;
+  forceConflict?: boolean;
 }) {
   try {
     if (data.startDate && data.endDate && new Date(data.startDate) >= new Date(data.endDate)) {
       return { success: false, error: 'La data/ora di inizio deve essere precedente alla data/ora di fine.' };
     }
 
-    const updateData: any = { ...data };
+    // Controllo conflitto: stesso automezzo pianificato nello stesso orario con autista diverso
+    if (!data.forceConflict && data.vehicleId && data.driverId && data.startDate && data.endDate) {
+      const targetDate = data.date || data.startDate.split('T')[0];
+      const existing = await db.orm.public.Schedule.where({ date: targetDate, vehicleId: Number(data.vehicleId) })
+        .include('driver')
+        .include('vehicle')
+        .all();
+
+      const newStart = new Date(data.startDate).getTime();
+      const newEnd = new Date(data.endDate).getTime();
+
+      const conflicts = existing.filter((s: any) => {
+        if (s.id === Number(id)) return false;
+        if (s.status === 'ANNULLATO') return false;
+        if (Number(s.driverId) === Number(data.driverId)) return false;
+        const sStart = new Date(s.startDate).getTime();
+        const sEnd = new Date(s.endDate).getTime();
+        return newStart < sEnd && newEnd > sStart;
+      });
+
+      if (conflicts.length > 0) {
+        const c = conflicts[0];
+        const vPlate = c.vehicle?.plateNumber || 'selezionato';
+        const dName = c.driver?.name || 'un altro autista';
+        const cStart = new Date(c.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const cEnd = new Date(c.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return {
+          success: false,
+          conflict: true,
+          error: `Attenzione: il camion ${vPlate} è già pianificato con l'autista ${dName} dalle ${cStart} alle ${cEnd}.`
+        };
+      }
+    }
+
+    const { forceConflict, ...restData } = data;
+    const updateData: any = { ...restData };
     if (data.driverId) updateData.driverId = Number(data.driverId);
     if (data.vehicleId) updateData.vehicleId = Number(data.vehicleId);
     if (data.destinationId !== undefined) {

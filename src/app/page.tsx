@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   login,
   logout,
@@ -573,12 +573,53 @@ const handleDeleteTrip = async (id: number) => {
     }));
   };
 
+  // Controllo conflitti camion: stesso veicolo pianificato nelle stesse ore con un autista diverso
+  const modalVehicleConflicts = useMemo(() => {
+    if (!newScheduleData.vehicleId || !newScheduleData.driverId || !newScheduleData.startDate || !newScheduleData.endDate) {
+      return [];
+    }
+    const start = new Date(newScheduleData.startDate).getTime();
+    const end = new Date(newScheduleData.endDate).getTime();
+    if (isNaN(start) || isNaN(end) || start >= end) return [];
+
+    return schedules.filter(s => {
+      if (newScheduleData.id && s.id === Number(newScheduleData.id)) return false;
+      if (s.status === 'ANNULLATO') return false;
+      if (Number(s.vehicleId) !== Number(newScheduleData.vehicleId)) return false;
+      if (Number(s.driverId) === Number(newScheduleData.driverId)) return false;
+
+      const sStart = new Date(s.startDate).getTime();
+      const sEnd = new Date(s.endDate).getTime();
+      return start < sEnd && end > sStart;
+    });
+  }, [newScheduleData.vehicleId, newScheduleData.driverId, newScheduleData.startDate, newScheduleData.endDate, newScheduleData.id, schedules]);
+
   const handleCreateSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newScheduleData.driverId || !newScheduleData.vehicleId || !newScheduleData.startDate || !newScheduleData.endDate) {
       alert('Autista, automezzo, data/ora inizio e fine sono obbligatori.');
       return;
     }
+
+    // Segnalazione conflitto se lo stesso camion è già pianificato con un altro autista nelle stesse ore
+    if (modalVehicleConflicts.length > 0) {
+      const vPlate = vehicles.find(v => v.id === Number(newScheduleData.vehicleId))?.plateNumber || 'selezionato';
+      const details = modalVehicleConflicts.map(c => {
+        const dName = drivers.find(d => d.id === c.driverId)?.name || c.driver?.name || 'Altro autista';
+        const cStart = new Date(c.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const cEnd = new Date(c.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const cDate = new Date(c.startDate).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        return `• ${dName} il ${cDate} dalle ${cStart} alle ${cEnd}`;
+      }).join('\n');
+
+      const proceed = confirm(
+        `⚠️ ATTENZIONE: CONFLITTO AUTOMEZZO!\n\nIl camion ${vPlate} risulta già pianificato nelle stesse ore con un autista diverso:\n\n${details}\n\nVuoi confermare comunque la pianificazione?`
+      );
+      if (!proceed) {
+        return;
+      }
+    }
+
     const schedulePayload = {
       date: newScheduleData.startDate.split('T')[0],
       startDate: newScheduleData.startDate,
@@ -598,9 +639,10 @@ const handleDeleteTrip = async (id: number) => {
       analisiPrice: newScheduleData.analisiPrice || '0',
       servRagnoPrice: newScheduleData.servRagnoPrice || '0',
       sostaPrice: newScheduleData.sostaPrice || '0',
+      forceConflict: true,
     };
 
-    let res;
+    let res: any;
     if (newScheduleData.id) {
       res = await updateSchedule(newScheduleData.id, schedulePayload);
     } else {
@@ -612,6 +654,24 @@ const handleDeleteTrip = async (id: number) => {
       resetScheduleForm();
       await refreshSchedules(newScheduleData.startDate.split('T')[0]);
     } else {
+      if (res.conflict) {
+        const forceSave = confirm(`${res.error}\n\nVuoi confermare comunque la pianificazione?`);
+        if (forceSave) {
+          let retryRes = newScheduleData.id
+            ? await updateSchedule(newScheduleData.id, { ...schedulePayload, forceConflict: true })
+            : await createSchedule({ ...schedulePayload, forceConflict: true });
+          if (retryRes.success) {
+            setIsScheduleModalOpen(false);
+            resetScheduleForm();
+            await refreshSchedules(newScheduleData.startDate.split('T')[0]);
+            return;
+          } else {
+            alert(retryRes.error);
+            return;
+          }
+        }
+        return;
+      }
       alert(res.error);
     }
   };
@@ -1807,11 +1867,21 @@ const handleDeleteTrip = async (id: number) => {
                                 const style = getEventStyle(s.startDate, s.endDate, layoutInfo.col, layoutInfo.count);
                                 const colorClass = getDriverColorClass(s.driverId);
                                 
+                                const hasVehicleConflict = schedules.some(other => 
+                                  other.id !== s.id &&
+                                  other.status !== 'ANNULLATO' &&
+                                  s.status !== 'ANNULLATO' &&
+                                  Number(other.vehicleId) === Number(s.vehicleId) &&
+                                  Number(other.driverId) !== Number(s.driverId) &&
+                                  new Date(s.startDate).getTime() < new Date(other.endDate).getTime() &&
+                                  new Date(s.endDate).getTime() > new Date(other.startDate).getTime()
+                                );
+
                                 return (
                                   <div
                                     key={s.id}
                                     style={style}
-                                    className={`${colorClass} opacity-95 hover:opacity-100 border rounded-md p-1.5 overflow-visible text-xs text-white cursor-pointer transition-opacity shadow-sm group flex flex-col gap-0.5`}
+                                    className={`${colorClass} ${hasVehicleConflict ? 'ring-2 ring-amber-400 border-amber-400 shadow-amber-500/20 shadow-md' : ''} opacity-95 hover:opacity-100 border rounded-md p-1.5 overflow-visible text-xs text-white cursor-pointer transition-opacity shadow-sm group flex flex-col gap-0.5`}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       const calc = calculatePrefilledPrices(
@@ -1850,6 +1920,11 @@ const handleDeleteTrip = async (id: number) => {
                                     <div className="font-bold truncate flex items-center justify-between gap-1">
                                       <span className="truncate">{s.driver?.name || 'Sconosciuto'}</span>
                                       <div className="flex items-center gap-1 shrink-0">
+                                        {hasVehicleConflict && (
+                                          <span title="Attenzione: stesso camion pianificato con un altro autista nelle stesse ore!" className="bg-amber-500 text-zinc-950 font-black text-[9px] px-1 py-0.5 rounded shadow flex items-center gap-0.5 animate-pulse">
+                                            ⚠️ CONFLITTO
+                                          </span>
+                                        )}
                                         {s.tripCreated && <span title="Importato nel registro" className="bg-blue-500/80 text-white text-[9px] px-1 rounded shadow-sm">IMPORTATO</span>}
                                         {s.status === 'ESEGUITO' && !s.tripCreated && <span title="Completato" className="bg-emerald-500/80 text-white text-[9px] px-1 rounded shadow-sm">COMPLETATO</span>}
                                         {s.status === 'ANNULLATO' && <span title="Annullato" className="text-red-400">❌</span>}
@@ -4051,10 +4126,17 @@ const handleDeleteTrip = async (id: number) => {
                   <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-zinc-400 font-sans">Autista (Trasportatore)</label>
+                        <div className="flex items-center justify-between">
+                          <label className="block text-xs font-semibold text-zinc-400 font-sans">Autista (Trasportatore)</label>
+                          {modalVehicleConflicts.length > 0 && (
+                            <span className="text-[10px] text-amber-400 font-bold bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-800/40">
+                              ⚠️ Conflitto orario
+                            </span>
+                          )}
+                        </div>
                         <select
                           required
-                          className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                          className={`w-full mt-1 p-2.5 bg-zinc-800 border ${modalVehicleConflicts.length > 0 ? 'border-amber-500 ring-1 ring-amber-500/60' : 'border-zinc-700'} rounded-lg text-white text-sm`}
                           value={newScheduleData.driverId}
                           onChange={(e) => setNewScheduleData({ ...newScheduleData, driverId: e.target.value })}
                         >
@@ -4066,10 +4148,17 @@ const handleDeleteTrip = async (id: number) => {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-zinc-400 font-sans">Automezzo (Camion)</label>
+                        <div className="flex items-center justify-between">
+                          <label className="block text-xs font-semibold text-zinc-400 font-sans">Automezzo (Camion)</label>
+                          {modalVehicleConflicts.length > 0 && (
+                            <span className="text-[10px] text-amber-400 font-bold bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-800/40">
+                              ⚠️ Camion occupato
+                            </span>
+                          )}
+                        </div>
                         <select
                           required
-                          className="w-full mt-1 p-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm"
+                          className={`w-full mt-1 p-2.5 bg-zinc-800 border ${modalVehicleConflicts.length > 0 ? 'border-amber-500 ring-1 ring-amber-500/60' : 'border-zinc-700'} rounded-lg text-white text-sm`}
                           value={newScheduleData.vehicleId}
                           onChange={(e) => handleScheduleVehicleChange(e.target.value)}
                         >
@@ -4104,6 +4193,44 @@ const handleDeleteTrip = async (id: number) => {
                         />
                       </div>
                     </div>
+
+                    {/* Banner Avviso Conflitto Pianificazione */}
+                    {modalVehicleConflicts.length > 0 && (
+                      <div className="p-3.5 bg-amber-500/10 border-2 border-amber-500/50 rounded-xl flex items-start gap-3 shadow-lg animate-fadeIn">
+                        <span className="text-2xl mt-0.5">⚠️</span>
+                        <div className="text-xs space-y-1.5 flex-1">
+                          <div className="font-bold text-amber-300 text-sm flex items-center justify-between">
+                            <span>Conflitto Rilevato: Camion già pianificato!</span>
+                            <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 uppercase tracking-wider font-mono font-bold">
+                              Autista Diverso
+                            </span>
+                          </div>
+                          <p className="text-zinc-200">
+                            Il camion <strong className="text-white">{vehicles.find(v => v.id === Number(newScheduleData.vehicleId))?.plateNumber || ''}</strong> è già stato assegnato a un altro autista in orari sovrapposti nello stesso giorno:
+                          </p>
+                          <div className="space-y-1.5 pt-1">
+                            {modalVehicleConflicts.map(c => {
+                              const cDriver = drivers.find(d => d.id === c.driverId)?.name || c.driver?.name || 'Altro autista';
+                              const cStart = new Date(c.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                              const cEnd = new Date(c.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                              const cDate = new Date(c.startDate).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                              const cDest = destinations.find(d => d.id === c.destinationId)?.name || c.destination?.name;
+                              return (
+                                <div key={c.id} className="bg-amber-950/40 border border-amber-500/40 rounded-lg p-2 flex flex-wrap items-center justify-between gap-2 text-amber-100">
+                                  <div>
+                                    👤 <strong className="text-white">{cDriver}</strong>
+                                    {cDest && <span className="text-zinc-300 text-[11px] ml-2 font-normal">→ {cDest}</span>}
+                                  </div>
+                                  <div className="font-mono text-[11px] bg-zinc-900/80 px-2.5 py-1 rounded border border-zinc-700 text-amber-200">
+                                    📅 {cDate} ore <strong className="text-white">{cStart}</strong> - <strong className="text-white">{cEnd}</strong>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Searchable Destination selector */}
