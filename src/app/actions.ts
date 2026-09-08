@@ -1094,25 +1094,20 @@ export async function uploadVehicleDocument(formData: FormData) {
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64Data = buffer.toString('base64');
+    const mimeType = file.type || 'application/octet-stream';
+    const fileData = `data:${mimeType};base64,${base64Data}`;
 
-    // Save to public/documents
-    const uploadDir = join(process.cwd(), 'public', 'documents');
-    if (!fs.existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    const uniqueName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.\-]/g, '_')}`;
-    const filePath = join(uploadDir, uniqueName);
-    await writeFile(filePath, buffer);
-
-    const fileUrl = `/documents/${uniqueName}`;
-
-    await db.orm.public.VehicleDocument.create({
+    const doc = await db.orm.public.VehicleDocument.create({
       vehicleId,
       name: file.name,
-      fileUrl,
+      fileUrl: '', // Segnaposto temporaneo
+      fileData,
       expirationDate: expirationDate || null,
     });
+
+    const fileUrl = `/api/documents/${doc.id}`;
+    await db.orm.public.VehicleDocument.where({ id: doc.id }).update({ fileUrl });
 
     return { success: true };
   } catch (e: any) {
@@ -1138,16 +1133,6 @@ export async function deleteVehicleDocument(id: number) {
       return { success: false, error: 'Documento non trovato.' };
     }
     await db.orm.public.VehicleDocument.where({ id }).delete();
-    
-    // Attempt to delete file from disk as well
-    try {
-      const filePath = join(process.cwd(), 'public', doc.fileUrl);
-      if (fs.existsSync(filePath)) {
-        await fs.promises.unlink(filePath);
-      }
-    } catch (fsError) {
-      console.warn('Errore eliminazione file fisico:', fsError);
-    }
     
     return { success: true };
   } catch (e: any) {

@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
         "localhost:3000",
         "*.github.dev",
         "*.preview.app.github.dev"
-      ]
+      ],
+      bodySizeLimit: "10mb"
     }
   },
   async headers() {

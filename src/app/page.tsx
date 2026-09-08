@@ -1007,13 +1007,18 @@ const handleDeleteTrip = async (id: number) => {
     if (!selectedVehicleForDocs) return;
     const formData = new FormData(e.currentTarget);
     formData.append('vehicleId', selectedVehicleForDocs.id.toString());
-    const res = await uploadVehicleDocument(formData);
-    if (res.success) {
-      const refreshRes = await getVehicleDocuments(selectedVehicleForDocs.id);
-      if (refreshRes.success) setVehicleDocs(refreshRes.documents || []);
-      (e.target as HTMLFormElement).reset();
-    } else {
-      alert(res.error);
+    try {
+      const res = await uploadVehicleDocument(formData);
+      if (res?.success) {
+        const refreshRes = await getVehicleDocuments(selectedVehicleForDocs.id);
+        if (refreshRes?.success) setVehicleDocs(refreshRes.documents || []);
+        (e.target as HTMLFormElement).reset();
+        setIsVehicleDocsModalOpen(false); // Chiudiamo il modale
+      } else {
+        alert(res?.error || 'Errore imprevisto. File troppo grande?');
+      }
+    } catch (err: any) {
+      alert('Errore di caricamento: ' + err.message);
     }
   };
 
