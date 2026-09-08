@@ -1077,30 +1077,17 @@ export async function deleteInvoice(id: number) {
   }
 }
 
-export async function uploadVehicleDocument(formData: FormData) {
+export async function uploadVehicleDocument(data: { vehicleId: number; name: string; fileData: string; expirationDate: string | null }) {
   try {
-    const file = formData.get('file') as File;
-    const vehicleIdStr = formData.get('vehicleId') as string;
-    const expirationDate = formData.get('expirationDate') as string | null;
+    const { vehicleId, name, fileData, expirationDate } = data;
 
-    if (!file || !vehicleIdStr) {
+    if (!name || !fileData || !vehicleId) {
       return { success: false, error: 'Dati mancanti.' };
     }
 
-    const vehicleId = Number(vehicleIdStr);
-    if (isNaN(vehicleId)) {
-      return { success: false, error: 'ID mezzo non valido.' };
-    }
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const base64Data = buffer.toString('base64');
-    const mimeType = file.type || 'application/octet-stream';
-    const fileData = `data:${mimeType};base64,${base64Data}`;
-
     const doc = await db.orm.public.VehicleDocument.create({
       vehicleId,
-      name: file.name,
+      name,
       fileUrl: '', // Segnaposto temporaneo
       fileData,
       expirationDate: expirationDate || null,

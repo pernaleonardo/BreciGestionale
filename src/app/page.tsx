@@ -1005,21 +1005,44 @@ const handleDeleteTrip = async (id: number) => {
   const handleUploadVehicleDoc = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedVehicleForDocs) return;
-    const formData = new FormData(e.currentTarget);
-    formData.append('vehicleId', selectedVehicleForDocs.id.toString());
-    try {
-      const res = await uploadVehicleDocument(formData);
-      if (res?.success) {
-        const refreshRes = await getVehicleDocuments(selectedVehicleForDocs.id);
-        if (refreshRes?.success) setVehicleDocs(refreshRes.documents || []);
-        (e.target as HTMLFormElement).reset();
-        setIsVehicleDocsModalOpen(false); // Chiudiamo il modale
-      } else {
-        alert(res?.error || 'Errore imprevisto. File troppo grande?');
-      }
-    } catch (err: any) {
-      alert('Errore di caricamento: ' + err.message);
+
+    const form = e.currentTarget;
+    const fileInput = form.elements.namedItem('file') as HTMLInputElement;
+    const expDateInput = form.elements.namedItem('expirationDate') as HTMLInputElement;
+    
+    const file = fileInput.files?.[0];
+    if (!file) {
+      alert("Seleziona un file.");
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64Data = event.target?.result as string;
+      try {
+        const payload = {
+          vehicleId: selectedVehicleForDocs.id,
+          name: file.name,
+          fileData: base64Data,
+          expirationDate: expDateInput.value || null
+        };
+        const res = await uploadVehicleDocument(payload);
+        if (res?.success) {
+          const refreshRes = await getVehicleDocuments(selectedVehicleForDocs.id);
+          if (refreshRes?.success) setVehicleDocs(refreshRes.documents || []);
+          form.reset();
+          setIsVehicleDocsModalOpen(false); // Chiudiamo il modale
+        } else {
+          alert(res?.error || 'Errore imprevisto. File troppo grande?');
+        }
+      } catch (err: any) {
+        alert('Errore di caricamento: ' + err.message);
+      }
+    };
+    reader.onerror = () => {
+      alert("Errore nella lettura del file.");
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleDeleteVehicleDoc = async (docId: number) => {
