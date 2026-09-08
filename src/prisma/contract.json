@@ -48,6 +48,10 @@
       "model": "Vehicle",
       "namespace": "public"
     },
+    "vehicleDocument": {
+      "model": "VehicleDocument",
+      "namespace": "public"
+    },
     "wasteType": {
       "model": "WasteType",
       "namespace": "public"
@@ -1639,6 +1643,21 @@
               }
             },
             "relations": {
+              "documents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "vehicleId"
+                  ]
+                },
+                "to": {
+                  "model": "VehicleDocument",
+                  "namespace": "public"
+                }
+              },
               "schedules": {
                 "cardinality": "1:N",
                 "on": {
@@ -1711,6 +1730,103 @@
               },
               "namespaceId": "public",
               "table": "vehicle"
+            }
+          },
+          "VehicleDocument": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "expirationDate": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fileUrl": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "vehicleId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "vehicle": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "vehicleId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Vehicle",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "expirationDate": {
+                  "column": "expirationDate"
+                },
+                "fileUrl": {
+                  "column": "fileUrl"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "vehicleId": {
+                  "column": "vehicleId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "vehicleDocument"
             }
           },
           "WasteType": {
@@ -1893,6 +2009,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "vehicle"
+            },
+            "vehicleDocument": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "vehicleDocument"
             },
             "wasteType": {
               "kind": "rls",
@@ -3237,6 +3358,87 @@
                 }
               ]
             },
+            "vehicleDocument": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "expirationDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "fileUrl": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "vehicleId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "vehicleId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "vehicleDocument"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "vehicle"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "vehicleId"
+                  ],
+                  "name": "vehicleDocument_vehicleId_idx_e2df58fc",
+                  "prefix": "vehicleDocument_vehicleId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "wasteType": {
               "columns": {
                 "category": {
@@ -3303,10 +3505,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4fac433696dbf4b2d59194d46c1eb2e886740263265c4b019a04fed942a33fcd"
+    "storageHash": "5661534831a2a88147a721b4f90d4d5876809aefbef49a287244acfdc492b184"
   },
   "execution": {
-    "executionHash": "ea58b24168d31833c46c90a36c80d561e36bb1d4968eb743e799b7cc7caf5704",
+    "executionHash": "20d37b10b04e69e32c730a678389f80c28643045feef35b1d921b8be8d8c6394",
     "mutations": {
       "defaults": [
         {
@@ -3457,6 +3659,21 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "vehicle"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "vehicleDocument"
           }
         },
         {

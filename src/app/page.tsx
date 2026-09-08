@@ -35,7 +35,8 @@ import {
   updateSchedule,
   deleteSchedule,
   importExecutedSchedulesToTrips,
-  getInvoices, generateInvoice, deleteInvoice
+  getInvoices, generateInvoice, deleteInvoice,
+  uploadVehicleDocument, getVehicleDocuments, deleteVehicleDocument
 } from './actions';
 
 // Helper per formattare i numeri come valuta (€)
@@ -167,6 +168,9 @@ export default function Home() {
   const [isDestinationModalOpen, setIsDestinationModalOpen] = useState(false);
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [isVehicleDocsModalOpen, setIsVehicleDocsModalOpen] = useState(false);
+  const [selectedVehicleForDocs, setSelectedVehicleForDocs] = useState<any>(null);
+  const [vehicleDocs, setVehicleDocs] = useState<any[]>([]);
   const [isWasteModalOpen, setIsWasteModalOpen] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
 
@@ -984,6 +988,43 @@ const handleDeleteTrip = async (id: number) => {
       await refreshData();
     } else {
       alert(res.error);
+    }
+  };
+
+  const handleViewVehicleDocs = async (vehicle: any) => {
+    setSelectedVehicleForDocs(vehicle);
+    const res = await getVehicleDocuments(vehicle.id);
+    if (res.success) {
+      setVehicleDocs(res.documents || []);
+      setIsVehicleDocsModalOpen(true);
+    } else {
+      alert(res.error);
+    }
+  };
+
+  const handleUploadVehicleDoc = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedVehicleForDocs) return;
+    const formData = new FormData(e.currentTarget);
+    formData.append('vehicleId', selectedVehicleForDocs.id.toString());
+    const res = await uploadVehicleDocument(formData);
+    if (res.success) {
+      const refreshRes = await getVehicleDocuments(selectedVehicleForDocs.id);
+      if (refreshRes.success) setVehicleDocs(refreshRes.documents || []);
+      (e.target as HTMLFormElement).reset();
+    } else {
+      alert(res.error);
+    }
+  };
+
+  const handleDeleteVehicleDoc = async (docId: number) => {
+    if (confirm('Sicuro di voler eliminare questo documento?')) {
+      const res = await deleteVehicleDocument(docId);
+      if (res.success) {
+        setVehicleDocs(vehicleDocs.filter(d => d.id !== docId));
+      } else {
+        alert(res.error);
+      }
     }
   };
 
@@ -1924,7 +1965,17 @@ const handleDeleteTrip = async (id: number) => {
                                         {s.status === 'ANNULLATO' && <span title="Annullato" className="text-red-400">❌</span>}
                                       </div>
                                     </div>
-                                    <div className="font-mono text-[10px] text-white/80 truncate">{s.vehicle?.plateNumber} - {s.vehicle?.model}</div>
+                                    <div className="font-mono text-[10px] text-white/80 truncate flex items-center justify-between">
+                                      <span>{s.vehicle?.plateNumber} - {s.vehicle?.model}</span>
+                                      {s.vehicle && (
+                                        <button 
+                                          onClick={(e) => { e.stopPropagation(); handleViewVehicleDocs(s.vehicle); }}
+                                          className="ml-1 text-blue-400 hover:text-blue-300 font-bold px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-[9px]"
+                                        >
+                                          DOC
+                                        </button>
+                                      )}
+                                    </div>
                                     {s.notes && (
                                       <div className="text-[10px] italic text-white/70 mt-0.5 truncate">
                                         {s.notes}
@@ -2200,6 +2251,7 @@ const handleDeleteTrip = async (id: number) => {
                             <th className="p-3">Targa Veicolo</th>
                             <th className="p-3">Modello</th>
                             <th className="p-3 text-right">Portata Utile (kg)</th>
+                            <th className="p-3 text-center">Documenti</th>
                             <th className="p-3 text-center">Rimuovi</th>
                           </tr>
                         </thead>
@@ -2209,6 +2261,14 @@ const handleDeleteTrip = async (id: number) => {
                               <td className="p-3 font-mono font-bold text-blue-400">{v.plateNumber}</td>
                               <td className="p-3 text-zinc-300">{v.model || '-'}</td>
                               <td className="p-3 text-right font-semibold">{v.capacity ? `${formatWeight(v.capacity)} kg` : '-'}</td>
+                              <td className="p-3 text-center">
+                                <button
+                                  onClick={() => handleViewVehicleDocs(v)}
+                                  className="text-blue-500 hover:text-blue-400 p-1 hover:bg-zinc-800 rounded cursor-pointer mr-2"
+                                >
+                                  Documenti
+                                </button>
+                              </td>
                               <td className="p-3 text-center">
                                 <button
                                   onClick={() => handleDeleteVehicle(v.id)}
@@ -4542,9 +4602,66 @@ const handleDeleteTrip = async (id: number) => {
           </div>
         </div>
       )}
+
+      {isVehicleDocsModalOpen && (
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-white">Documenti: {selectedVehicleForDocs?.plateNumber}</h2>
+              <button onClick={() => setIsVehicleDocsModalOpen(false)} className="p-1 hover:bg-zinc-800 rounded-md cursor-pointer">
+                <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            <div className="mb-6 max-h-60 overflow-y-auto">
+              {vehicleDocs.length === 0 ? (
+                <p className="text-sm text-zinc-400 text-center py-4">Nessun documento presente.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {vehicleDocs.map(doc => (
+                    <li key={doc.id} className="bg-zinc-800 p-3 rounded-lg flex justify-between items-center text-sm">
+                      <div className="flex flex-col">
+                        <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="text-blue-400 font-bold hover:underline">
+                          {doc.name}
+                        </a>
+                        {doc.expirationDate && (
+                          <span className="text-xs text-zinc-400">Scadenza: {doc.expirationDate}</span>
+                        )}
+                      </div>
+                      <button onClick={() => handleDeleteVehicleDoc(doc.id)} className="text-red-500 hover:text-red-400 p-1">
+                        Elimina
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <form onSubmit={handleUploadVehicleDoc} className="border-t border-zinc-800 pt-4">
+              <h3 className="text-sm font-bold text-white mb-3">Carica nuovo documento</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">File</label>
+                  <input type="file" name="file" required className="w-full text-sm text-zinc-300" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">Data Scadenza (Opzionale)</label>
+                  <input type="date" name="expirationDate" className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-600" />
+                </div>
+                <div className="flex justify-end pt-2">
+                  <button type="submit" className="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-bold cursor-pointer">
+                    Carica Documento
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 
 
 

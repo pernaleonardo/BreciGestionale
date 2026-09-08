@@ -63,8 +63,21 @@ model Vehicle {
   trips           Trip[]
   transportPrices TransportPrice[]
   schedules       Schedule[]
+  documents       VehicleDocument[]
   createdAt       TimestamptzString @default(now())
   updatedAt       temporal.updatedAtString()
+  @@rls
+}
+
+model VehicleDocument {
+  id             Int      @id @default(autoincrement())
+  vehicleId      Int
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id])
+  name           String   // Nome/Titolo del documento
+  fileUrl        String   // Percorso del file o URL
+  expirationDate String?  // Data di scadenza (opzionale)
+  createdAt      TimestamptzString @default(now())
+  updatedAt      temporal.updatedAtString()
   @@rls
 }
 

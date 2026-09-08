@@ -3,6 +3,9 @@
 import { cookies } from 'next/headers';
 import { db } from '../prisma/db';
 import type { Contract } from '../prisma/contract.d';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
+import fs from 'fs';
 
 // Helper per verificare se l'utente è autenticato ed è amministratore
 async function checkAdmin() {
@@ -1073,4 +1076,84 @@ export async function deleteInvoice(id: number) {
     return { success: false, error: e.message || 'Errore nella cancellazione della fattura.' };
   }
 }
+
+export async function uploadVehicleDocument(formData: FormData) {
+  try {
+    const file = formData.get('file') as File;
+    const vehicleIdStr = formData.get('vehicleId') as string;
+    const expirationDate = formData.get('expirationDate') as string | null;
+
+    if (!file || !vehicleIdStr) {
+      return { success: false, error: 'Dati mancanti.' };
+    }
+
+    const vehicleId = Number(vehicleIdStr);
+    if (isNaN(vehicleId)) {
+      return { success: false, error: 'ID mezzo non valido.' };
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Save to public/documents
+    const uploadDir = join(process.cwd(), 'public', 'documents');
+    if (!fs.existsSync(uploadDir)) {
+      await mkdir(uploadDir, { recursive: true });
+    }
+
+    const uniqueName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.\-]/g, '_')}`;
+    const filePath = join(uploadDir, uniqueName);
+    await writeFile(filePath, buffer);
+
+    const fileUrl = `/documents/${uniqueName}`;
+
+    await db.orm.public.VehicleDocument.create({
+      vehicleId,
+      name: file.name,
+      fileUrl,
+      expirationDate: expirationDate || null,
+    });
+
+    return { success: true };
+  } catch (e: any) {
+    console.error('uploadVehicleDocument error:', e);
+    return { success: false, error: e.message || 'Errore nel caricamento del documento.' };
+  }
+}
+
+export async function getVehicleDocuments(vehicleId: number) {
+  try {
+    const documents = await db.orm.public.VehicleDocument.where({ vehicleId }).all();
+    return { success: true, documents };
+  } catch (e: any) {
+    console.error('getVehicleDocuments error:', e);
+    return { success: false, error: e.message || 'Errore nel recupero dei documenti.' };
+  }
+}
+
+export async function deleteVehicleDocument(id: number) {
+  try {
+    const doc = await db.orm.public.VehicleDocument.where({ id }).first();
+    if (!doc) {
+      return { success: false, error: 'Documento non trovato.' };
+    }
+    await db.orm.public.VehicleDocument.where({ id }).delete();
+    
+    // Attempt to delete file from disk as well
+    try {
+      const filePath = join(process.cwd(), 'public', doc.fileUrl);
+      if (fs.existsSync(filePath)) {
+        await fs.promises.unlink(filePath);
+      }
+    } catch (fsError) {
+      console.warn('Errore eliminazione file fisico:', fsError);
+    }
+    
+    return { success: true };
+  } catch (e: any) {
+    console.error('deleteVehicleDocument error:', e);
+    return { success: false, error: e.message || 'Errore nella cancellazione del documento.' };
+  }
+}
+
 
