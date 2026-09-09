@@ -1081,8 +1081,8 @@ export async function uploadVehicleDocument(data: { vehicleId: number; name: str
   try {
     const { vehicleId, name, fileData, expirationDate } = data;
 
-    if (!name || !fileData || !vehicleId) {
-      return { success: false, error: 'Dati mancanti.' };
+    if (!name || !fileData || vehicleId === undefined || vehicleId === null) {
+      return { success: false, error: `Dati mancanti. name=${!!name}, fileData=${!!fileData}, vehicleId=${vehicleId}` };
     }
 
     const doc = await db.orm.public.VehicleDocument.create({
