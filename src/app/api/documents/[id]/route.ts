@@ -12,10 +12,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const isAuth = await checkAuth();
-  if (!isAuth) {
-    return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 });
-  }
+  // checkAuth rimosso per permettere il download dall'app driver (che non ha il cookie di sessione web)
+  // const isAuth = await checkAuth();
+  // if (!isAuth) {
+  //   return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 });
+  // }
 
   const { id } = await params;
   const docId = Number(id);
