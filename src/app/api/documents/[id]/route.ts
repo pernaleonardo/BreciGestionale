@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../prisma/db';
+import { db } from '../../../../prisma/db';
 import { cookies } from 'next/headers';
 
 async function checkAuth() {
@@ -25,9 +25,7 @@ export async function GET(
   }
 
   try {
-    const doc = await db.orm.public.VehicleDocument.findUnique({
-      where: { id: docId }
-    });
+    const doc = await db.orm.public.VehicleDocument.where({ id: docId }).first();
 
     if (!doc || !doc.fileData) {
       return NextResponse.json({ error: 'Documento non trovato' }, { status: 404 });
